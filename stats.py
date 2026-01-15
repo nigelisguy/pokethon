@@ -14,7 +14,7 @@ class Mon:
 
 
     def call(self):
-        return f"{self.name} placeholder text"
+        return f"{self.name}"
     
 #ok so the stats 
 mon1=Mon("""bulbasaur""","""grass""","""poison""",45,49,49,65,65,45)
@@ -171,7 +171,7 @@ mon151=Mon("""mew""","""psychic""","""nil""",100,100,100,100,100,100)
 
 #moves
 class Moves:
-    def __init__(self,name,type,pp,pow,acc,attack,defence,spattack,spdefence,speed,evasion,enattack,endefence,enspattack,enspdefence,enspeed,emevasion,emaccuracy,weather,eneffect,hitpriority,secondacc,repeatedhit,maxhealth,critstage):
+    def __init__(self,name,type,pp,pow,acc,attack,defence,spattack,spdefence,speed,evasion,enattack,endefence,enspattack,enspdefence,enspeed,emevasion,emaccuracy,weather,eneffect,hitpriority,secondacc,repeatedhit,maxhealth,critstage,desc):
         self.name = name 
         self.type = type
         self.pp = pp
@@ -197,6 +197,7 @@ class Moves:
         self.rhit = repeatedhit
         self.mhp = maxhealth
         self.crits=critstage
+        self.desc=desc
 
 
 

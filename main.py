@@ -1,41 +1,53 @@
 import stats
 import curses
 import time
+import fightui
+
+#variables
 textspeed = 0.05
+VISIBLE = 4
+mons = [
+    getattr(stats, f"mon{i}")
+    for i in range(1, 152)
+    if hasattr(stats, f"mon{i}")
+]
+TOTAL = len(mons)
+def main(stdscr):
+    battle_data = fightui.battle_setup(stdscr)
 def printdelay(text):
     for char in text:
         print(char, end='', flush=True)
         time.sleep(textspeed) 
-
 def mainm(stdscr):
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
     curses.use_default_colors()
 
-    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_RED)
+    # Blue highlight for selected menu item
+    curses.init_pair(1, curses.COLOR_BLUE, -1)
 
     menu = [
-        "--pokethon--",
-        "fighttest",
-        "pokedex ",
-        "settings"
+        "--Pokethon--",
+        "FightTest",
+        "Pokedex",
+        "Settings"
     ]
 
     y = 1
-    cell_width = 11
 
     while True:
         stdscr.clear()
 
+        # Draw menu items
         for i in range(4):
-            text = menu[i].ljust(9)
+            text = menu[i].capitalize()  # Ensure capitalization
             if i == y:
                 stdscr.attron(curses.color_pair(1))
                 stdscr.addstr(i * 2, 0, f"> {text}")
                 stdscr.attroff(curses.color_pair(1))
             else:
-                stdscr.addstr(i * 2, 0, f" {text} ")
+                stdscr.addstr(i * 2, 0, f"  {text}")
 
         key = stdscr.getch()
 
@@ -44,11 +56,11 @@ def mainm(stdscr):
         elif key == curses.KEY_DOWN and y < 3:
             y += 1
         elif key == ord("z"):
-            if y ==2:
-                printdelay("wip")
-            elif y ==1:
-                fightui(stdscr)
-            elif y==3:
+            if y == 2:
+                mon_menu(stdscr)
+            elif y == 1:
+                curses.wrapper(main)
+            elif y == 3:
                 setting(stdscr)
 
 def setting(stdscr):
@@ -58,7 +70,8 @@ def setting(stdscr):
     curses.start_color()
     curses.use_default_colors()
 
-    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_RED)
+    # Blue text instead of red highlighter
+    curses.init_pair(1, curses.COLOR_BLUE, -1)
 
     y = 0
     cell_width = 11
@@ -66,10 +79,10 @@ def setting(stdscr):
     while True:
         stdscr.clear()
         menu = [
-        f"text speed {textspeed:.2f}",
-        "wip",
-        "wip",
-        "back"
+            f"text speed {textspeed:.2f}",
+            "wip",
+            "wip",
+            "back"
         ]
         for i in range(4):
             text = menu[i].ljust(9)
@@ -89,102 +102,134 @@ def setting(stdscr):
         elif key == curses.KEY_LEFT and y == 0:
             if textspeed > 0:
                 textspeed -= 0.05
-        elif key == curses.KEY_RIGHT and y == 0:  
-            if textspeed < 1:  
+        elif key == curses.KEY_RIGHT and y == 0:
+            if textspeed < 1:
                 textspeed += 0.05
         elif key == ord("z"):
             if y == 3:
                 break
             else:
                 printdelay("wip")
-                
 
+def draw_stats(stdscr, mon, dexno):
+    curses.start_color()
+    curses.use_default_colors()
 
-def fightui(stdscr):
-    curses.curs_set(0)
-    stdscr.keypad(True)
+    type_colors = {
+        "Fire": curses.COLOR_RED,
+        "Ground": curses.COLOR_YELLOW,
+        "Rock": curses.COLOR_YELLOW,
+        "Fighting": curses.COLOR_MAGENTA,
+        "Electric": curses.COLOR_YELLOW,
+        "Bug": curses.COLOR_GREEN,
+        "Grass": curses.COLOR_GREEN,
+        "Water": curses.COLOR_BLUE,
+        "Flying": curses.COLOR_CYAN,
+        "Ice": curses.COLOR_CYAN,
+        "Dragon": curses.COLOR_MAGENTA,
+        "Psychic": curses.COLOR_MAGENTA,
+        "Poison": curses.COLOR_MAGENTA,
+        "Ghost": curses.COLOR_MAGENTA,
+        "Dark": curses.COLOR_BLACK,
+        "Normal": curses.COLOR_WHITE,
+        "Steel": curses.COLOR_WHITE
+    }
 
-    grid = [
-        ["--Fight--", "---Bag---"],
-        ["-Pokémon-", "---Run---"]
-    ]
+    color_pairs = {}
+    pair_id = 1
+    for t, color in type_colors.items():
+        curses.init_pair(pair_id, color, -1)
+        color_pairs[t] = curses.color_pair(pair_id)
+        pair_id += 1
 
-    x = 0
-    y = 0
-    cell_width = 11
+    stdscr.clear()
+    h, w = stdscr.getmaxyx()
+
+    title = mon.call().capitalize()
+    stdscr.addstr(0, 0, title)
+
+    divider = "-" * 70 
+    stdscr.addstr(1, 0, divider)
+
+    col1, col2, col3, col4 = 0, 14, 30, 50
+
+    type1 = mon.type.capitalize()
+    type2 = (mon.type2 or "").capitalize()
+    stdscr.addstr(2, col1, f"{type1:<12}", color_pairs.get(type1, curses.A_NORMAL))
+    stdscr.addstr(2, col2, f"| HP: {mon.hp:<5}")
+    stdscr.addstr(2, col3, f"| Attack: {mon.at:<5}")
+    stdscr.addstr(2, col4, f"| Sp. Atk: {mon.sp_at:<5}")
+
+    stdscr.addstr(3, col1, f"{type2:<12}", color_pairs.get(type2, curses.A_NORMAL))
+    stdscr.addstr(3, col2, f"| Speed: {mon.spd:<5}")
+    stdscr.addstr(3, col3, f"| Defense: {mon.de:<5}")
+    stdscr.addstr(3, col4, f"| Sp. Def: {mon.sp_de:<5}")
+
+    stdscr.addstr(4, 0, divider)
+
+    stdscr.addstr(5, 0, "#placeholder")
+
+    stdscr.addstr(h - 1, 0, "Press X to go back")
+    stdscr.refresh()
 
     while True:
-        stdscr.clear()
-
-        for j in range(2):
-            for i in range(2):
-                text = grid[j][i].ljust(9)
-
-                if i == x and j == y:
-                    cell = f"[{text}]"
-                else:
-                    cell = f" {text} "
-
-                stdscr.addstr(j * 2, i * cell_width, cell)
-
-        key = stdscr.getch()
-
-        if key == curses.KEY_UP and y > 0:
-            y -= 1
-        elif key == curses.KEY_DOWN and y < 1:
-            y += 1
-        elif key == curses.KEY_LEFT and x > 0:
-            x -= 1
-        elif key == curses.KEY_RIGHT and x < 1:
-            x += 1
-        elif key == ord("q"):
+        if stdscr.getch() == ord("x"):
             break
 
-def fightui(stdscr):
+def mon_menu(stdscr):
     curses.curs_set(0)
     stdscr.keypad(True)
 
-    grid = [
-        ["--Fight--", "---Bag---"],
-        ["-Pokémon-", "---Run---"]
-    ]
-
-    x = 0
-    y = 0
-    cell_width = 11
+    scrollno = 0
+    cursor = 0
 
     while True:
         stdscr.clear()
 
-        for j in range(2):
-            for i in range(2):
-                text = grid[j][i].ljust(9)
+        for i in range(VISIBLE):
+            idx = scrollno + i
+            if idx >= TOTAL:
+                break
 
-                if i == x and j == y:
-                    cell = f"[{text}]"
-                else:
-                    cell = f" {text} "
+            dexno = idx + 1
+            name = mons[idx].call().capitalize()
 
-                stdscr.addstr(j * 2, i * cell_width, cell)
+            line = f"{dexno:03d} {name}"
+
+            if i == cursor:
+                stdscr.addstr(i, 0, f"> {line}")
+            else:
+                stdscr.addstr(i, 0, f"  {line}")
+
+        stdscr.addstr(VISIBLE + 1, 0, "Press Z to see Stats!")
 
         key = stdscr.getch()
 
-        if key == curses.KEY_UP and y > 0:
-            y -= 1
-        elif key == curses.KEY_DOWN and y < 1:
-            y += 1
-        elif key == curses.KEY_LEFT and x > 0:
-            x -= 1
-        elif key == curses.KEY_RIGHT and x < 1:
-            x += 1
+        if key == curses.KEY_UP:
+            if cursor > 0:
+                cursor -= 1
+            elif scrollno > 0:
+                scrollno -= 1
+
+        elif key == curses.KEY_DOWN:
+            if cursor < VISIBLE - 1 and scrollno + cursor + 1 < TOTAL:
+                cursor += 1
+            elif scrollno + VISIBLE < TOTAL:
+                scrollno += 1
+
+        elif key == ord("z"):
+            idx = scrollno + cursor
+            draw_stats(stdscr, mons[idx], idx + 1)
+
         elif key == ord("q"):
             break
 
         stdscr.refresh()
+
+
 while True:
     curses.wrapper(mainm)
 
-#var
-
+#test
 print("hi")
 print(stats.mon1.call())
