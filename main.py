@@ -23,8 +23,6 @@ def mainm(stdscr):
     stdscr.keypad(True)
     curses.start_color()
     curses.use_default_colors()
-
-    # Blue highlight for selected menu item
     curses.init_pair(1, curses.COLOR_BLUE, -1)
 
     menu = [
@@ -38,10 +36,8 @@ def mainm(stdscr):
 
     while True:
         stdscr.clear()
-
-        # Draw menu items
         for i in range(4):
-            text = menu[i].capitalize()  # Ensure capitalization
+            text = menu[i].capitalize()  
             if i == y:
                 stdscr.attron(curses.color_pair(1))
                 stdscr.addstr(i * 2, 0, f"> {text}")
@@ -58,8 +54,8 @@ def mainm(stdscr):
         elif key == ord("z"):
             if y == 2:
                 mon_menu(stdscr)
-            elif y == 1:
-                curses.wrapper(main)
+            elif y == 1:  
+                fightui.battle_setup(stdscr)
             elif y == 3:
                 setting(stdscr)
 
@@ -69,8 +65,6 @@ def setting(stdscr):
     stdscr.keypad(True)
     curses.start_color()
     curses.use_default_colors()
-
-    # Blue text instead of red highlighter
     curses.init_pair(1, curses.COLOR_BLUE, -1)
 
     y = 0
