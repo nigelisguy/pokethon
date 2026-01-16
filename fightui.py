@@ -1,6 +1,7 @@
 import curses
 import random
 import stats
+import main
 VISIBLE = 4
 
 def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=False):
@@ -65,7 +66,7 @@ def textbox(stdscr, text):
         line += ch
         safe_addstr(stdscr, top + 1, 2, line[: w - 4])
         stdscr.refresh()
-        curses.napms(20)
+        curses.napms(int(main.textspeed*1000))
     while True:
         if stdscr.getch() == ord("z"):
             break
