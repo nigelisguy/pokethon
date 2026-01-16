@@ -3,7 +3,7 @@ import curses
 import time
 import fightui
 
-#variables
+# Global variables
 textspeed = 0.05
 VISIBLE = 4
 mons = [
@@ -12,104 +12,89 @@ mons = [
     if hasattr(stats, f"mon{i}")
 ]
 TOTAL = len(mons)
-def main(stdscr):
-    battle_data = fightui.battle_setup(stdscr)
+
+
 def printdelay(text):
     for char in text:
         print(char, end='', flush=True)
-        time.sleep(textspeed) 
-def mainm(stdscr):
+        time.sleep(textspeed)
+
+
+def main_menu(stdscr):
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
     curses.use_default_colors()
-
-    # Blue highlight for selected menu item
     curses.init_pair(1, curses.COLOR_BLUE, -1)
 
-    menu = [
-        "--Pokethon--",
-        "FightTest",
-        "Pokedex",
-        "Settings"
-    ]
-
-    y = 1
+    menu_items = ["--Pokethon--", "FightTest", "Pokedex", "Settings"]
+    selected = 1
 
     while True:
         stdscr.clear()
 
-        # Draw menu items
-        for i in range(4):
-            text = menu[i].capitalize()  # Ensure capitalization
-            if i == y:
+        for i, text in enumerate(menu_items):
+            display = text.capitalize()
+            if i == selected:
                 stdscr.attron(curses.color_pair(1))
-                stdscr.addstr(i * 2, 0, f"> {text}")
+                stdscr.addstr(i * 2, 0, f"> {display}")
                 stdscr.attroff(curses.color_pair(1))
             else:
-                stdscr.addstr(i * 2, 0, f"  {text}")
+                stdscr.addstr(i * 2, 0, f"  {display}")
 
         key = stdscr.getch()
 
-        if key == curses.KEY_UP and y > 1:
-            y -= 1
-        elif key == curses.KEY_DOWN and y < 3:
-            y += 1
+        if key == curses.KEY_UP and selected > 1:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < 3:
+            selected += 1
         elif key == ord("z"):
-            if y == 2:
+            if selected == 1:
+                fightui.battle_setup(stdscr)  # call battle
+            elif selected == 2:
                 mon_menu(stdscr)
-            elif y == 1:
-                curses.wrapper(main)
-            elif y == 3:
-                setting(stdscr)
+            elif selected == 3:
+                setting_menu(stdscr)
 
-def setting(stdscr):
+
+def setting_menu(stdscr):
     global textspeed
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
     curses.use_default_colors()
-
-    # Blue text instead of red highlighter
     curses.init_pair(1, curses.COLOR_BLUE, -1)
 
-    y = 0
-    cell_width = 11
+    options = [f"text speed {textspeed:.2f}", "wip", "wip", "back"]
+    selected = 0
 
     while True:
         stdscr.clear()
-        menu = [
-            f"text speed {textspeed:.2f}",
-            "wip",
-            "wip",
-            "back"
-        ]
-        for i in range(4):
-            text = menu[i].ljust(9)
-            if i == y:
+        for i, text in enumerate(options):
+            text_display = text.ljust(9)
+            if i == selected:
                 stdscr.attron(curses.color_pair(1))
-                stdscr.addstr(i * 2, 0, f"< {text} >")
+                stdscr.addstr(i * 2, 0, f"< {text_display} >")
                 stdscr.attroff(curses.color_pair(1))
             else:
-                stdscr.addstr(i * 2, 0, f" {text} ")
+                stdscr.addstr(i * 2, 0, f" {text_display} ")
 
         key = stdscr.getch()
 
-        if key == curses.KEY_UP and y > 0:
-            y -= 1
-        elif key == curses.KEY_DOWN and y < 3:
-            y += 1
-        elif key == curses.KEY_LEFT and y == 0:
-            if textspeed > 0:
-                textspeed -= 0.05
-        elif key == curses.KEY_RIGHT and y == 0:
-            if textspeed < 1:
-                textspeed += 0.05
+        if key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < 3:
+            selected += 1
+        elif key == curses.KEY_LEFT and selected == 0 and textspeed > 0:
+            textspeed -= 0.05
+        elif key == curses.KEY_RIGHT and selected == 0 and textspeed < 1:
+            textspeed += 0.05
         elif key == ord("z"):
-            if y == 3:
+            if selected == 3:
                 break
             else:
                 printdelay("wip")
+
 
 def draw_stats(stdscr, mon, dexno):
     curses.start_color()
@@ -148,7 +133,7 @@ def draw_stats(stdscr, mon, dexno):
     title = mon.call().capitalize()
     stdscr.addstr(0, 0, title)
 
-    divider = "-" * 70 
+    divider = "-" * 70
     stdscr.addstr(1, 0, divider)
 
     col1, col2, col3, col4 = 0, 14, 30, 50
@@ -175,6 +160,7 @@ def draw_stats(stdscr, mon, dexno):
     while True:
         if stdscr.getch() == ord("x"):
             break
+
 
 def mon_menu(stdscr):
     curses.curs_set(0)
@@ -216,7 +202,6 @@ def mon_menu(stdscr):
                 cursor += 1
             elif scrollno + VISIBLE < TOTAL:
                 scrollno += 1
-
         elif key == ord("z"):
             idx = scrollno + cursor
             draw_stats(stdscr, mons[idx], idx + 1)
@@ -227,9 +212,5 @@ def mon_menu(stdscr):
         stdscr.refresh()
 
 
-while True:
-    curses.wrapper(mainm)
-
-#test
-print("hi")
-print(stats.mon1.call())
+if __name__ == "__main__":
+    curses.wrapper(main_menu)

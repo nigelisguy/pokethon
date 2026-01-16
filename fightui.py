@@ -1,180 +1,189 @@
 import curses
+import random
 import stats
 
-VISIBLE = 4  # Number of visible items in menus
-
-# Pokémon objects
+# -------------------- Data --------------------
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
-# Moves are tuples
 moves_list = [stats.move1, stats.move2, stats.move3, stats.move4]
 
-
-def truncate(text, width):
-    """Truncate text to fit in terminal width"""
-    if len(text) > width:
-        return text[:width-3] + "..."
-    return text
-
-
+# -------------------- Utility --------------------
 def safe_addstr(stdscr, y, x, text):
-    """Add string safely, truncating to screen width"""
     h, w = stdscr.getmaxyx()
-    if y < h:
-        stdscr.addstr(y, x, truncate(text, w - x))
+    if 0 <= y < h and 0 <= x < w:
+        stdscr.addstr(y, x, str(text)[: w - x])
 
+def draw_divider(stdscr, y):
+    h, w = stdscr.getmaxyx()
+    safe_addstr(stdscr, y, 0, "=" * w)
 
-def select_from_list(stdscr, items, title="Select", visible=VISIBLE, show_type=False, show_desc=False):
-    scroll = 0
+def textbox(stdscr, text):
+    h, w = stdscr.getmaxyx()
+    top = max(0, h - 4)
+    safe_addstr(stdscr, top, 0, "+" + "-" * (w - 2) + "+")
+    safe_addstr(stdscr, top + 1, 0, "|" + " " * (w - 2) + "|")
+    safe_addstr(stdscr, top + 2, 0, "+" + "-" * (w - 2) + "+")
+    line = ""
+    for ch in text:
+        line += ch
+        safe_addstr(stdscr, top + 1, 2, line[: w - 4])
+        stdscr.refresh()
+        curses.napms(20)
+    while True:
+        if stdscr.getch() == ord("z"):
+            break
+
+# -------------------- Classes --------------------
+class BattleMove:
+    def __init__(self, move):
+        self.name = move[0].strip('"').capitalize()
+        self.type = move[1]
+        self.pp_max = move[2]
+        self.pp = move[2]
+        self.power = move[3]
+        self.acc = move[4]
+        self.desc = move[-1]
+
+class BattleMon:
+    def __init__(self, base, level, moves):
+        self.base = base
+        self.level = level
+        self.status = "OK"
+        self.max_hp = int(((2*base.hp*level)/100) + level + 10)
+        self.hp = self.max_hp
+        self.at = int(((2*base.at*level)/100) + 5)
+        self.de = int(((2*base.de*level)/100) + 5)
+        self.spd = int(((2*base.spd*level)/100) + 5)
+        self.moves = [BattleMove(m) for m in moves]
+
+    def name(self):
+        return self.base.call().capitalize()
+
+def damage_calc(attacker, defender, move):
+    if move.power <= 0: return 0
+    base = (((2*attacker.level)/5 + 2) * move.power * attacker.at / defender.de)/50 + 2
+    modifier = random.uniform(0.85, 1.0)
+    return int(base * modifier)
+
+# -------------------- Selection --------------------
+def select_from_list(stdscr, items, title, show_type=False, show_desc=False):
     cursor = 0
-
     while True:
         stdscr.clear()
-        h, w = stdscr.getmaxyx()
         safe_addstr(stdscr, 0, 0, title)
-        safe_addstr(stdscr, 1, 0, "-" * min(50, w))
-
-        for i in range(visible):
-            idx = scroll + i
-            if idx >= len(items):
-                break
-
-            item = items[idx]
-
-            if hasattr(item, "call"):  # Pokémon
+        safe_addstr(stdscr, 1, 0, "-"*40)
+        for i in range(min(4, len(items))):
+            item = items[i]
+            if hasattr(item, "call"):
                 name = item.call().capitalize()
-                if show_type:
-                    type1 = getattr(item, "type", "")
-                    type2 = getattr(item, "type2", "")
-                    types = type1.capitalize()
-                    if type2:
-                        types += f"/{type2.capitalize()}"
-                    line = f"{name} - {types}"
-                else:
-                    line = name
-            else:  # Moves as tuples
-                name = item[0].capitalize()
-                desc = item[-1] if len(item) > 0 else "#placeholder"
-                line = f"{name} - {desc}" if show_desc else name
-
-            line = truncate(line, w - 3)
-            if i == cursor:
-                safe_addstr(stdscr, i + 2, 0, f"> {line}")
+                t2 = "" if item.type2=="nil" else f"/{item.type2.capitalize()}"
+                line = f"{name} - {item.type.capitalize()}{t2}"
             else:
-                safe_addstr(stdscr, i + 2, 0, f"  {line}")
-
+                name = item[0].strip('"').capitalize()
+                line = f"{name} - {item[-1]}" if show_desc else name
+            prefix = "> " if i==cursor else "  "
+            safe_addstr(stdscr, i+2, 0, prefix + line)
         key = stdscr.getch()
-        if key == curses.KEY_UP:
-            if cursor > 0:
-                cursor -= 1
-            elif scroll > 0:
-                scroll -= 1
-        elif key == curses.KEY_DOWN:
-            if cursor < visible - 1 and scroll + cursor + 1 < len(items):
-                cursor += 1
-            elif scroll + visible < len(items):
-                scroll += 1
-        elif key == ord("z"):
-            return scroll + cursor
-        elif key == ord("q"):
-            return None
-        stdscr.refresh()
+        if key==curses.KEY_UP and cursor>0: cursor-=1
+        elif key==curses.KEY_DOWN and cursor<len(items)-1: cursor+=1
+        elif key==ord("z"): return cursor
 
-
-def select_pokemon_and_moves(stdscr, mons_pool, label="Player"):
-    idx = select_from_list(stdscr, mons_pool, f"{label} Pokémon", show_type=True)
-    if idx is None:
-        return None, []
-    mon = mons_pool.pop(idx)
-
-    selected_moves = []
+def select_pokemon_and_moves(stdscr, pool, label):
+    idx = select_from_list(stdscr, pool, f"{label} Pokémon", show_type=True)
+    mon = pool.pop(idx)
+    chosen = []
     for i in range(4):
-        move_idx = select_from_list(
-            stdscr,
-            moves_list,
-            f"{mon.call().capitalize()} - Move {i+1}",
-            show_desc=True
-        )
-        if move_idx is None:
-            break
-        selected_moves.append(moves_list[move_idx])
+        m = select_from_list(stdscr, moves_list, f"{mon.call().capitalize()} Move {i+1}", show_desc=True)
+        chosen.append(moves_list[m])
+    return mon, chosen
 
-    return mon, selected_moves
-
-
-def show_summary(stdscr, player_mon, player_moves, enemy_mon, enemy_moves):
-    """
-    Compact summary:
-    Pokémon name
-    move1_name   move2_name
-    move3_name   move4_name
-    """
-    stdscr.clear()
+# -------------------- Drawing --------------------
+def draw_header(stdscr, player, enemy):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 0, 0, "Battle Setup Complete (Press Z to Start Battle)")
-    safe_addstr(stdscr, 1, 0, "-" * min(50, w))
+    left = f"{player.name()} [{player.status}] HP {player.hp}/{player.max_hp}"
+    right = f"{enemy.name()} [{enemy.status}] HP {enemy.hp}/{enemy.max_hp}"
+    safe_addstr(stdscr, 0, 0, (left + " ------ " + right)[:w])
+    draw_divider(stdscr, 1)
 
-    def draw_compact(mon, moves, start_row, label):
-        safe_addstr(stdscr, start_row, 0, f"{label}: {mon.call().capitalize()}")
-        max_width = (w - 6) // 2  # 2 moves per line
-        lines_needed = (len(moves) + 1) // 2
-        for i in range(lines_needed):
-            left_idx = i*2
-            right_idx = i*2 + 1
-            left_text = moves[left_idx][0].capitalize() if left_idx < len(moves) else ""
-            left_text = truncate(left_text, max_width)
-            line = f"{left_text:<{max_width}}"
-            if right_idx < len(moves):
-                right_text = moves[right_idx][0].capitalize()
-                right_text = truncate(right_text, max_width)
-                line += right_text
-            safe_addstr(stdscr, start_row + 1 + i, 2, line)
-        return start_row + 1 + lines_needed + 1  # next starting row
+def draw_moves(stdscr, mon, highlight=-1):
+    for j in range(2):
+        for i in range(2):
+            idx = j*2 + i
+            if idx>=len(mon.moves): continue
+            move = mon.moves[idx]
+            sel = idx==highlight
+            safe_addstr(stdscr, 2+j, i*20, f">[{move.name}]<" if sel else f"[{move.name}]")
+            safe_addstr(stdscr, 3+j, i*20, f"PP {move.pp}/{move.pp_max}")
+    draw_divider(stdscr, 4)
 
-    row = 2
-    row = draw_compact(player_mon, player_moves, row, "Player")
-    row = draw_compact(enemy_mon, enemy_moves, row, "Enemy")
-    stdscr.refresh()
+def draw_main_menu(stdscr, menu_pos):
+    menu = ["Fight","Bag","Pokémon","Run"]
+    y = 2  # menu right below the divider
+    for i, item in enumerate(menu):
+        if i == menu_pos:
+            text = f">[{item}]<"
+        else:
+            text = f"[{item}]"
+        x = (i%2)*25
+        safe_addstr(stdscr, y, x, text)
+        if i==1: safe_addstr(stdscr, y+1, 0, "")  # just spacing for alignment
 
+# -------------------- Move selection --------------------
+def move_menu(stdscr, user):
+    highlight = 0
     while True:
+        stdscr.clear()
+        draw_header(stdscr, user, user)
+        draw_moves(stdscr, user, highlight)
         key = stdscr.getch()
-        if key == ord("z"):
-            afightui(stdscr)
-            break
+        if key == curses.KEY_UP and highlight>1: highlight-=2
+        elif key == curses.KEY_DOWN and highlight<2: highlight+=2
+        elif key == curses.KEY_LEFT and highlight%2==1: highlight-=1
+        elif key == curses.KEY_RIGHT and highlight%2==0 and highlight+1<len(user.moves): highlight+=1
+        elif key == ord("x"): return None  # go back to main menu
+        elif key == ord("z"):
+            move = user.moves[highlight]
+            if move.pp>0: return move
 
-
-def battle_setup(stdscr):
-    mons_pool = mons.copy()
-    player_mon, player_moves = select_pokemon_and_moves(stdscr, mons_pool, label="Player")
-    enemy_mon, enemy_moves = select_pokemon_and_moves(stdscr, mons_pool, label="Enemy")
-    show_summary(stdscr, player_mon, player_moves, enemy_mon, enemy_moves)
-    return {
-        "player": {"mon": player_mon, "moves": player_moves},
-        "enemy": {"mon": enemy_mon, "moves": enemy_moves},
-    }
-
-
-def afightui(stdscr):
+# -------------------- Battle Loop --------------------
+def afightui(stdscr, player, enemy):
     curses.curs_set(0)
     stdscr.keypad(True)
-    x = 0
-    y = 0
-    cell_width = 11
+    menu_pos = 0
     while True:
         stdscr.clear()
-        grid = [["--Fight--", "---Bag---"], ["-Pokémon-", "---Run---"]]
-        for j in range(2):
-            for i in range(2):
-                text = grid[j][i].ljust(9)
-                cell = f"[{text}]" if i == x and j == y else f" {text} "
-                safe_addstr(stdscr, j*2, i*cell_width, cell)
+        draw_header(stdscr, player, enemy)
+        draw_main_menu(stdscr, menu_pos)
         key = stdscr.getch()
-        if key == curses.KEY_UP and y > 0:
-            y -= 1
-        elif key == curses.KEY_DOWN and y < 1:
-            y += 1
-        elif key == curses.KEY_LEFT and x > 0:
-            x -= 1
-        elif key == curses.KEY_RIGHT and x < 1:
-            x += 1
-        elif key == ord("q"):
-            break
+        if key==curses.KEY_UP and menu_pos>1: menu_pos-=2
+        elif key==curses.KEY_DOWN and menu_pos<2: menu_pos+=2
+        elif key==curses.KEY_LEFT and menu_pos%2==1: menu_pos-=1
+        elif key==curses.KEY_RIGHT and menu_pos%2==0 and menu_pos+1<4: menu_pos+=1
+        elif key==ord("z"):
+            if menu_pos==0:  # Fight
+                player_move = move_menu(stdscr, player)
+                if player_move is None:  # X pressed, cancel
+                    continue
+                usable = [m for m in enemy.moves if m.pp>0]
+                enemy_move = random.choice(usable) if usable else None
+                turn = sorted([(player, player_move),(enemy, enemy_move)], key=lambda x:x[0].spd, reverse=True)
+                for user, move in turn:
+                    if move is None or move.pp<=0: continue
+                    target = enemy if user==player else player
+                    move.pp-=1
+                    dmg=damage_calc(user, target, move)
+                    target.hp = max(0, target.hp - dmg)
+                    textbox(stdscr, f"{user.name()} used {move.name}! It dealt {dmg} damage.")
+                    if target.hp<=0:
+                        textbox(stdscr, f"{target.name()} fainted!")
+                        return "win" if target==enemy else "lose"
+            else:
+                textbox(stdscr, f"{['Bag','Pokémon','Run'][menu_pos-1]} is WIP")
+
+# -------------------- Setup --------------------
+def battle_setup(stdscr):
+    pool = mons.copy()
+    p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
+    e_mon, e_moves = select_pokemon_and_moves(stdscr, pool, "Enemy")
+    player = BattleMon(p_mon, 50, p_moves)
+    enemy = BattleMon(e_mon, 50, e_moves)
+    return afightui(stdscr, player, enemy)
