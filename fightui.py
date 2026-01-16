@@ -2,11 +2,11 @@ import curses
 import random
 import stats
 
-# -------------------- Data --------------------
+# data
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
 moves_list = [stats.move1, stats.move2, stats.move3, stats.move4]
 
-# -------------------- Utility --------------------
+#utility
 def safe_addstr(stdscr, y, x, text):
     h, w = stdscr.getmaxyx()
     if 0 <= y < h and 0 <= x < w:
@@ -32,7 +32,7 @@ def textbox(stdscr, text):
         if stdscr.getch() == ord("z"):
             break
 
-# -------------------- Classes --------------------
+#class
 class BattleMove:
     def __init__(self, move):
         self.name = move[0].strip('"').capitalize()
@@ -64,7 +64,7 @@ def damage_calc(attacker, defender, move):
     modifier = random.uniform(0.85, 1.0)
     return int(base * modifier)
 
-# -------------------- Selection --------------------
+#select
 def select_from_list(stdscr, items, title, show_type=False, show_desc=False):
     cursor = 0
     while True:
@@ -96,38 +96,42 @@ def select_pokemon_and_moves(stdscr, pool, label):
         chosen.append(moves_list[m])
     return mon, chosen
 
-# -------------------- Drawing --------------------
+# -draw ui
+
 def draw_header(stdscr, player, enemy):
-    h, w = stdscr.getmaxyx()
     left = f"{player.name()} [{player.status}] HP {player.hp}/{player.max_hp}"
     right = f"{enemy.name()} [{enemy.status}] HP {enemy.hp}/{enemy.max_hp}"
-    safe_addstr(stdscr, 0, 0, (left + " ------ " + right)[:w])
-    draw_divider(stdscr, 1)
+    safe_addstr(stdscr, 0, 0, f"{left} ------ {right}")
+    draw_divider(stdscr, 1)  
+
+def draw_main_menu(stdscr, menu_pos):
+    """Draw main battle menu under header"""
+    menu = ["Fight", "Bag", "Pokémon", "Run"]
+    row_start = 2
+    col_spacing = 25
+    for i, item in enumerate(menu):
+        row = row_start + i//2
+        col = (i%2)*col_spacing
+        text = f">[{item}]<" if i == menu_pos else f"[{item}]"
+        safe_addstr(stdscr, row, col, text)
+    draw_divider(stdscr, row_start + 2) 
 
 def draw_moves(stdscr, mon, highlight=-1):
+    """Draw 2x2 move grid with PP values beside the move name."""
+    row_start = 5  
+    col_spacing = 25
     for j in range(2):
         for i in range(2):
             idx = j*2 + i
-            if idx>=len(mon.moves): continue
+            if idx >= len(mon.moves):
+                continue
             move = mon.moves[idx]
-            sel = idx==highlight
-            safe_addstr(stdscr, 2+j, i*20, f">[{move.name}]<" if sel else f"[{move.name}]")
-            safe_addstr(stdscr, 3+j, i*20, f"PP {move.pp}/{move.pp_max}")
-    draw_divider(stdscr, 4)
+            sel = idx == highlight
+            text = f"{move.name} PP{move.pp}/{move.pp_max}"
+            text = f">[{text}]<" if sel else f"[{text}]"
+            safe_addstr(stdscr, row_start + j, i*col_spacing, text)
+    draw_divider(stdscr, row_start + 2)  
 
-def draw_main_menu(stdscr, menu_pos):
-    menu = ["Fight","Bag","Pokémon","Run"]
-    y = 2  # menu right below the divider
-    for i, item in enumerate(menu):
-        if i == menu_pos:
-            text = f">[{item}]<"
-        else:
-            text = f"[{item}]"
-        x = (i%2)*25
-        safe_addstr(stdscr, y, x, text)
-        if i==1: safe_addstr(stdscr, y+1, 0, "")  # just spacing for alignment
-
-# -------------------- Move selection --------------------
 def move_menu(stdscr, user):
     highlight = 0
     while True:
@@ -139,12 +143,12 @@ def move_menu(stdscr, user):
         elif key == curses.KEY_DOWN and highlight<2: highlight+=2
         elif key == curses.KEY_LEFT and highlight%2==1: highlight-=1
         elif key == curses.KEY_RIGHT and highlight%2==0 and highlight+1<len(user.moves): highlight+=1
-        elif key == ord("x"): return None  # go back to main menu
+        elif key == ord("x"): return None 
         elif key == ord("z"):
             move = user.moves[highlight]
             if move.pp>0: return move
 
-# -------------------- Battle Loop --------------------
+# battle ui, lol hey what so funny bum
 def afightui(stdscr, player, enemy):
     curses.curs_set(0)
     stdscr.keypad(True)
@@ -159,9 +163,9 @@ def afightui(stdscr, player, enemy):
         elif key==curses.KEY_LEFT and menu_pos%2==1: menu_pos-=1
         elif key==curses.KEY_RIGHT and menu_pos%2==0 and menu_pos+1<4: menu_pos+=1
         elif key==ord("z"):
-            if menu_pos==0:  # Fight
+            if menu_pos==0:  # Fight me bum
                 player_move = move_menu(stdscr, player)
-                if player_move is None:  # X pressed, cancel
+                if player_move is None:  
                     continue
                 usable = [m for m in enemy.moves if m.pp>0]
                 enemy_move = random.choice(usable) if usable else None
@@ -175,11 +179,11 @@ def afightui(stdscr, player, enemy):
                     textbox(stdscr, f"{user.name()} used {move.name}! It dealt {dmg} damage.")
                     if target.hp<=0:
                         textbox(stdscr, f"{target.name()} fainted!")
-                        return "win" if target==enemy else "lose"
+                        return "win" if target==enemy else "you dide lol"
             else:
                 textbox(stdscr, f"{['Bag','Pokémon','Run'][menu_pos-1]} is WIP")
 
-# -------------------- Setup --------------------
+# setup
 def battle_setup(stdscr):
     pool = mons.copy()
     p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
