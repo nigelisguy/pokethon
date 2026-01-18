@@ -2,6 +2,15 @@ import curses
 import random
 import stats
 import main
+
+def battle_setup(stdscr):
+    pool = mons.copy()
+    p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
+    e_mon, e_moves = select_pokemon_and_moves(stdscr, pool, "Enemy")
+    player = BattleMon(p_mon, 50, p_moves)
+    enemy = BattleMon(e_mon, 50, e_moves)
+    return afightui(stdscr, player, enemy)
+
 VISIBLE = 4
 
 def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=False):
@@ -11,7 +20,6 @@ def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=Fal
         stdscr.clear()
         safe_addstr(stdscr, 0, 0, title)
         safe_addstr(stdscr, 1, 0, "-"*40)
-
         for i in range(VISIBLE):
             idx = scroll + i
             if idx >= len(items):
@@ -26,22 +34,45 @@ def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=Fal
                 line = f"{name} - {item[-1]}" if show_desc else name
             prefix = "> " if i == cursor else "  "
             safe_addstr(stdscr, 2+i, 0, prefix + line)
-
         key = stdscr.getch()
+        curses.napms(100)
         if key == curses.KEY_UP:
-            if cursor > 0:
-                cursor -= 1
-            elif scroll > 0:
-                scroll -= 1
+            if cursor > 0: cursor -= 1
+            elif scroll > 0: scroll -= 1
         elif key == curses.KEY_DOWN:
             if cursor < min(VISIBLE-1, len(items)-1):
-                if scroll + cursor + 1 < len(items):
-                    cursor += 1
-            elif scroll + VISIBLE < len(items):
-                scroll += 1
+                if scroll + cursor + 1 < len(items): cursor += 1
+            elif scroll + VISIBLE < len(items): scroll += 1
         elif key == ord("z"):
             return scroll + cursor
 
+TYPE_EFFECTIVENESS = {
+    "normal": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 0.5,"bug": 1,"ghost": 0,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 1,"ice": 1,"dragon": 1,"dark": 1 },
+    "fight": {"normal": 2,"fight": 1,"flying": 0.5,"poison": 0.5,"ground": 1,"rock": 2,"bug": 0.5,"ghost": 0,"steel": 2,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 0.5,"ice": 2,"dragon": 1,"dark": 2 },
+    "flying": {"normal": 1,"fight": 2,"flying": 1,"poison": 1,"ground": 1,"rock": 0.5,"bug": 2,"ghost": 1,"steel": 0.5,"fire": 1,"water": 1,"grass": 2,"electric": 0.5,"psychic": 1,"ice": 1,"dragon": 1,"dark": 1},
+    "poison": {"normal": 1,"fight": 1,"flying": 1,"poison": 0.5,"ground": 0.5,"rock": 0.5,"bug": 1,"ghost": 0.5,"steel": 0,"fire": 1,"water": 1,"grass": 2,"electric": 1,"psychic": 1,"ice": 1,"dragon": 1,"dark": 1},
+    "ground": {"normal": 1,"fight": 1,"flying": 0,"poison": 2,"ground": 1,"rock": 2,"bug": 0.5,"ghost": 1,"steel": 2,"fire": 2,"water": 1,"grass": 0.5,"electric": 2,"psychic": 1,"ice": 1,"dragon": 1,"dark": 1},
+    "rock": {"normal": 1,"fight": 0.5,"flying": 2,"poison": 1,"ground": 0.5,"rock": 1,"bug": 2,"ghost": 1,"steel": 0.5,"fire": 2,"water": 1,"grass": 1,"electric": 1,"psychic": 1,"ice": 2,"dragon": 1,"dark": 1},
+    "bug": {"normal": 1,"fight": 0.5,"flying": 0.5,"poison": 0.5,"ground": 1,"rock": 1,"bug": 1,"ghost": 0.5,"steel": 0.5,"fire": 0.5,"water": 1,"grass": 2,"electric": 1,"psychic": 2,"ice": 1,"dragon": 1,"dark": 2},
+    "ghost": {"normal": 0,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 1,"bug": 1,"ghost": 2,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 2,"ice": 1,"dragon": 1,"dark": 0.5},
+    "steel": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 2,"bug": 1,"ghost": 1,"steel": 0.5,"fire": 0.5,"water": 0.5,"grass": 1,"electric": 0.5,"psychic": 1,"ice": 2,"dragon": 1,"dark": 1},
+    "fire": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 0.5,"bug": 2,"ghost": 1,"steel": 2,"fire": 0.5,"water": 0.5,"grass": 2,"electric": 1,"psychic": 1,"ice": 2,"dragon": 0.5,"dark": 1},
+    "water": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 2,"rock": 2,"bug": 1,"ghost": 1,"steel": 1,"fire": 2,"water": 0.5,"grass": 0.5,"electric": 1,"psychic": 1,"ice": 1,"dragon": 0.5,"dark": 1},
+    "grass": {"normal": 1,"fight": 1,"flying": 0.5,"poison": 0.5,"ground": 2,"rock": 2,"bug": 0.5,"ghost": 1,"steel": 0.5,"fire": 0.5,"water": 2,"grass": 0.5,"electric": 1,"psychic": 1,"ice": 1,"dragon": 0.5,"dark": 1},
+    "electric": {"normal": 1,"fight": 1,"flying": 2,"poison": 1,"ground": 0,"rock": 1,"bug": 1,"ghost": 1,"steel": 1,"fire": 1,"water": 2,"grass": 0.5,"electric": 0.5,"psychic": 1,"ice": 1,"dragon": 0.5,"dark": 1},
+    "psychic": {"normal": 1,"fight": 2,"flying": 1,"poison": 2,"ground": 1,"rock": 1,"bug": 1,"ghost": 1,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 0.5,"ice": 1,"dragon": 1,"dark": 0},
+    "ice": {"normal": 1,"fight": 1,"flying": 2,"poison": 1,"ground": 2,"rock": 1,"bug": 1,"ghost": 1,"steel": 0.5,"fire": 0.5,"water": 0.5,"grass": 2,"electric": 1,"psychic": 1,"ice": 0.5,"dragon": 2,"dark": 1},
+    "dragon": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 1,"bug": 1,"ghost": 1,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 1,"ice": 1,"dragon": 2,"dark": 1},
+    "dark": {"normal": 1,"fight": 0.5,"flying": 1,"poison": 1,"ground": 1,"rock": 1,"bug": 1,"ghost": 2,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 2,"ice": 1,"dragon": 1,"dark": 0.5}
+}
+
+def type_multiplier(move_type, defender):
+    mult = 1.0
+    chart = TYPE_EFFECTIVENESS.get(move_type, {})
+    mult *= chart.get(defender.base.type, 1.0)
+    if defender.base.type2 != "nil":
+        mult *= chart.get(defender.base.type2, 1.0)
+    return mult
 
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
 moves_list = [stats.move1, stats.move2, stats.move3, stats.move4]
@@ -70,16 +101,33 @@ def textbox(stdscr, text):
     while True:
         if stdscr.getch() == ord("z"):
             break
+        
+def redraw_battle(stdscr, player, enemy, menu_pos=0):
+    stdscr.clear()
+    draw_header(stdscr, player, enemy)
+    draw_main_menu(stdscr, menu_pos)
+    stdscr.refresh()
+
+PHYSICAL_TYPES = ["normal", "fight", "poison", "ground", "flying", "bug", "rock", "ghost", "steel"]
+SPECIAL_TYPES = ["fire", "water", "electric", "grass", "ice", "psychic", "dragon", "dark"]
 
 class BattleMove:
     def __init__(self, move):
         self.name = move[0].strip('"').capitalize()
-        self.type = move[1]
+        self.type = move[1].lower()
         self.pp_max = move[2]
         self.pp = move[2]
         self.power = move[3]
         self.acc = move[4]
         self.desc = move[-1]
+
+        if self.type in PHYSICAL_TYPES:
+            self.category = "physical"
+        elif self.type in SPECIAL_TYPES:
+            self.category = "special"
+        else:
+            self.category = "status"  
+
 
 class BattleMon:
     def __init__(self, base, level, moves):
@@ -90,16 +138,42 @@ class BattleMon:
         self.hp = self.max_hp
         self.at = int(((2*base.at*level)/100) + 5)
         self.de = int(((2*base.de*level)/100) + 5)
-        self.spd = int(((2*base.spd*level)/100) + 5)
+        self.spa = int(((2*base.sp_at*level)/100) + 5)      
+        self.spd_def = int(((2*base.sp_de*level)/100) + 5)  
+        self.spd = int(((2*base.spd*level)/100) + 5)      
         self.moves = [BattleMove(m) for m in moves]
-    def name(self):
-        return self.base.call().capitalize()
 
+        # Temporary battle stage stats
+        self.stage_at = 0       
+        self.stage_de = 0     
+        self.stage_spa = 0   
+        self.stage_spd_def = 0  
+        self.stage_spd = 0    
+        self.stage_eva = 0      
+        self.stage_acc = 0     
+
+    def name(self):
+        return self.base.name
+ 
 def damage_calc(attacker, defender, move):
-    if move.power <= 0: return 0
-    base = (((2*attacker.level)/5 + 2) * move.power * attacker.at / defender.de)/50 + 2
-    modifier = random.uniform(0.85, 1.0)
-    return int(base * modifier)
+    if move.power <= 0:
+        return 0
+
+    if move.category == "physical":
+        atk = apply_stage(attacker.at, attacker.stage_at)
+        defense = apply_stage(defender.de, defender.stage_de)
+    elif move.category == "special":
+        atk = apply_stage(attacker.spa, attacker.stage_spa)
+        defense = apply_stage(defender.spd_def, defender.stage_spd_def)
+    else:  
+        return 0 
+
+    base = (((2 * attacker.level) / 5 + 2) * move.power * atk / defense) / 50 + 2
+    modifier = random.uniform(0.85, 1.0) * type_multiplier(move.type, defender)
+    dmg = int(base * modifier)
+
+    defender.hp = max(0, defender.hp - dmg)
+    return dmg
 
 def select_from_list(stdscr, items, title, show_type=False, show_desc=False):
     cursor = 0
@@ -131,10 +205,17 @@ def select_pokemon_and_moves(stdscr, pool, label):
         m = select_from_list_scroll(stdscr, moves_list, f"{mon.call().capitalize()} Move {i+1}", show_desc=True)
         chosen.append(moves_list[m])
     return mon, chosen
+
+def apply_stage(stat, stage):
+    if stage >= 0:
+        return stat * (2 + stage) / 2
+    else:
+        return stat * 2 / (2 - stage)
+
 #draw pls work aahssahhshsahsadds
 def draw_header(stdscr, player, enemy):
-    left = f"{player.name()} [{player.status}] HP {player.hp}/{player.max_hp}"
-    right = f"{enemy.name()} [{enemy.status}] HP {enemy.hp}/{enemy.max_hp}"
+    left = f"{player.base.name} [{player.status}] HP {player.hp}/{player.max_hp}"
+    right = f"{enemy.base.name} [{enemy.status}] HP {enemy.hp}/{enemy.max_hp}"  
     safe_addstr(stdscr, 0, 0, f"{left} ------ {right}")
     draw_divider(stdscr, 1)
 
@@ -184,48 +265,93 @@ def afightui(stdscr, player, enemy):
     curses.curs_set(0)
     stdscr.keypad(True)
     menu_pos = 0
+
     while True:
         stdscr.clear()
         draw_header(stdscr, player, enemy)
         draw_main_menu(stdscr, menu_pos)
-        key = stdscr.getch()
-        if key==curses.KEY_UP and menu_pos>1: menu_pos-=2
-        elif key==curses.KEY_DOWN and menu_pos<2: menu_pos+=2
-        elif key==curses.KEY_LEFT and menu_pos%2==1: menu_pos-=1
-        elif key==curses.KEY_RIGHT and menu_pos%2==0 and menu_pos+1<4: menu_pos+=1
-        elif key==ord("z"):
-            if menu_pos==0:
-                while True:
-                    player_move = move_menu(stdscr, player, enemy)
-                    if player_move is None: break
-                    usable = [m for m in enemy.moves if m.pp>0]
-                    enemy_move = random.choice(usable) if usable else None
-                    turn = sorted(
-                        [(player, player_move),(enemy, enemy_move)],
-                        key=lambda x:x[0].spd, reverse=True
-                    )
-                    for user, move in turn:
-                        if move is None or move.pp<=0: continue
-                        target = enemy if user==player else player
-                        move.pp -= 1
-                        dmg = damage_calc(user, target, move)
-                        target.hp = max(0, target.hp - dmg)
-                        textbox(stdscr, f"{user.name()} used {move.name}!")
-                        if dmg==0:
-                            textbox(stdscr, f"{user.name()} stats rose!")
-                            textbox(stdscr, f"Who am I kidding. stats don't work yet.")
-                        else:
-                            textbox(stdscr, f"It dealt {dmg} damage.")
-                        if target.hp<=0:
-                            textbox(stdscr, f"{target.name()} fainted!")
-                            return "win" if target==enemy else "lose"
-            else:
-                textbox(stdscr, f"{['Bag','Pokémon','Run'][menu_pos-1]} does not work wait bruh")
+        stdscr.refresh()
 
-def battle_setup(stdscr):
-    pool = mons.copy()
-    p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
-    e_mon, e_moves = select_pokemon_and_moves(stdscr, pool, "Enemy")
-    player = BattleMon(p_mon, 50, p_moves)
-    enemy = BattleMon(e_mon, 50, e_moves)
-    return afightui(stdscr, player, enemy)
+        key = stdscr.getch()
+        curses.napms(100)
+
+        if key==curses.KEY_UP and menu_pos>1:
+            menu_pos-=2
+        elif key==curses.KEY_DOWN and menu_pos<2:
+            menu_pos+=2
+        elif key==curses.KEY_LEFT and menu_pos%2==1:
+            menu_pos-=1
+        elif key==curses.KEY_RIGHT and menu_pos%2==0 and menu_pos+1<4:
+            menu_pos+=1
+
+        elif key==ord("z"):
+            if menu_pos!=0:
+                textbox(stdscr, f"{['Bag','Pokémon','Run'][menu_pos-1]} does not work yet")
+                continue
+
+            player_move = move_menu(stdscr, player, enemy)
+            if player_move is None:
+                continue
+
+            usable = [m for m in enemy.moves if m.pp>0]
+            enemy_move = random.choice(usable) if usable else None
+
+            turn = sorted(
+                [(player, player_move), (enemy, enemy_move)],
+                key=lambda x: x[0].spd,
+                reverse=True
+            )
+
+            for user, move in turn:
+                if move is None or move.pp <= 0:
+                    continue
+
+                target = enemy if user == player else player
+                move.pp -= 1
+
+                redraw_battle(stdscr, player, enemy)
+                textbox(stdscr, f"{user.name()} used {move.name}!")
+
+                # --- Apply stat changes safely ---
+                for stat, attr in [
+                    ("at", "stage_at"),
+                    ("de", "stage_de"),
+                    ("sp_at", "stage_spa"),
+                    ("sp_de", "stage_spd_def"),
+                    ("spd", "stage_spd"),
+                    ("eva", "stage_eva"),
+                ]:
+                    # Self
+                    change = getattr(move, attr, 0) if hasattr(move, attr) else getattr(move, stat, 0)
+                    if change != 0:
+                        setattr(user, attr, min(max(getattr(user, attr) + change, -6), 6))
+                        textbox(stdscr, f"{user.name()}'s {stat.replace('_',' ').title()} {'rose' if change>0 else 'fell'}!")
+
+                    # Target (enemy effect)
+                    en_attr_map = {
+                        "at":"enat",
+                        "de":"endf",
+                        "sp_at":"enspat",
+                        "sp_de":"enspdef",
+                        "spd":"enspd",
+                        "eva":"eneva"
+                    }
+                    en_change = getattr(move, en_attr_map[stat], 0)
+                    if en_change != 0:
+                        setattr(target, attr, min(max(getattr(target, attr) + en_change, -6), 6))
+                        textbox(stdscr, f"{target.name()}'s {stat.replace('_',' ').title()} {'rose' if en_change>0 else 'fell'}!")
+
+                # --- Deal damage ---
+                dmg = damage_calc(user, target, move)
+                redraw_battle(stdscr, player, enemy)
+                if dmg > 0:
+                    mult = type_multiplier(move.type, target)
+                    if mult > 1:
+                        textbox(stdscr, "It's super effective!")
+                    elif mult < 1:
+                        textbox(stdscr, "It's not very effective...")
+
+                if target.hp <= 0:
+                    redraw_battle(stdscr, player, enemy)
+                    textbox(stdscr, f"{target.name()} fainted!")
+                    return "win" if target == enemy else "lose"

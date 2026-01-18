@@ -2,6 +2,7 @@ import stats
 import curses
 import time
 import fightui
+print(fightui.__file__)
 
 #variables
 textspeed = 0.05
@@ -12,6 +13,7 @@ mons = [
     if hasattr(stats, f"mon{i}")
 ]
 TOTAL = len(mons)
+
 def main(stdscr):
     battle_data = fightui.battle_setup(stdscr)
 def printdelay(text):
