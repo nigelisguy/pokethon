@@ -21,6 +21,15 @@ ENEMY_MAP = {
     "eva": "eneva"
 }
 
+def effect_heal_self(stdscr, user, target):
+    heal = user.max_hp // 2
+    user.hp = min(user.max_hp, user.hp + heal)
+    textbox(stdscr, f"{user.name()} regained health!")
+
+EFFECT_HANDLERS = {
+    "heal_self": effect_heal_self
+}
+
 def battle_setup(stdscr):
     pool = mons.copy()
     p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
@@ -140,6 +149,7 @@ SPECIAL_TYPES = ["fire", "water", "electric", "grass", "ice", "psychic", "dragon
 
 class BattleMove:
     def __init__(self, move):
+        self.enefc = move.enefc
         self.name = move.name.capitalize()
         self.type = move.type.lower()
         self.pp_max = move.pp
@@ -355,6 +365,8 @@ def afightui(stdscr, player, enemy):
 
                 redraw_battle(stdscr, player, enemy)
                 textbox(stdscr, f"{user.name()} used {move.name}!")
+                if move.enefc in EFFECT_HANDLERS:
+                    EFFECT_HANDLERS[move.enefc](stdscr, user, target)
 
                 # --- Apply stat changes safely ---
 

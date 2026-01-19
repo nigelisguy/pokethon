@@ -227,4 +227,10 @@ move4 = Moves("""aerial ace""","flying",
         0,0,0,0,0,0,0,0,0,0,
         """nil""","""nil""","""no""",-1,"""no""",0,0,
         """this move never misses."""
-        ) 
+        )
+move4 = Moves("""stats testing""","flying",
+        99,0,-1,0,0,0,
+        1,1,1,1,1,1,1,1,1,1,
+        """nil""","""heal_self""","""no""",-1,"""no""",0,0,
+        """test stat changes"""
+        )
