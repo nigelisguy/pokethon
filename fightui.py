@@ -3,6 +3,24 @@ import random
 import stats
 import main
 
+STAT_MAP = {
+    "at": "stage_at",
+    "de": "stage_de",
+    "sp_at": "stage_spa",
+    "sp_de": "stage_spd_def",
+    "spd": "stage_spd",
+    "eva": "stage_eva"
+}
+
+ENEMY_MAP = {
+    "at": "enat",
+    "de": "endf",
+    "sp_at": "enspat",
+    "sp_de": "enspdefence",
+    "spd": "enspd",
+    "eva": "eneva"
+}
+
 def battle_setup(stdscr):
     pool = mons.copy()
     p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
@@ -27,8 +45,11 @@ def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=Fal
             item = items[idx]
             if hasattr(item, "call"):
                 name = item.call().capitalize()
-                t2 = "" if item.type2=="nil" else f"/{item.type2.capitalize()}"
+                t2 = "" if getattr(item, "type2", "nil") == "nil" else f"/{item.type2.capitalize()}"
                 line = f"{name} - {item.type.capitalize()}{t2}"
+            elif hasattr(item, "type"):
+                name = item.name.capitalize()
+                line = f"{name} - {item.type.capitalize()}"
             else:
                 name = item[0].strip('"').capitalize()
                 line = f"{name} - {item[-1]}" if show_desc else name
@@ -75,7 +96,13 @@ def type_multiplier(move_type, defender):
     return mult
 
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
-moves_list = [stats.move1, stats.move2, stats.move3, stats.move4]
+moves_list = [
+    stats.move1,
+    stats.move2,
+    stats.move3,
+    stats.move4
+]
+
 
 def safe_addstr(stdscr, y, x, text):
     h, w = stdscr.getmaxyx()
@@ -113,21 +140,38 @@ SPECIAL_TYPES = ["fire", "water", "electric", "grass", "ice", "psychic", "dragon
 
 class BattleMove:
     def __init__(self, move):
-        self.name = move[0].strip('"').capitalize()
-        self.type = move[1].lower()
-        self.pp_max = move[2]
-        self.pp = move[2]
-        self.power = move[3]
-        self.acc = move[4]
-        self.desc = move[-1]
+        self.name = move.name.capitalize()
+        self.type = move.type.lower()
+        self.pp_max = move.pp
+        self.pp = move.pp
+        self.power = move.pow
+        self.acc = move.acc
+        self.desc = move.desc
+
+        self.at = move.at
+        self.de = move.de
+        self.sp_at = move.sp_at
+        self.sp_de = move.sp_de
+        self.spd = move.spd
+        self.eva = move.eva
+
+        self.enat = move.enat
+        self.endf = move.endf
+        self.enspat = move.enspat
+        self.enspdef = move.enspdef
+        self.enspd = move.enspd
+        self.eneva = move.eneva
+
+        self.hitprio = move.hitprio
+        self.rhit = move.rhit
+        self.crits = move.crits
 
         if self.type in PHYSICAL_TYPES:
             self.category = "physical"
         elif self.type in SPECIAL_TYPES:
             self.category = "special"
         else:
-            self.category = "status"  
-
+            self.category = "status"
 
 class BattleMon:
     def __init__(self, base, level, moves):
@@ -313,33 +357,32 @@ def afightui(stdscr, player, enemy):
                 textbox(stdscr, f"{user.name()} used {move.name}!")
 
                 # --- Apply stat changes safely ---
-                for stat, attr in [
-                    ("at", "stage_at"),
-                    ("de", "stage_de"),
-                    ("sp_at", "stage_spa"),
-                    ("sp_de", "stage_spd_def"),
-                    ("spd", "stage_spd"),
-                    ("eva", "stage_eva"),
-                ]:
-                    # Self
-                    change = getattr(move, attr, 0) if hasattr(move, attr) else getattr(move, stat, 0)
-                    if change != 0:
-                        setattr(user, attr, min(max(getattr(user, attr) + change, -6), 6))
-                        textbox(stdscr, f"{user.name()}'s {stat.replace('_',' ').title()} {'rose' if change>0 else 'fell'}!")
 
-                    # Target (enemy effect)
-                    en_attr_map = {
-                        "at":"enat",
-                        "de":"endf",
-                        "sp_at":"enspat",
-                        "sp_de":"enspdef",
-                        "spd":"enspd",
-                        "eva":"eneva"
-                    }
-                    en_change = getattr(move, en_attr_map[stat], 0)
+                for stat, stage_attr in STAT_MAP.items():
+                    change = getattr(move, stat, 0)
+                    if change != 0:
+                        setattr(
+                            user,
+                            stage_attr,
+                            min(6, max(-6, getattr(user, stage_attr) + change))
+                        )
+                        textbox(
+                            stdscr,
+                            f"{user.name()}'s {stat.replace('_',' ').upper()} rose!"
+                        )
+
+                    en_change = getattr(move, ENEMY_MAP[stat], 0)
                     if en_change != 0:
-                        setattr(target, attr, min(max(getattr(target, attr) + en_change, -6), 6))
-                        textbox(stdscr, f"{target.name()}'s {stat.replace('_',' ').title()} {'rose' if en_change>0 else 'fell'}!")
+                        setattr(
+                            target,
+                            stage_attr,
+                            min(6, max(-6, getattr(target, stage_attr) + en_change))
+                        )
+                        textbox(
+                            stdscr,
+                            f"{target.name()}'s {stat.replace('_',' ').upper()} fell!"
+                        )
+
 
                 # --- Deal damage ---
                 dmg = damage_calc(user, target, move)

@@ -1,3 +1,4 @@
+#run code in fightui or it will crash
 import stats
 import curses
 import time

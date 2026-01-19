@@ -204,7 +204,27 @@ class Moves:
     def call(self):
         return f"{self.name} placeholder text"
 
-move1 =(""""absorb""""","grass",20,20,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""","""no""",-1,"""no""",0,0,"""the user recovers hp equal to 50% of the damage dealt.""") #S
-move2 =(""""acid""""","poison",30,40,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""","""no""",10,"""no""",0,0,"""this move has a 10% chance to lower the target's defense by one stage.""")
-move3 =(""""acid armor""""","poison",40,-1,-1,0,2,0,0,0,0,0,0,0,-1,0,0,0,"""nil""","""nil""","""no""",-1,"""no""",0,0,"""this move raises the user's defense by two stages.""")
-move4 =(""""aerial ace""""","flying",20,60,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""","""no""",-1,"""no""",0,0,"""this move never misses.""") 
+move1 = Moves("""absorb""","grass",
+        20,20,100,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        """nil""","""nil""","""no""",-1,"""no""",0,0,
+        """the user recovers hp equal to 50% of the damage dealt."""
+        ) #S
+move2 = Moves("""acid""","poison",
+        30,40,100,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        """nil""","""nil""","""no""",10,"""no""",0,0,
+        """this move has a 10% chance to lower the target's defense by one stage."""
+        )
+move3 = Moves("""acid armor""","poison",40,-1,-1,
+        0,2,0,0,0,0,0,
+        0,0,-1,0,0,0,
+        """nil""","""nil""","""no""",-1,"""no""",0,0,
+        """this move raises the user's defense by two stages."""
+        )
+move4 = Moves("""aerial ace""","flying",
+        20,60,-1,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+        """nil""","""nil""","""no""",-1,"""no""",0,0,
+        """this move never misses."""
+        ) 
