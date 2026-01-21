@@ -228,142 +228,130 @@ move4 = Moves("""aerial ace""","flying",
                 """nil""","""nil""",False,-1,False,0,0,
                 """this move never misses."""
                 )
-move5 = Moves("""<STATS_TESTING>""","flying",
-                99,0,-1,0,0,0,
-                1,1,1,1,1,1,1,1,1,1,
-                """nil""","""heal_self""",False,-1,False,0,0,
-                """test stat changes"""
-                )
-move6 = Moves("""aeroblast""","flying",
+move5 = Moves("""aeroblast""","flying",
                 5,100,95,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """this move has an increased critical hit ratio."""
                 )
-move7 = Moves("""agility""","psychic",
+move6 = Moves("""agility""","psychic",
                 30,-1,-1,0,0,0,
                 0,2,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """this move raises the user's speed by two stages."""
                 )
-move8 = Moves("""air cutter""","flying",
+move7 = Moves("""air cutter""","flying",
                 25,55,95,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,1,
                 """this move has an increased critical hit ratio."""
                 )
-move9 = Moves("""amnesia""","psychic",
+move8 = Moves("""amnesia""","psychic",
                 20,-1,-1,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """this move raises the user's sp. def by two stages."""
                 )
-move10 = Moves("""ancientpower""","rock",
+move9 = Moves("""ancientpower""","rock",
                 5,60,100,1,1,1,
                 1,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,10,False,0,0,
                 """this move has a 10% chance to increase the user's attack, defense, sp. atk, sp. def, and speed by one stage each.""",
                 )
-move11 = Moves("""<poison_drill_placeholder>""","poison",
-                10,100,100,0,0,0,
-                0,0,0,0,0,0,0,0,0,0,
-                """nil""","""poison_enemy""",False,-1,"no",0,0,
-                """no"""
-                )
-move12 = Moves("""arm thrust""","fighting",
+move10 = Moves("""arm thrust""","fighting",
                 20,15,100,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,"yes",0,0,
                 """this move hits 2-5 times."""
                 )
-move13 = Moves("""aromatherapy""","grass",
+move11 = Moves("""aromatherapy""","grass",
                 5,-1,-1,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """this move cures every pokemon in the party of their status conditions."""
                 ) #S
-move14 = Moves("""assist""","""normal""",
+move12 = Moves("""assist""","""normal""",
                 20,-1,-1,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """the user will use a random move known by any pokémon on its team."""
                 ) #S
-move15 = Moves("""astonish""","ghost",
+move13 = Moves("""astonish""","ghost",
                 15,30,100,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""flinch""",False,30,False,0,0,
                 """this move has a 30% chance to make the target flinch."""
                 )
-move16 = Moves("""attract""","""normal""",
+move14 = Moves("""attract""","""normal""",
                 15,-1,100,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """if the target is the opposite gender to the user, it will become infatuated."""
                 ) #S
-move17 = Moves("""aurora beam""","ice",
+move15 = Moves("""aurora beam""","ice",
                 20,65,100,0,0,0,
                 0,0,0,1,0,0,0,0,0,0,
                 """nil""","""nil""",False,10,False,0,0,
                 """this move has a 10% chance to lower the target's attack by one stage."""
                 )
-move18 = Moves("""barrage""","normal",
+move16 = Moves("""barrage""","normal",
                 20,15,85,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,"yes",0,0,
                 """this move hits 2-5 times."""
                 )
-move19 = Moves("""baton pass""","""normal""",
+move17 = Moves("""baton pass""","""normal""",
                 40,-1,-1,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """the user switches out; the pokémon that comes in copies all stat changes and minor status conditions."""
                 ) #S
-move20 = Moves("""beat up""","dark",
+move18 = Moves("""beat up""","dark",
                 10,10,100,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,False,0,0,
                 """this move hits once per non-fainted pokémon, with each hit using the respective pokémon's attack stat for calculation."""
                 ) #S
-move22 = Moves("""belly drum""","""normal""",
+move19 = Moves("""belly drum""","""normal""",
                 10,-1,-1,0,0,0,0,10,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,-50,0,"""the user cuts 50% of their max hp and increases its attack by six stages.""")
-move23 = Moves("""bide""","""normal""",10,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user charges for two turns, dealing damage equal to double the damage taken on both those turns on the third turn.""") #S
-move24 = Moves("""bind""","""normal""",20,15,75,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""bound""",False,30,False,0,0,"""the target is bound for 2-5 turns.""")
-move25 = Moves("""bite""","dark",25,60,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""flinch""",False,30,False,0,0,"""this move has a 30% chance to make the target flinch.""")
-move26 = Moves("""blast burn""","fire",5,150,90,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""after using this move, the user has to recharge for a turn.""") #rc #S
-move27 = Moves("""blaze kick""","fire",10,85,90,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,30,False,0,0,"""this move has an increased critical hit ratio.""")
-move28 = Moves("""blizzard""","ice",5,120,70,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""freeze""",False,10,False,0,0,"""this move has a 10% chance to freeze the target""")
-move29 = Moves("""block""","""normal""",5,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the target is prevented from escaping.""") #S
-move30 = Moves("""body slam""","""normal""",15,85,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""paralyse""",False,30,False,0,0,"""this move has a 30% chance to paralyze the target.""")
-move31 = Moves("""bone club""","ground",20,65,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""flinch""",False,10,False,0,0,"""this move has a 10% chance to make the target flinch.""")
-move32 = Moves("""bone rush""","ground",10,25,80,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""yes""",0,0,"""this move hits 2-5 times.""")
-move33 = Moves("""<PLACEHOLDER>""","""normal""",1,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""placeholder move""")
-move34 = Moves("""bonemerang""","ground",10,50,90,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move hits twice.""") #S
-move35 = Moves("""bounce""","flying",5,85,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user jumps into the air on the first turn, evading most attacks, then attacks on the second turn. this move has a 30% chance to paralyze target.""") #do
-move36 = Moves("""brick break""","fighting",15,75,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move removes the effects of reflect and light screen from the target's side.""") #S
-move37 = Moves("""bubble""","water",30,20,100,0,0,0,0,0,0,0,0,0,0,-1,0,0,"""nil""","""nil""",False,10,False,0,0,"""this move has a 10% chance to lower the target's speed by one stage.""")
-move38 = Moves("""bubblebeam""","water",20,65,100,0,0,0,0,0,0,0,0,0,0,-1,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move has a 10% chance to lower the target's speed by one stage.""")
-move39 = Moves("""bulk up""","fighting",20,-1,-1,1,1,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's attack and defense by one stage each.""")
-move40 = Moves("""bullet seed""","grass",30,10,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""yes""",0,0,"""this move hits 2-5 times.""")
-move41 = Moves("""calm mind""","psychic",20,-1,-1,0,0,1,1,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's sp. atk and sp. def by one stage each.""")
-move42 = Moves("""camouflage""","""normal""",20,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move changes the user's type according to the terrain the battle takes place.""") #S
-move43 = Moves("""charge""","electric",20,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move increases the power of the user's electric-type attacks on the next turn.""") #S
-move44 = Moves("""charm""","""normal""",20,-1,100,0,0,0,0,0,0,-2,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move lowers the target's attack by two stages.""")
-move45 = Moves("""clamp""","water",10,35,75,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""bound""",False,-1,False,0,0,"""the target is bound for 2-5 turns.""")
-move46 = Moves("""comet punch""","""normal""",15,18,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""yes""",0,0,"""this move hits 2-5 times.""")
-move47 = Moves("""confuse ray""","ghost",10,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""confuse""",False,-1,False,0,0,"""this move confuses the target.""")
-move48 = Moves("""confusion""","psychic",25,50,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""confuse""",False,10,False,0,0,"""this move has a 10% chance to confuse the target.""")
-move49 = Moves("""constrict""","""normal""",35,10,100,0,0,0,0,0,0,0,0,0,0,-2,0,0,"""nil""","""nil""",False,10,False,0,0,"""this move has a 10% chance to lower the target's speed by one stage.""")
-move50 = Moves("""conversion""","""normal""",30,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user changes its type to the type of one of its four moves.""") #S
-move51 = Moves("""conversion 2""","""normal""",30,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user changes its type to one that resists the last-used move on it.""") #S
-move52 = Moves("""cosmic power""","psychic",20,-1,-1,0,1,0,1,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's defense and sp. def by one stage each.""")
-move53 = Moves("""cotton spore""","grass",40,-1,85,0,0,0,0,0,0,0,0,0,0,-2,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move lowers the target's speed by two stages.""")
-move54 = Moves("""counter""","fighting",20,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""last""",0,0,"""the user moves last, dealing double the damage it takes from a physical move back to the attacker.""") #S
-move55 = Moves("""<PLACEHOLDER>""","""normal""",1,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""placeholder move""")
-move56 = Moves("""covet""","""normal""",40,40,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""if the target is holding an item and the user is not, the user will steal the item.""") #S
-move57 = Moves("""crabhammer""","water",10,90,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,1,"""this move has an increased critical hit ratio.""")
-move58 = Moves("""cross chop""","fighting",5,100,80,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,1,"""this move has an increased critical hit ratio.""")
-move59 = Moves("""crunch""","dark",15,80,100,0,0,0,0,0,0,0,0,0,-1,0,0,0,"""nil""","""nil""",False,20,False,0,0,"""this move has a 20% chance to lower the target's sp. def by one stage.""")
-move60 = Moves("""crush claw""","""normal""",10,75,95,0,0,0,0,0,0,0,-1,0,0,0,0,0,"""nil""","""nil""",False,50,False,0,0,"""this move has a 50% chance to lower the target's defense by one stage.""")
+move20 = Moves("""bide""","""normal""",10,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user charges for two turns, dealing damage equal to double the damage taken on both those turns on the third turn.""") #S
+move21 = Moves("""bind""","""normal""",20,15,75,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""bound""",False,30,False,0,0,"""the target is bound for 2-5 turns.""")
+move22 = Moves("""bite""","dark",25,60,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""flinch""",False,30,False,0,0,"""this move has a 30% chance to make the target flinch.""")
+move23 = Moves("""blast burn""","fire",5,150,90,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""after using this move, the user has to recharge for a turn.""") #rc #S
+move24 = Moves("""blaze kick""","fire",10,85,90,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,30,False,0,0,"""this move has an increased critical hit ratio.""")
+move25 = Moves("""blizzard""","ice",5,120,70,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""freeze""",False,10,False,0,0,"""this move has a 10% chance to freeze the target""")
+move26 = Moves("""block""","""normal""",5,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the target is prevented from escaping.""") #S
+move27 = Moves("""body slam""","""normal""",15,85,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""paralyse""",False,30,False,0,0,"""this move has a 30% chance to paralyze the target.""")
+move28 = Moves("""bone club""","ground",20,65,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""flinch""",False,10,False,0,0,"""this move has a 10% chance to make the target flinch.""")
+move29 = Moves("""bone rush""","ground",10,25,80,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""yes""",0,0,"""this move hits 2-5 times.""")
+move30 = Moves("""<PLACEHOLDER>""","""normal""",1,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""placeholder move""")
+move31 = Moves("""bonemerang""","ground",10,50,90,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move hits twice.""") #S
+move32 = Moves("""bounce""","flying",5,85,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user jumps into the air on the first turn, evading most attacks, then attacks on the second turn. this move has a 30% chance to paralyze target.""") #do
+move33 = Moves("""brick break""","fighting",15,75,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move removes the effects of reflect and light screen from the target's side.""") #S
+move34 = Moves("""bubble""","water",30,20,100,0,0,0,0,0,0,0,0,0,0,-1,0,0,"""nil""","""nil""",False,10,False,0,0,"""this move has a 10% chance to lower the target's speed by one stage.""")
+move35 = Moves("""bubblebeam""","water",20,65,100,0,0,0,0,0,0,0,0,0,0,-1,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move has a 10% chance to lower the target's speed by one stage.""")
+move36 = Moves("""bulk up""","fighting",20,-1,-1,1,1,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's attack and defense by one stage each.""")
+move37 = Moves("""bullet seed""","grass",30,10,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""yes""",0,0,"""this move hits 2-5 times.""")
+move38 = Moves("""calm mind""","psychic",20,-1,-1,0,0,1,1,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's sp. atk and sp. def by one stage each.""")
+move39 = Moves("""camouflage""","""normal""",20,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move changes the user's type according to the terrain the battle takes place.""") #S
+move40 = Moves("""charge""","electric",20,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move increases the power of the user's electric-type attacks on the next turn.""") #S
+move41 = Moves("""charm""","""normal""",20,-1,100,0,0,0,0,0,0,-2,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move lowers the target's attack by two stages.""")
+move42 = Moves("""clamp""","water",10,35,75,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""bound""",False,-1,False,0,0,"""the target is bound for 2-5 turns.""")
+move43 = Moves("""comet punch""","""normal""",15,18,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""yes""",0,0,"""this move hits 2-5 times.""")
+move44 = Moves("""confuse ray""","ghost",10,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""confuse""",False,-1,False,0,0,"""this move confuses the target.""")
+move45 = Moves("""confusion""","psychic",25,50,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""confuse""",False,10,False,0,0,"""this move has a 10% chance to confuse the target.""")
+move46 = Moves("""constrict""","""normal""",35,10,100,0,0,0,0,0,0,0,0,0,0,-2,0,0,"""nil""","""nil""",False,10,False,0,0,"""this move has a 10% chance to lower the target's speed by one stage.""")
+move47 = Moves("""conversion""","""normal""",30,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user changes its type to the type of one of its four moves.""") #S
+move48 = Moves("""conversion 2""","""normal""",30,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""the user changes its type to one that resists the last-used move on it.""") #S
+move49 = Moves("""cosmic power""","psychic",20,-1,-1,0,1,0,1,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's defense and sp. def by one stage each.""")
+move50 = Moves("""cotton spore""","grass",40,-1,85,0,0,0,0,0,0,0,0,0,0,-2,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move lowers the target's speed by two stages.""")
+move51 = Moves("""counter""","fighting",20,-1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"""last""",0,0,"""the user moves last, dealing double the damage it takes from a physical move back to the attacker.""") #S
+move52 = Moves("""<PLACEHOLDER>""","""normal""",1,0,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""placeholder move""")
+move53 = Moves("""covet""","""normal""",40,40,100,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""if the target is holding an item and the user is not, the user will steal the item.""") #S
+move54 = Moves("""crabhammer""","water",10,90,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,1,"""this move has an increased critical hit ratio.""")
+move55 = Moves("""cross chop""","fighting",5,100,80,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,1,"""this move has an increased critical hit ratio.""")
+move56 = Moves("""crunch""","dark",15,80,100,0,0,0,0,0,0,0,0,0,-1,0,0,0,"""nil""","""nil""",False,20,False,0,0,"""this move has a 20% chance to lower the target's sp. def by one stage.""")
+move57 = Moves("""crush claw""","""normal""",10,75,95,0,0,0,0,0,0,0,-1,0,0,0,0,0,"""nil""","""nil""",False,50,False,0,0,"""this move has a 50% chance to lower the target's defense by one stage.""")
 '''
 move62 = Moves("""cut""","""normal""",30,50,95,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move has "False"secondary effect."") "
 move63 = Moves("""defense curl""","""normal""",40,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,False,0,0,"""this move raises the user's defense by one stage and doubles the power of rollout and ice ball."") #S
@@ -662,3 +650,33 @@ move65 = Moves(""""detect""""",fighting,5,-1,-1,0,0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,
 "move364 =(""""yawn""""","normal",10,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""",drowsy,False,-1,False,0,0,"""this move makes the target drowsy. after the next turn, it will fall asleep."")"
 "move365 =(""""zap can""no""n""""",electric,5,100,50,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""",paralyse,False,-1,False,0,0,"""this move paralyzes the target."")"
 '''
+move366 = Moves("""<stat_test>""","flying",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""heal_self""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move367 = Moves("""<poison_test>""","poison",
+                10,10,100,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                """nil""","""poison_enemy""",False,-1,"no",0,0,
+                """no"""
+                )
+move368 = Moves("""<paralyse_test>""","flying",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""paralyse_enemy""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move369 = Moves("""<miss>""","grass",
+                10,0,1,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                """nil""","""nil""",False,-1,"no",0,0,
+                """no"""
+                )
+move370 = Moves("""<splash>""","water",
+                40,0,-50,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                """nil""","""nil""",False,-1,"no",0,0,
+                """no"""
+                )

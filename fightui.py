@@ -195,7 +195,7 @@ def type_multiplier(move_type, defender):
     return mult
 
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
-moves_list = [getattr(stats, f"move{i}") for i in range(1, 18)]
+moves_list = [getattr(stats, f"move{i}") for i in range(366, 371)]
 
 
 def safe_addstr(stdscr, y, x, text):
