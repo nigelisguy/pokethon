@@ -6,7 +6,7 @@ import fightui
 print(fightui.__file__)
 
 #variables
-textspeed = 0.05
+textspeed = 0.01
 VISIBLE = 4
 mons = [
     getattr(stats, f"mon{i}")
@@ -98,10 +98,10 @@ def setting(stdscr):
             y += 1
         elif key == curses.KEY_LEFT and y == 0:
             if textspeed > 0:
-                textspeed -= 0.05
+                textspeed -= 0.01
         elif key == curses.KEY_RIGHT and y == 0:
             if textspeed < 1:
-                textspeed += 0.05
+                textspeed += 0.01
         elif key == ord("z"):
             if y == 3:
                 break

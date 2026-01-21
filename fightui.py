@@ -3,6 +3,15 @@ import random
 import stats
 import main
 
+STAT_DISPLAY = {
+    "at": "Attack",
+    "de": "Defense",
+    "sp_at": "Special Attack",
+    "sp_de": "Special Defense",
+    "spd": "Speed",
+    "eva": "Evasion",
+    "acc": "Accuracy"
+}
 STAT_MAP = {
     "at": "stage_at",
     "de": "stage_de",
@@ -21,14 +30,71 @@ ENEMY_MAP = {
     "eva": "eneva"
 }
 
-def effect_heal_self(stdscr, user, target):
+def effect_heal_self(stdscr, user):
     heal = user.max_hp // 2
     user.hp = min(user.max_hp, user.hp + heal)
     textbox(stdscr, f"{user.name()} regained health!")
 
+def apply_status(status_list, new_status, clears=None):
+    if new_status in status_list:
+        return
+    if clears:
+        for s in clears:
+            if s in status_list:
+                status_list.remove(s)
+    status_list.append(new_status)
+
+def poison(target):
+    apply_status(target.statuses, "poison", ["burn", "sleep", "confuse", "flinch"])
+def poison_enemy(target):
+    apply_status(target.statuses, "poison", ["burn", "sleep", "confuse", "flinch"])
+
+def para(target):
+    apply_status(target.statuses, "paralyze", ["burn", "sleep", "bind", "confuse", "flinch"])
+
+def para_enemy(target):
+    apply_status(target.statuses, "paralyze", ["burn", "sleep", "confuse", "flinch"])
+
+def burn(target):
+    apply_status(target.statuses, "burn", ["poison", "sleep", "confuse", "flinch"])
+
+def burn_enemy(target):
+    apply_status(target.statuses, "burn", ["poison", "sleep", "confuse", "flinch"])
+
+def sleep(target):
+    apply_status(target.statuses, "sleep", ["poison", "burn", "confuse", "flinch"])
+
+def sleep_enemy(target):
+    apply_status(target.statuses, "sleep", ["poison", "burn", "confuse", "flinch"])
+
+def bind(target):
+    apply_status(target.statuses, "bind")
+
+def bind_enemy(target):
+    apply_status(target.statuses, "bind")
+
+def confuse(target):
+    apply_status(target.statuses, "confuse", ["poison", "burn", "sleep", "flinch"])
+
+def confuse_enemy(target):
+    apply_status(target.statuses, "confuse", ["poison", "burn", "sleep", "flinch"])
+
+def flinch(target):
+    apply_status(target.statuses, "flinch")
+
+def flinch_enemy(target):
+    apply_status(target.statuses, "flinch")
+
 EFFECT_HANDLERS = {
-    "heal_self": effect_heal_self
+    "poison_self": lambda s, u, t: poison(u),
+    "poison_enemy": lambda s, u, t: poison(t),
+    "burn_self": lambda s, u, t: burn(u),
+    "burn_enemy": lambda s, u, t: burn(t),
+    "sleep_self": lambda s, u, t: sleep(u),
+    "sleep_enemy": lambda s, u, t: sleep(t),
 }
+
+
 
 def battle_setup(stdscr):
     pool = mons.copy()
@@ -38,16 +104,40 @@ def battle_setup(stdscr):
     enemy = BattleMon(e_mon, 50, e_moves)
     return afightui(stdscr, player, enemy)
 
-VISIBLE = 4
+def status_effect_manager(stdscr, mon):
+    if "poison" in mon.statuses:
+        dmg = mon.max_hp // 8
+        mon.hp = max(0, mon.hp - dmg)
+        textbox(stdscr, f"{mon.name()} is hurt by poison!")
+    if "burn" in mon.statuses:
+        dmg = mon.max_hp // 16
+        mon.hp = max(0, mon.hp - dmg)
+        textbox(stdscr, f"{mon.name()} is hurt by its burn!")
+    if "sleep" in mon.statuses:
+        textbox(stdscr, f"{mon.name()} is fast asleep!")
+    if "bind" in mon.statuses:
+        dmg = mon.max_hp // 16
+        mon.hp = max(0, mon.hp - dmg)
+        textbox(stdscr, f"{mon.name()} is hurt by binding!")
+    if "confuse" in mon.statuses:
+        if random.random() < 0.5:
+            dmg = damage_calc(mon, mon, random.choice(mon.moves))
+            textbox(stdscr, f"{mon.name()} hurt itself in its confusion!")
+            redraw_battle(stdscr, mon)
+    if "flinch" in mon.statuses:
+        textbox(stdscr, f"{mon.name()} flinched!")
+        mon.statuses.remove("flinch")
 
 def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=False):
     scroll = 0
     cursor = 0
     while True:
         stdscr.clear()
+        h, w = stdscr.getmaxyx()
+        visible = max(1, h - 4)  # Account for title, divider, and footer space
         safe_addstr(stdscr, 0, 0, title)
         safe_addstr(stdscr, 1, 0, "-"*40)
-        for i in range(VISIBLE):
+        for i in range(visible):
             idx = scroll + i
             if idx >= len(items):
                 break
@@ -70,9 +160,9 @@ def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=Fal
             if cursor > 0: cursor -= 1
             elif scroll > 0: scroll -= 1
         elif key == curses.KEY_DOWN:
-            if cursor < min(VISIBLE-1, len(items)-1):
+            if cursor < min(visible-1, len(items)-1):
                 if scroll + cursor + 1 < len(items): cursor += 1
-            elif scroll + VISIBLE < len(items): scroll += 1
+            elif scroll + visible < len(items): scroll += 1
         elif key == ord("z"):
             return scroll + cursor
 
@@ -105,12 +195,7 @@ def type_multiplier(move_type, defender):
     return mult
 
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
-moves_list = [
-    stats.move1,
-    stats.move2,
-    stats.move3,
-    stats.move4
-]
+moves_list = [getattr(stats, f"move{i}") for i in range(1, 18)]
 
 
 def safe_addstr(stdscr, y, x, text):
@@ -187,7 +272,7 @@ class BattleMon:
     def __init__(self, base, level, moves):
         self.base = base
         self.level = level
-        self.status = "OK"
+        self.statuses = []
         self.max_hp = int(((2*base.hp*level)/100) + level + 10)
         self.hp = self.max_hp
         self.at = int(((2*base.at*level)/100) + 5)
@@ -268,25 +353,41 @@ def apply_stage(stat, stage):
 
 #draw pls work aahssahhshsahsadds
 def draw_header(stdscr, player, enemy):
-    left = f"{player.base.name} [{player.status}] HP {player.hp}/{player.max_hp}"
-    right = f"{enemy.base.name} [{enemy.status}] HP {enemy.hp}/{enemy.max_hp}"  
+    left = f"{player.base.name} [{player.statuses}] HP {player.hp}/{player.max_hp}"
+    right = f"{enemy.base.name} [{enemy.statuses}] HP {enemy.hp}/{enemy.max_hp}"  
     safe_addstr(stdscr, 0, 0, f"{left} ------ {right}")
     draw_divider(stdscr, 1)
 
 def draw_main_menu(stdscr, menu_pos):
-    menu = ["Fight","Bag","Pokémon","Run"]
+    menu = ["Fight","Bag","Dynamax","Tera","Pokémon","Run","Mega Evo","???"]
     row_start = 2
-    col_spacing = 25
+    col_spacing = 15
+
     for i, item in enumerate(menu):
-        row = row_start + i//2
-        col = (i%2)*col_spacing
-        text = f">[{item}]<" if i==menu_pos else f"[{item}]"
+        row = row_start + i // 4
+        col = (i % 4) * col_spacing
+        text = f">[{item}]<" if i == menu_pos else f"[{item}]"
         safe_addstr(stdscr, row, col, text)
-    draw_divider(stdscr, row_start+2)
+
+    draw_divider(stdscr, row_start + 2)
+
+#wip menu idk
+def draw_items(stdscr, menu_pos):
+    menu = ["Potion","Super Potion","Hyper Potion","Max Potion","Full Heal","???","???","???"]
+    row_start = 5
+    col_spacing = 15
+
+    for i, item in enumerate(menu):
+        row = row_start + i // 4
+        col = (i % 4) * col_spacing
+        text = f">[{item}]<" if i == menu_pos else f"[{item}]"
+        safe_addstr(stdscr, row, col, text)
+
+    draw_divider(stdscr, row_start + 2)
 
 def draw_moves(stdscr, mon, highlight=-1):
     row_start = 5
-    col_spacing = 25
+    col_spacing = 20
     for j in range(2):
         for i in range(2):
             idx = j*2 + i
@@ -330,12 +431,12 @@ def afightui(stdscr, player, enemy):
         curses.napms(100)
 
         if key==curses.KEY_UP and menu_pos>1:
-            menu_pos-=2
+            menu_pos-=4
         elif key==curses.KEY_DOWN and menu_pos<2:
-            menu_pos+=2
-        elif key==curses.KEY_LEFT and menu_pos%2==1:
+            menu_pos+=4
+        elif key==curses.KEY_LEFT and menu_pos%4==1:
             menu_pos-=1
-        elif key==curses.KEY_RIGHT and menu_pos%2==0 and menu_pos+1<4:
+        elif key==curses.KEY_RIGHT and menu_pos%4==0 and menu_pos+1<8:
             menu_pos+=1
 
         elif key==ord("z"):
@@ -364,49 +465,53 @@ def afightui(stdscr, player, enemy):
                 move.pp -= 1
 
                 redraw_battle(stdscr, player, enemy)
-                textbox(stdscr, f"{user.name()} used {move.name}!")
-                if move.enefc in EFFECT_HANDLERS:
-                    EFFECT_HANDLERS[move.enefc](stdscr, user, target)
+                if random.randint(1, 100) > move.acc and move.acc != -1:
+                    textbox(stdscr, f"{user.name()} used {move.name}!")
+                    textbox(stdscr, f"{user.name()} missed!")
+                else:
+                    textbox(stdscr, f"{user.name()} used {move.name}!")
+                    if move.enefc in EFFECT_HANDLERS:
+                        EFFECT_HANDLERS[move.enefc](stdscr, user, target)
+                        
+                    for stat, stage_attr in STAT_MAP.items():
+                        change = getattr(move, stat, 0)
+                        if change != 0:
+                            setattr(
+                                user,
+                                stage_attr,
+                                min(6, max(-6, getattr(user, stage_attr) + change))
+                            )
+                            textbox(
+                                stdscr,
+                                f"{user.name()}'s {STAT_DISPLAY[stat]} rose!"
+                            )
 
-                # --- Apply stat changes safely ---
-
-                for stat, stage_attr in STAT_MAP.items():
-                    change = getattr(move, stat, 0)
-                    if change != 0:
-                        setattr(
-                            user,
-                            stage_attr,
-                            min(6, max(-6, getattr(user, stage_attr) + change))
-                        )
-                        textbox(
-                            stdscr,
-                            f"{user.name()}'s {stat.replace('_',' ').upper()} rose!"
-                        )
-
-                    en_change = getattr(move, ENEMY_MAP[stat], 0)
-                    if en_change != 0:
-                        setattr(
-                            target,
-                            stage_attr,
-                            min(6, max(-6, getattr(target, stage_attr) + en_change))
-                        )
-                        textbox(
-                            stdscr,
-                            f"{target.name()}'s {stat.replace('_',' ').upper()} fell!"
-                        )
+                        en_change = getattr(move, ENEMY_MAP[stat], 0)
+                        if en_change != 0:
+                            setattr(
+                                target,
+                                stage_attr,
+                                min(6, max(-6, getattr(target, stage_attr) + en_change))
+                            )
+                            textbox(
+                                stdscr,
+                                f"{target.name()}'s {STAT_DISPLAY[stat]} fell!"
+                            )
 
 
-                # --- Deal damage ---
-                dmg = damage_calc(user, target, move)
-                redraw_battle(stdscr, player, enemy)
-                if dmg > 0:
-                    mult = type_multiplier(move.type, target)
-                    if mult > 1:
-                        textbox(stdscr, "It's super effective!")
-                    elif mult < 1:
-                        textbox(stdscr, "It's not very effective...")
-
-                if target.hp <= 0:
+                    # --- Deal damage ---
+                    dmg = damage_calc(user, target, move)
                     redraw_battle(stdscr, player, enemy)
-                    textbox(stdscr, f"{target.name()} fainted!")
-                    return "win" if target == enemy else "lose"
+                    if dmg > 0:
+                        mult = type_multiplier(move.type, target)
+                        if mult > 1:
+                            textbox(stdscr, "It's super effective!")
+                        elif mult < 1:
+                            textbox(stdscr, "It's not very effective...")
+                    if target.hp <= 0:
+                        redraw_battle(stdscr, player, enemy)
+                        textbox(stdscr, f"{target.name()} fainted!")
+                        return "win" if target == enemy else "lose"
+
+            status_effect_manager(stdscr, player)
+            status_effect_manager(stdscr, enemy)
