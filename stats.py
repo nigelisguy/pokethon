@@ -650,6 +650,7 @@ move65 = Moves(""""detect""""",fighting,5,-1,-1,0,0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,
 "move364 =(""""yawn""""","normal",10,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""",drowsy,False,-1,False,0,0,"""this move makes the target drowsy. after the next turn, it will fall asleep."")"
 "move365 =(""""zap can""no""n""""",electric,5,100,50,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""",paralyse,False,-1,False,0,0,"""this move paralyzes the target."")"
 '''
+#ensure all placeholder moves work before adding actual moves (test speical effects, poison, double hits etc)
 move366 = Moves("""<stat_test>""","flying",
                 99,0,-1,0,0,0,
                 1,1,1,1,1,1,1,1,1,1,
@@ -662,19 +663,55 @@ move367 = Moves("""<poison_test>""","poison",
                 """nil""","""poison_enemy""",False,-1,"no",0,0,
                 """no"""
                 )
-move368 = Moves("""<paralyse_test>""","flying",
+move368 = Moves("""<paralyse_test>""","electric",
                 99,0,-1,0,0,0,
                 1,1,1,1,1,1,1,1,1,1,
                 """nil""","""paralyse_enemy""",False,-1,False,0,0,
                 """test stat changes"""
                 )
-move369 = Moves("""<miss>""","grass",
+move369 = Moves("""<burn_test>""","fire",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""burn_enemy""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move370 = Moves("""<nuke_test>""","normal",
+                99,99999,-1,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                """nil""","""burn_enemy""",False,-1,False,0,0,
+                """kaboom, explosion final boss"""
+                )
+move371 = Moves("""<flinch_test>""","dark",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""flinch_enemy""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move372 = Moves("""<sleep_test>""","sleep",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""flinch_enemy""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move373 = Moves("""<bind_test>""","grass",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""bind_enemy""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move374 = Moves("""<frozen_test>""","ice",
+                99,0,-1,0,0,0,
+                1,1,1,1,1,1,1,1,1,1,
+                """nil""","""ice_enemy""",False,-1,False,0,0,
+                """test stat changes"""
+                )
+move375 = Moves("""<miss>""","grass",
                 10,0,1,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,"no",0,0,
                 """no"""
                 )
-move370 = Moves("""<splash>""","water",
+move376 = Moves("""<splash>""","water",
                 40,0,-50,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,
                 """nil""","""nil""",False,-1,"no",0,0,
