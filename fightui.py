@@ -3,6 +3,7 @@ import random
 import stats
 import main
 
+
 STAT_DISPLAY = {
     "at": "Attack",
     "de": "Defense",
@@ -100,6 +101,11 @@ def battle_setup(stdscr):
     pool = mons.copy()
     p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
     e_mon, e_moves = select_pokemon_and_moves(stdscr, pool, "Enemy")
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     player = BattleMon(p_mon, 50, p_moves)
     enemy = BattleMon(e_mon, 50, e_moves)
     return afightui(stdscr, player, enemy)
@@ -134,7 +140,7 @@ def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=Fal
     while True:
         stdscr.clear()
         h, w = stdscr.getmaxyx()
-        visible = max(1, h - 4)  # Account for title, divider, and footer space
+        visible = max(1, h - 4)  
         safe_addstr(stdscr, 0, 0, title)
         safe_addstr(stdscr, 1, 0, "-"*40)
         for i in range(visible):
@@ -205,7 +211,7 @@ def safe_addstr(stdscr, y, x, text):
 
 def draw_divider(stdscr, y):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, y, 0, "=" * w)
+    safe_addstr(stdscr, y, 0, ">" * 2)
 
 def textbox(stdscr, text):
     h, w = stdscr.getmaxyx()
@@ -358,92 +364,123 @@ def draw_header(stdscr, player, enemy):
     safe_addstr(stdscr, 0, 0, f"{left} ------ {right}")
     draw_divider(stdscr, 1)
 
-def draw_main_menu(stdscr, menu_pos):
-    menu = ["Fight","Bag","Dynamax","Tera","Pokémon","Run","Mega Evo","???"]
-    row_start = 2
-    col_spacing = 15
+def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
+    menu = ["Fight","Pokémon","Bag","Run","Dynamax","Tera","Mega Evo","???"]
+    row_start = 1
+    col_spacing = 12
+    # Top 2x2 menu buttons
+    for i in range(4):
+        row = row_start + 1 + (i // 2)
+        col = (i % 2) * col_spacing
+        text = f"[{menu[i]}]"
+        if i == menu_pos:
+            stdscr.attron(curses.color_pair(1))
+            safe_addstr(stdscr, row, col, text)
+            stdscr.attroff(curses.color_pair(1))
+        else:
+            safe_addstr(stdscr, row, col, text)
 
-    for i, item in enumerate(menu):
-        row = row_start + i // 4
-        col = (i % 4) * col_spacing
-        text = f">[{item}]<" if i == menu_pos else f"[{item}]"
-        safe_addstr(stdscr, row, col, text)
+    draw_divider(stdscr, 4)
 
-    draw_divider(stdscr, row_start + 2)
+    # Bottom 1x4 buttons
+    bottom_colors = [2,3,4,0]
+    row = row_start + 4
+    for i in range(4,8):
+        col = (i-4)*col_spacing
+        text = f"[{menu[i]}]"
+        color = curses.color_pair(bottom_colors[i-4])
+        if i == menu_pos:
+            stdscr.attron(curses.color_pair(1))
+            safe_addstr(stdscr, row, col, text)
+            stdscr.attroff(curses.color_pair(1))
+        else:
+            stdscr.attron(color)
+            safe_addstr(stdscr, row, col, text)
+            stdscr.attroff(color)
 
-#wip menu idk
-def draw_items(stdscr, menu_pos):
-    menu = ["Potion","Super Potion","Hyper Potion","Max Potion","Full Heal","???","???","???"]
-    row_start = 5
-    col_spacing = 15
-
-    for i, item in enumerate(menu):
-        row = row_start + i // 4
-        col = (i % 4) * col_spacing
-        text = f">[{item}]<" if i == menu_pos else f"[{item}]"
-        safe_addstr(stdscr, row, col, text)
-
-    draw_divider(stdscr, row_start + 2)
-
-def draw_moves(stdscr, mon, highlight=-1):
-    row_start = 5
-    col_spacing = 20
-    for j in range(2):
-        for i in range(2):
-            idx = j*2 + i
-            if idx >= len(mon.moves): continue
-            move = mon.moves[idx]
-            sel = idx == highlight
-            text = f"{move.name} PP{move.pp}/{move.pp_max}"
-            text = f">[{text}]<" if sel else f"[{text}]"
-            safe_addstr(stdscr, row_start + j, i*col_spacing, text)
-    draw_divider(stdscr, row_start + 2)
+    # Only draw moves if show_moves is True
+    if show_moves and player:
+        move_col = 25  # adjust horizontal position
+        move_row_start = row_start + 1
+        for idx, move in enumerate(player.moves):
+            text = f"{idx+1}. {move.name} PP{move.pp}/{move.pp_max}"
+            safe_addstr(stdscr, move_row_start + idx, move_col, text)
+            
+def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
+    if col is None: col = 28
+    if row_start is None: row_start = 1
+    for idx, move in enumerate(mon.moves):
+        text = f"{idx+1}. {move.name} PP{move.pp}/{move.pp_max}"
+        if idx == highlight:
+            stdscr.attron(curses.color_pair(1))
+            safe_addstr(stdscr, row_start + idx, col, text)
+            stdscr.attroff(curses.color_pair(1))
+        else:
+            safe_addstr(stdscr, row_start + idx, col, text)
 
 def move_menu(stdscr, player, enemy):
     highlight = 0
+    max_moves = len(player.moves)
     while True:
         stdscr.clear()
         draw_header(stdscr, player, enemy)
-        draw_main_menu(stdscr, 0)
+        draw_main_menu(stdscr, 0, player)  
         draw_moves(stdscr, player, highlight)
         key = stdscr.getch()
-        if key == curses.KEY_UP and highlight>1: highlight-=2
-        elif key == curses.KEY_DOWN and highlight<2: highlight+=2
-        elif key == curses.KEY_LEFT and highlight%2==1: highlight-=1
-        elif key == curses.KEY_RIGHT and highlight%2==0 and highlight+1<len(player.moves): highlight+=1
-        elif key == ord("x"): return None
+
+        if key == curses.KEY_UP:
+            if highlight > 0:
+                highlight -= 1
+        elif key == curses.KEY_DOWN:
+            if highlight < max_moves - 1:
+                highlight += 1
+        elif key == ord("x"):
+            return None
         elif key == ord("z"):
             move = player.moves[highlight]
-            if move.pp>0: return move
+            if move.pp > 0:
+                return move
 
 def afightui(stdscr, player, enemy):
     curses.curs_set(0)
     stdscr.keypad(True)
-    menu_pos = 0
+    
+    key_map = {
+        ord("a"): 4,  # Dynamax
+        ord("s"): 5,  # Tera
+        ord("d"): 6,  # Mega Evo
+        ord("f"): 7   # ???
+    }
+
+    menu_pos = 0  # top-left Fight/Pokémon/Bag/Run
 
     while True:
         stdscr.clear()
         draw_header(stdscr, player, enemy)
-        draw_main_menu(stdscr, menu_pos)
+        draw_main_menu(stdscr, menu_pos, player)
         stdscr.refresh()
 
         key = stdscr.getch()
-        curses.napms(100)
+        curses.napms(50)
 
+        # Navigate top 2x2 menu (Fight/Pokémon/Bag/Run)
         if key==curses.KEY_UP and menu_pos>1:
-            menu_pos-=4
+            menu_pos-=2
         elif key==curses.KEY_DOWN and menu_pos<2:
-            menu_pos+=4
-        elif key==curses.KEY_LEFT and menu_pos%4==1:
+            menu_pos+=2
+        elif key==curses.KEY_LEFT and menu_pos%2==1:
             menu_pos-=1
-        elif key==curses.KEY_RIGHT and menu_pos%4==0 and menu_pos+1<8:
+        elif key==curses.KEY_RIGHT and menu_pos%2==0:
             menu_pos+=1
 
-        elif key==ord("z"):
-            if menu_pos!=0:
-                textbox(stdscr, f"{['Bag','Pokémon','Run'][menu_pos-1]} does not work yet")
-                continue
+        # Direct select bottom 1x4 menu with Z/X/C/V
+        elif key in key_map:
+            choice = key_map[key]
+            textbox(stdscr, f"{['Dynamax','Tera','Mega Evo','???'][choice-4]} does not work yet")
+            continue
 
+        # Select top-left Fight
+        elif key==ord("z") and menu_pos==0:
             player_move = move_menu(stdscr, player, enemy)
             if player_move is None:
                 continue
@@ -498,8 +535,6 @@ def afightui(stdscr, player, enemy):
                                 f"{target.name()}'s {STAT_DISPLAY[stat]} fell!"
                             )
 
-
-                    # --- Deal damage ---
                     dmg = damage_calc(user, target, move)
                     redraw_battle(stdscr, player, enemy)
                     if dmg > 0:
