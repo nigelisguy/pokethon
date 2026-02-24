@@ -202,8 +202,9 @@ class Moves:
 
 
     def call(self):
-        return f"{self.name} placeholder text"
-
+        return f"{self.name:<20} - {self.desc}"
+    def nameself(self):
+        return f"{self.name:<20} - {self.type}"
 move1 = Moves("""absorb""","grass",
                 20,20,100,0,0,0,
                 0,0,0,0,0,0,0,0,0,0,

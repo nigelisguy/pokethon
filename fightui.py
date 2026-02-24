@@ -99,8 +99,12 @@ EFFECT_HANDLERS = {
 
 def battle_setup(stdscr):
     pool = mons.copy()
-    p_mon, p_moves = select_pokemon_and_moves(stdscr, pool, "Player")
-    e_mon, e_moves = select_pokemon_and_moves(stdscr, pool, "Enemy")
+    (p_mon, p_moves), (e_mon, e_moves) = select_teams_and_moves(
+    stdscr,
+    pool,
+    pool.copy(),
+    moves_list
+    )
     curses.start_color()
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
     curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
@@ -201,13 +205,16 @@ def type_multiplier(move_type, defender):
     return mult
 
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
-moves_list = [getattr(stats, f"move{i}") for i in range(366, 376)]
+moves_list = [getattr(stats, f"move{i}") for i in range(1, 57)]
 
 
 def safe_addstr(stdscr, y, x, text):
-    h, w = stdscr.getmaxyx()
-    if 0 <= y < h and 0 <= x < w:
-        stdscr.addstr(y, x, str(text)[: w - x])
+    try:
+        h, w = stdscr.getmaxyx()
+        if y < h and x < w:
+            stdscr.addstr(y, x, str(text)[:w - x])
+    except curses.error:
+        pass 
 
 def draw_divider(stdscr, y):
     h, w = stdscr.getmaxyx()
@@ -320,37 +327,96 @@ def damage_calc(attacker, defender, move):
     defender.hp = max(0, defender.hp - dmg)
     return dmg
 
-def select_from_list(stdscr, items, title, show_type=False, show_desc=False):
-    cursor = 0
+def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
+    player_mon=None
+    cpu_mon=None
+    player_moves=[None]*4
+    cpu_moves=[None]*4
+
+    col=0
+    row=0
+
+    move_menu=False
+    move_cursor=0
+
     while True:
         stdscr.clear()
-        safe_addstr(stdscr, 0, 0, title)
-        safe_addstr(stdscr, 1, 0, "-"*40)
-        for i in range(min(4, len(items))):
-            item = items[i]
-            if hasattr(item, "call"):
-                name = item.call().capitalize()
-                t2 = "" if item.type2=="nil" else f"/{item.type2.capitalize()}"
-                line = f"{name} - {item.type.capitalize()}{t2}"
-            else:
-                name = item[0].strip('"').capitalize()
-                line = f"{name} - {item[-1]}" if show_desc else name
-            prefix = "> " if i==cursor else "  "
-            safe_addstr(stdscr, i+2, 0, prefix + line)
-        key = stdscr.getch()
-        if key==curses.KEY_UP and cursor>0: cursor-=1
-        elif key==curses.KEY_DOWN and cursor<len(items)-1: cursor+=1
-        elif key==ord("z"): return cursor
 
-def select_pokemon_and_moves(stdscr, pool, label):
-    idx = select_from_list_scroll(stdscr, pool, f"{label} Pokémon", show_type=True)
-    mon = pool.pop(idx)
-    chosen = []
-    for i in range(4):
-        m = select_from_list_scroll(stdscr, moves_list, f"{mon.call().capitalize()} Move {i+1}", show_desc=True)
-        chosen.append(moves_list[m])
-    return mon, chosen
+        safe_addstr(stdscr,0,5,"Player")
+        safe_addstr(stdscr,0,30,"CPU")
 
+        if move_menu:
+            safe_addstr(stdscr,0,55,"Moves")
+
+        def draw_side(x, mon, moves, selected):
+            
+            name = "[Select Pokémon]" if not mon else mon.call().capitalize()
+            prefix = "> " if selected and row == 0 and not move_menu else "  "
+            safe_addstr(stdscr, 2, x, prefix + name)
+
+            for i in range(4):
+                y = 4 + i
+                mname = "-"
+                if moves[i]:
+                    mname = moves[i].call().capitalize()[:20] 
+                prefix = "> " if selected and row == i + 1 and not move_menu else "  "
+                safe_addstr(stdscr, y, x, prefix + mname)
+
+        draw_side(5,player_mon,player_moves,col==0)
+        draw_side(30,cpu_mon,cpu_moves,col==1)
+
+        if move_menu:
+            for i,m in enumerate(moves_list):
+                name = m.call().capitalize()
+                prefix="> " if i==move_cursor else "  "
+                safe_addstr(stdscr,2+i,55,prefix+name)
+
+        ok_prefix="> " if row==5 and not move_menu else "  "
+        safe_addstr(stdscr,9,20,ok_prefix+"[ OK ]")
+
+        key=stdscr.getch()
+
+        if move_menu:
+            if key==curses.KEY_UP and move_cursor>0:
+                move_cursor-=1
+            elif key==curses.KEY_DOWN and move_cursor<len(moves_list)-1:
+                move_cursor+=1
+            elif key==ord("z"):
+                if col==0:
+                    player_moves[row-1]=moves_list[move_cursor]
+                else:
+                    cpu_moves[row-1]=moves_list[move_cursor]
+                move_menu=False
+            elif key==ord("x"):
+                move_menu=False
+            continue
+
+        if key==curses.KEY_UP and row>0:
+            row-=1
+        elif key==curses.KEY_DOWN and row<5:
+            row+=1
+        elif key==curses.KEY_LEFT:
+            col=0
+        elif key==curses.KEY_RIGHT:
+            col=1
+
+        elif key==ord("z"):
+            if row==0:
+                if col==0:
+                    i=select_from_list_scroll(stdscr,player_pool,"Select Player Pokémon",show_type=True)
+                    player_mon=player_pool.pop(i)
+                else:
+                    i=select_from_list_scroll(stdscr,cpu_pool,"Select CPU Pokémon",show_type=True)
+                    cpu_mon=cpu_pool.pop(i)
+
+            elif 1<=row<=4:
+                move_menu=True
+                move_cursor=0
+
+            elif row==5:
+                if player_mon and cpu_mon:
+                    return (player_mon,player_moves),(cpu_mon,cpu_moves)
+        
 def apply_stage(stat, stage):
     if stage >= 0:
         return stat * (2 + stage) / 2

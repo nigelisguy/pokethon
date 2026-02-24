@@ -30,7 +30,7 @@ def mainm(stdscr):
 
     menu = [
         "--Pokethon--",
-        "FightTest",
+        "Battle Sim",
         "Pokedex",
         "Settings"
     ]
@@ -43,10 +43,10 @@ def mainm(stdscr):
             text = menu[i].capitalize()  
             if i == y:
                 stdscr.attron(curses.color_pair(1))
-                stdscr.addstr(i * 2, 0, f"> {text}")
+                stdscr.addstr(i * 1, 0, f"> {text}")
                 stdscr.attroff(curses.color_pair(1))
             else:
-                stdscr.addstr(i * 2, 0, f"  {text}")
+                stdscr.addstr(i * 1, 0, f"  {text}")
 
         key = stdscr.getch()
 
