@@ -138,43 +138,43 @@ def status_effect_manager(stdscr, mon):
         textbox(stdscr, f"{mon.name()} flinched!")
         mon.statuses.remove("flinch")
 
-def select_from_list_scroll(stdscr, items, title, show_type=False, show_desc=False):
-    scroll = 0
+def select_from_list_scroll(stdscr, items, title, show_type=False):
     cursor = 0
+    view = 0
+
     while True:
         stdscr.clear()
-        h, w = stdscr.getmaxyx()
-        visible = max(1, h - 4)  
-        safe_addstr(stdscr, 0, 0, title)
-        safe_addstr(stdscr, 1, 0, "-"*40)
-        for i in range(visible):
-            idx = scroll + i
-            if idx >= len(items):
-                break
-            item = items[idx]
-            if hasattr(item, "call"):
-                name = item.call().capitalize()
-                t2 = "" if getattr(item, "type2", "nil") == "nil" else f"/{item.type2.capitalize()}"
-                line = f"{name} - {item.type.capitalize()}{t2}"
-            elif hasattr(item, "type"):
-                name = item.name.capitalize()
-                line = f"{name} - {item.type.capitalize()}"
-            else:
-                name = item[0].strip('"').capitalize()
-                line = f"{name} - {item[-1]}" if show_desc else name
-            prefix = "> " if i == cursor else "  "
-            safe_addstr(stdscr, 2+i, 0, prefix + line)
+        safe_addstr(stdscr,0,5,title)
+
+        visible_items = items[view:view+6]
+
+        if view > 0:
+            safe_addstr(stdscr,1,5,"▲")
+
+        for i,item in enumerate(visible_items):
+            idx = view + i
+            name = item.call().capitalize()
+            prefix = "> " if idx == cursor else "  "
+            safe_addstr(stdscr,2+i,5,prefix+name)
+
+        if view+6 < len(items):
+            safe_addstr(stdscr,8,5,"▼")
+
         key = stdscr.getch()
-        curses.napms(100)
-        if key == curses.KEY_UP:
-            if cursor > 0: cursor -= 1
-            elif scroll > 0: scroll -= 1
-        elif key == curses.KEY_DOWN:
-            if cursor < min(visible-1, len(items)-1):
-                if scroll + cursor + 1 < len(items): cursor += 1
-            elif scroll + visible < len(items): scroll += 1
+
+        if key == curses.KEY_UP and cursor > 0:
+            cursor -= 1
+        elif key == curses.KEY_DOWN and cursor < len(items)-1:
+            cursor += 1
         elif key == ord("z"):
-            return scroll + cursor
+            return cursor
+        elif key == ord("x"):
+            return None
+
+        if cursor < view:
+            view = cursor
+        elif cursor >= view + 6:
+            view = cursor - 5
 
 TYPE_EFFECTIVENESS = {
     "normal": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 0.5,"bug": 1,"ghost": 0,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 1,"ice": 1,"dragon": 1,"dark": 1 },
@@ -205,7 +205,7 @@ def type_multiplier(move_type, defender):
     return mult
 
 mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon{i}")]
-moves_list = [getattr(stats, f"move{i}") for i in range(1, 57)]
+moves_list = [getattr(stats, f"move{i}") for i in range(1,388)]
 
 
 def safe_addstr(stdscr, y, x, text):
@@ -218,7 +218,7 @@ def safe_addstr(stdscr, y, x, text):
 
 def draw_divider(stdscr, y):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, y, 0, ">" * 2)
+    safe_addstr(stdscr, y, 0, "-" * 25)
 
 def textbox(stdscr, text):
     h, w = stdscr.getmaxyx()
@@ -338,6 +338,7 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
 
     move_menu=False
     move_cursor=0
+    move_view=0
 
     while True:
         stdscr.clear()
@@ -346,10 +347,11 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
         safe_addstr(stdscr,0,30,"CPU")
 
         if move_menu:
-            safe_addstr(stdscr,0,55,"Moves")
+            menu_x = 5
+            menu_y = 0
+            safe_addstr(stdscr,menu_y,menu_x,"Select Move")
 
         def draw_side(x, mon, moves, selected):
-            
             name = "[Select Pokémon]" if not mon else mon.call().capitalize()
             prefix = "> " if selected and row == 0 and not move_menu else "  "
             safe_addstr(stdscr, 2, x, prefix + name)
@@ -358,7 +360,7 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
                 y = 4 + i
                 mname = "-"
                 if moves[i]:
-                    mname = moves[i].call().capitalize()[:20] 
+                    mname = moves[i].call().capitalize()[:20]
                 prefix = "> " if selected and row == i + 1 and not move_menu else "  "
                 safe_addstr(stdscr, y, x, prefix + mname)
 
@@ -366,11 +368,19 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
         draw_side(30,cpu_mon,cpu_moves,col==1)
 
         if move_menu:
-            for i,m in enumerate(moves_list):
-                name = m.call().capitalize()
-                prefix="> " if i==move_cursor else "  "
-                safe_addstr(stdscr,2+i,55,prefix+name)
+            safe_addstr(stdscr,1,55,"▲" if move_view>0 else " ")
 
+            visible_moves = moves_list[move_view:move_view+6]
+
+            for i,m in enumerate(visible_moves):
+                idx = move_view + i
+                name = m.call().capitalize()
+                prefix="> " if idx==move_cursor else "  "
+                safe_addstr(stdscr,menu_y+2+i,menu_x,prefix+name)
+                
+            if move_view+6 < len(moves_list):
+                safe_addstr(stdscr,8,55,"▼")
+    
         ok_prefix="> " if row==5 and not move_menu else "  "
         safe_addstr(stdscr,9,20,ok_prefix+"[ OK ]")
 
@@ -381,14 +391,22 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
                 move_cursor-=1
             elif key==curses.KEY_DOWN and move_cursor<len(moves_list)-1:
                 move_cursor+=1
+
+            if move_cursor < move_view:
+                move_view = move_cursor
+            elif move_cursor >= move_view + 6:
+                move_view = move_cursor - 5
+
             elif key==ord("z"):
                 if col==0:
                     player_moves[row-1]=moves_list[move_cursor]
                 else:
                     cpu_moves[row-1]=moves_list[move_cursor]
                 move_menu=False
+
             elif key==ord("x"):
                 move_menu=False
+
             continue
 
         if key==curses.KEY_UP and row>0:
@@ -412,11 +430,12 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
             elif 1<=row<=4:
                 move_menu=True
                 move_cursor=0
+                move_view=0
 
             elif row==5:
                 if player_mon and cpu_mon:
                     return (player_mon,player_moves),(cpu_mon,cpu_moves)
-        
+    
 def apply_stage(stat, stage):
     if stage >= 0:
         return stat * (2 + stage) / 2
@@ -476,7 +495,7 @@ def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
     if col is None: col = 28
     if row_start is None: row_start = 1
     for idx, move in enumerate(mon.moves):
-        text = f"{idx+1}. {move.name} PP{move.pp}/{move.pp_max}"
+        text = f"[ {move.name} PP{move.pp}/{move.pp_max} ]"
         if idx == highlight:
             stdscr.attron(curses.color_pair(1))
             safe_addstr(stdscr, row_start + idx, col, text)
@@ -512,13 +531,13 @@ def afightui(stdscr, player, enemy):
     stdscr.keypad(True)
     
     key_map = {
-        ord("a"): 4,  # Dynamax
-        ord("s"): 5,  # Tera
-        ord("d"): 6,  # Mega Evo
-        ord("f"): 7   # ???
+        ord("a"): 4,  
+        ord("s"): 5,  
+        ord("d"): 6,  
+        ord("f"): 7   
     }
 
-    menu_pos = 0  # top-left Fight/Pokémon/Bag/Run
+    menu_pos = 0  
 
     while True:
         stdscr.clear()
@@ -529,7 +548,6 @@ def afightui(stdscr, player, enemy):
         key = stdscr.getch()
         curses.napms(50)
 
-        # Navigate top 2x2 menu (Fight/Pokémon/Bag/Run)
         if key==curses.KEY_UP and menu_pos>1:
             menu_pos-=2
         elif key==curses.KEY_DOWN and menu_pos<2:
@@ -539,13 +557,11 @@ def afightui(stdscr, player, enemy):
         elif key==curses.KEY_RIGHT and menu_pos%2==0:
             menu_pos+=1
 
-        # Direct select bottom 1x4 menu with Z/X/C/V
         elif key in key_map:
             choice = key_map[key]
             textbox(stdscr, f"{['Dynamax','Tera','Mega Evo','???'][choice-4]} does not work yet")
             continue
 
-        # Select top-left Fight
         elif key==ord("z") and menu_pos==0:
             player_move = move_menu(stdscr, player, enemy)
             if player_move is None:
