@@ -14,7 +14,7 @@ TEXT_SPEED = 0.02
 
 
 npcs = {
-    (2, 5): (NPC_ICON, ["what, not impressed?", "do u expect anything for a test map?"]),
+    (2, 5): (NPC_ICON, ["hello!", "welcome to the test map!"]),
     (6, 20): ("⌘", ["sign", "sign2"]) #overwrite for sign, dont ask about the symbol
 }
 
