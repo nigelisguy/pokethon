@@ -3,6 +3,8 @@ import stats
 import curses
 import time
 import fightui
+import overworld
+import battlehandler
 print(fightui.__file__)
 
 #variables
@@ -16,12 +18,14 @@ mons = [
 TOTAL = len(mons)
 
 def main(stdscr):
+    import fightui
     battle_data = fightui.battle_setup(stdscr)
 def printdelay(text):
     for char in text:
         print(char, end='', flush=True)
         time.sleep(textspeed) 
 def mainm(stdscr):
+    import fightui
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
@@ -30,7 +34,8 @@ def mainm(stdscr):
 
     menu = [
         "--Pokethon--",
-        "Battle Sim",
+        "Debug Battle",
+        "Overworld",
         "Pokedex",
         "Settings"
     ]
@@ -39,7 +44,7 @@ def mainm(stdscr):
 
     while True:
         stdscr.clear()
-        for i in range(4):
+        for i in range(len(menu)):
             text = menu[i].capitalize()  
             if i == y:
                 stdscr.attron(curses.color_pair(1))
@@ -52,15 +57,18 @@ def mainm(stdscr):
 
         if key == curses.KEY_UP and y > 1:
             y -= 1
-        elif key == curses.KEY_DOWN and y < 3:
+        elif key == curses.KEY_DOWN and y < 4:
             y += 1
         elif key == ord("z"):
-            if y == 2:
+            if y == 3:
                 mon_menu(stdscr)
             elif y == 1:  
+                import fightui
                 fightui.battle_setup(stdscr)
-            elif y == 3:
+            elif y == 4:
                 setting(stdscr)
+            elif y == 2:
+                overworld.overworld(stdscr)
 
 def setting(stdscr):
     global textspeed
@@ -218,11 +226,10 @@ def mon_menu(stdscr):
             idx = scrollno + cursor
             draw_stats(stdscr, mons[idx], idx + 1)
 
-        elif key == ord("q"):
+        elif key == ord("x"):
             break
 
         stdscr.refresh()
-
 
 while True:
     curses.wrapper(mainm)

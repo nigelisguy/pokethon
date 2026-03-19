@@ -1,8 +1,8 @@
 import curses
 import random
 import stats
-import main
 
+EASY_OFFSET=4
 
 STAT_DISPLAY = {
     "at": "Attack",
@@ -44,6 +44,20 @@ def apply_status(status_list, new_status, clears=None):
             if s in status_list:
                 status_list.remove(s)
     status_list.append(new_status)
+
+def draw_top_banner(stdscr):
+    h, w = stdscr.getmaxyx()
+    safe_addstr(stdscr, 0, 0, "+" + "-"*(w-2) + "+", 0)
+    safe_addstr(stdscr, 1, 2, "mons png here", 0)
+    safe_addstr(stdscr, 2, 0, "+" + "-"*(w-2) + "+", 0)
+    safe_addstr(stdscr, 3, 0, "",0)
+
+def sdraw_top_banner(stdscr):
+    h, w = stdscr.getmaxyx()
+    safe_addstr(stdscr, 0, 0, "+" + "-"*(w-2) + "+", 0)
+    safe_addstr(stdscr, 1, 2, "mons png here", 0)
+    safe_addstr(stdscr, 2, 0, "+" + "-"*(w-2) + "+", 0)
+    safe_addstr(stdscr, 3, 0, "",0)
 
 def poison(target):
     apply_status(target.statuses, "poison", ["burn", "sleep", "confuse", "flinch"])
@@ -208,9 +222,10 @@ mons = [getattr(stats, f"mon{i}") for i in range(1, 152) if hasattr(stats, f"mon
 moves_list = [getattr(stats, f"move{i}") for i in range(1,388)]
 
 
-def safe_addstr(stdscr, y, x, text):
+def safe_addstr(stdscr, y, x, text,y_offset=EASY_OFFSET):
     try:
         h, w = stdscr.getmaxyx()
+        y += y_offset
         if y < h and x < w:
             stdscr.addstr(y, x, str(text)[:w - x])
     except curses.error:
@@ -223,22 +238,23 @@ def draw_divider(stdscr, y):
 def textbox(stdscr, text):
     h, w = stdscr.getmaxyx()
     top = max(0, h - 4)
-    safe_addstr(stdscr, top, 0, "+" + "-" * (w - 2) + "+")
-    safe_addstr(stdscr, top + 1, 0, "|" + " " * (w - 2) + "|")
-    safe_addstr(stdscr, top + 2, 0, "+" + "-" * (w - 2) + "+")
+    safe_addstr(stdscr, top, 0, "+" + "-" * (w - 2) + "+",0)
+    safe_addstr(stdscr, top + 1, 0, "|" + " " * (w - 2) + "|",0)
+    safe_addstr(stdscr, top + 2, 0, "+" + "-" * (w - 2) + "+",0)
     line = ""
     for ch in text:
         line += ch
-        safe_addstr(stdscr, top + 1, 2, line[: w - 4])
+        safe_addstr(stdscr, top + 1, 2, line[: w - 4],0)
         stdscr.refresh()
-        curses.napms(int(main.textspeed*1000))
+        curses.napms(int(0.01*1000))#fix textspeed thing later
     while True:
         if stdscr.getch() == ord("z"):
             break
         
 def redraw_battle(stdscr, player, enemy, menu_pos=0):
     stdscr.clear()
-    draw_header(stdscr, player, enemy)
+    draw_top_banner(stdscr)
+    draw_header(stdscr, player, enemy)  
     draw_main_menu(stdscr, menu_pos)
     stdscr.refresh()
 
@@ -307,7 +323,7 @@ class BattleMon:
     def name(self):
         return self.base.name
  
-def damage_calc(attacker, defender, move):
+def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
     if move.power <= 0:
         return 0
 
@@ -324,7 +340,18 @@ def damage_calc(attacker, defender, move):
     modifier = random.uniform(0.85, 1.0) * type_multiplier(move.type, defender)
     dmg = int(base * modifier)
 
-    defender.hp = max(0, defender.hp - dmg)
+    target_hp_final = max(0, defender.hp - dmg)
+    while defender.hp > target_hp_final:
+        defender.hp -= 1
+        if defender.hp < target_hp_final:
+            defender.hp = target_hp_final
+        if player and enemy:
+            redraw_battle(stdscr, player, enemy)
+        else:
+            redraw_battle(stdscr, attacker, defender)
+        delay = max(1, int(dmg / 10)*20)
+        curses.napms(delay)
+
     return dmg
 
 def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
@@ -435,6 +462,8 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
             elif row==5:
                 if player_mon and cpu_mon:
                     return (player_mon,player_moves),(cpu_mon,cpu_moves)
+                else:
+                    textbox(stdscr, "Fill In Everything First Please")
     
 def apply_stage(stat, stage):
     if stage >= 0:
@@ -444,12 +473,13 @@ def apply_stage(stat, stage):
 
 #draw pls work aahssahhshsahsadds
 def draw_header(stdscr, player, enemy):
-    left = f"{player.base.name} [{player.statuses}] HP {player.hp}/{player.max_hp}"
-    right = f"{enemy.base.name} [{enemy.statuses}] HP {enemy.hp}/{enemy.max_hp}"  
+    left = f"{player.base.name} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
+    right = f"{enemy.base.name} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"  
     safe_addstr(stdscr, 0, 0, f"{left} ------ {right}")
     draw_divider(stdscr, 1)
 
 def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
+    draw_top_banner(stdscr)
     menu = ["Fight","Pokémon","Bag","Run","Dynamax","Tera","Mega Evo","???"]
     row_start = 1
     col_spacing = 12
@@ -508,6 +538,7 @@ def move_menu(stdscr, player, enemy):
     max_moves = len(player.moves)
     while True:
         stdscr.clear()
+        draw_top_banner(stdscr)
         draw_header(stdscr, player, enemy)
         draw_main_menu(stdscr, 0, player)  
         draw_moves(stdscr, player, highlight)
@@ -529,7 +560,6 @@ def move_menu(stdscr, player, enemy):
 def afightui(stdscr, player, enemy):
     curses.curs_set(0)
     stdscr.keypad(True)
-    
     key_map = {
         ord("a"): 4,  
         ord("s"): 5,  
@@ -617,7 +647,8 @@ def afightui(stdscr, player, enemy):
                                 f"{target.name()}'s {STAT_DISPLAY[stat]} fell!"
                             )
 
-                    dmg = damage_calc(user, target, move)
+                    dmg = damage_calc(user, target, move, stdscr, player=player, enemy=enemy)
+
                     redraw_battle(stdscr, player, enemy)
                     if dmg > 0:
                         mult = type_multiplier(move.type, target)
