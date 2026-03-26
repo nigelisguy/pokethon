@@ -1,5 +1,5 @@
 import curses
-
+#wip will do soon
 def run_battle(stdscr):
     import fightui
     from fightui import BattleMon, stats

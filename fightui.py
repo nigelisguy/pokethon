@@ -2,7 +2,7 @@ import curses
 import random
 import stats
 
-EASY_OFFSET=4
+EASY_OFFSET=15
 
 STAT_DISPLAY = {
     "at": "Attack",
@@ -49,16 +49,11 @@ def draw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
     safe_addstr(stdscr, 0, 0, "+" + "-"*(w-2) + "+", 0)
     safe_addstr(stdscr, 1, 2, "mons png here", 0)
-    safe_addstr(stdscr, 2, 0, "+" + "-"*(w-2) + "+", 0)
-    safe_addstr(stdscr, 3, 0, "",0)
 
 def sdraw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
     safe_addstr(stdscr, 0, 0, "+" + "-"*(w-2) + "+", 0)
     safe_addstr(stdscr, 1, 2, "mons png here", 0)
-    safe_addstr(stdscr, 2, 0, "+" + "-"*(w-2) + "+", 0)
-    safe_addstr(stdscr, 3, 0, "",0)
-
 def poison(target):
     apply_status(target.statuses, "poison", ["burn", "sleep", "confuse", "flinch"])
 def poison_enemy(target):
@@ -158,7 +153,7 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
 
     while True:
         stdscr.clear()
-        safe_addstr(stdscr,0,5,title)
+        safe_addstr(stdscr,0,5,title,0)
 
         visible_items = items[view:view+6]
 
@@ -169,7 +164,7 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
             idx = view + i
             name = item.call().capitalize()
             prefix = "> " if idx == cursor else "  "
-            safe_addstr(stdscr,2+i,5,prefix+name)
+            safe_addstr(stdscr,2+i,5,prefix+name,0)
 
         if view+6 < len(items):
             safe_addstr(stdscr,8,5,"▼")
@@ -233,18 +228,18 @@ def safe_addstr(stdscr, y, x, text,y_offset=EASY_OFFSET):
 
 def draw_divider(stdscr, y):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, y, 0, "-" * 25)
+    safe_addstr(stdscr, y, 0, "-" * 40)
 
 def textbox(stdscr, text):
     h, w = stdscr.getmaxyx()
     top = max(0, h - 4)
-    safe_addstr(stdscr, top, 0, "+" + "-" * (w - 2) + "+",0)
-    safe_addstr(stdscr, top + 1, 0, "|" + " " * (w - 2) + "|",0)
-    safe_addstr(stdscr, top + 2, 0, "+" + "-" * (w - 2) + "+",0)
+    safe_addstr(stdscr, top + 1, 0, "+" + "-" * (w - 2) + "+",0)
+    safe_addstr(stdscr, top + 2, 0, "|" + " " * (w - 2) + "|",0)
+    safe_addstr(stdscr, top + 3, 0, "+" + "-" * (w - 2) + "+",0)
     line = ""
     for ch in text:
         line += ch
-        safe_addstr(stdscr, top + 1, 2, line[: w - 4],0)
+        safe_addstr(stdscr, top + 2, 2, line[: w - 4],0)
         stdscr.refresh()
         curses.napms(int(0.01*1000))#fix textspeed thing later
     while True:
@@ -471,23 +466,28 @@ def apply_stage(stat, stage):
     else:
         return stat * 2 / (2 - stage)
 
-#draw pls work aahssahhshsahsadds
 def draw_header(stdscr, player, enemy):
     left = f"{player.base.name} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
     right = f"{enemy.base.name} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"  
-    safe_addstr(stdscr, 0, 0, f"{left} ------ {right}")
+    safe_addstr(stdscr, 0, 0, f"{left} ------ {right}",14)
     draw_divider(stdscr, 1)
 
 def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
+    h, w = stdscr.getmaxyx()
+    safe_addstr(stdscr, 13, 0, "+" + "-" * (w - 2) + "+",0)
+    safe_addstr(stdscr, 15, 0,"!insertlvlhpbarhere!" * 2 + "+" + "-" * 38 + "+",0)
+    safe_addstr(stdscr, 17, 0, "|" + " " * 38 + "|",0)
+    safe_addstr(stdscr, 18, 0, "|" + " " * 38 + "|",0)
+    safe_addstr(stdscr, 20, 40, "+" + "-" * 38 + "+",0)
+    safe_addstr(stdscr, 21, 0, "+" + "-" * (w - 2) + "+",0)
     draw_top_banner(stdscr)
-    menu = ["Fight","Pokémon","Bag","Run","Dynamax","Tera","Mega Evo","???"]
+    menu = ["Fight","Pokémon","Bag","Run","Dynamax","Tera","MegaEvo","Z-MOVE"]
     row_start = 1
-    col_spacing = 12
-    # Top 2x2 menu buttons
+    col_spacing = 10
     for i in range(4):
         row = row_start + 1 + (i // 2)
         col = (i % 2) * col_spacing
-        text = f"[{menu[i]}]"
+        text = f"| [{menu[i]}]"
         if i == menu_pos:
             stdscr.attron(curses.color_pair(1))
             safe_addstr(stdscr, row, col, text)
@@ -497,12 +497,11 @@ def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
 
     draw_divider(stdscr, 4)
 
-    # Bottom 1x4 buttons
     bottom_colors = [2,3,4,0]
     row = row_start + 4
     for i in range(4,8):
         col = (i-4)*col_spacing
-        text = f"[{menu[i]}]"
+        text = f" [{menu[i]}] "
         color = curses.color_pair(bottom_colors[i-4])
         if i == menu_pos:
             stdscr.attron(curses.color_pair(1))
@@ -513,19 +512,18 @@ def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
             safe_addstr(stdscr, row, col, text)
             stdscr.attroff(color)
 
-    # Only draw moves if show_moves is True
     if show_moves and player:
-        move_col = 25  # adjust horizontal position
+        move_col = 25  
         move_row_start = row_start + 1
         for idx, move in enumerate(player.moves):
             text = f"{idx+1}. {move.name} PP{move.pp}/{move.pp_max}"
             safe_addstr(stdscr, move_row_start + idx, move_col, text)
             
 def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
-    if col is None: col = 28
+    if col is None: col = 40
     if row_start is None: row_start = 1
     for idx, move in enumerate(mon.moves):
-        text = f"[ {move.name} PP{move.pp}/{move.pp_max} ]"
+        text = f"|        [{f'{move.name} PP{move.pp}/{move.pp_max}':^20}]        |"
         if idx == highlight:
             stdscr.attron(curses.color_pair(1))
             safe_addstr(stdscr, row_start + idx, col, text)
@@ -564,7 +562,7 @@ def afightui(stdscr, player, enemy):
         ord("a"): 4,  
         ord("s"): 5,  
         ord("d"): 6,  
-        ord("f"): 7   
+        ord("f"): 7   #fix later
     }
 
     menu_pos = 0  
@@ -589,7 +587,7 @@ def afightui(stdscr, player, enemy):
 
         elif key in key_map:
             choice = key_map[key]
-            textbox(stdscr, f"{['Dynamax','Tera','Mega Evo','???'][choice-4]} does not work yet")
+            textbox(stdscr, f"{['Dynamax','Tera','Mega Evo','Z-MOVE'][choice-4]} does not work yet")
             continue
 
         elif key==ord("z") and menu_pos==0:

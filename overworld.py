@@ -2,7 +2,7 @@ import curses
 import time
 import random
 
-WIDTH = 30
+WIDTH = 20
 HEIGHT = 10
 
 
@@ -15,10 +15,18 @@ TEXT_SPEED = 0.02
 
 npcs = {
     (2, 5): (NPC_ICON, ["hello!", "welcome to the test map!"]),
-    (6, 20): ("⌘", ["sign", "sign2"]) #overwrite for sign, dont ask about the symbol
+    (6, 20): (NPC_ICON, ["HI", "HI2"]) 
 }
 
 grass_tiles = set()
+
+def safe_addstr(stdscr, y, x, text):
+    try:
+        h, w = stdscr.getmaxyx()
+        if y < h and x < w:
+            stdscr.addstr(y, x, str(text)[:w - x])
+    except curses.error:
+        pass 
 
 # touch graassss
 for y in range(HEIGHT - 5, HEIGHT):
@@ -40,10 +48,10 @@ def show_dialogue(stdscr, lines):
 
     for line in lines:
         stdscr.move(h - 2, 0)
+        safe_addstr(stdscr, h - 3, 0, "+" + "-"*78 + "+")
+        safe_addstr(stdscr, h - 1, 0, "+" + "-"*78 + "+")
         stdscr.clrtoeol()
         type_text(stdscr, line)
-
-        stdscr.addstr(h - 1, 0, "[Z]")
         stdscr.refresh()
 
         while True:
@@ -94,10 +102,9 @@ def overworld(stdscr):
     curses.init_pair(4, curses.COLOR_GREEN, -1)   # grass (ew flip u)
 
     py, px = 0, 0
-
     while True:
         draw(stdscr, py, px)
-
+        menu(stdscr)
         key = stdscr.getch()
 
         ny, nx = py, px
@@ -112,7 +119,6 @@ def overworld(stdscr):
             nx += 1
         elif key == ord("q"):
             break
-
         if 0 <= ny < HEIGHT and 0 <= nx < WIDTH:
             if (ny, nx) not in npcs:
                 py, px = ny, nx
@@ -125,5 +131,14 @@ def overworld(stdscr):
 
         if (py, px) in grass_tiles:
             if random.random() < 0.2:
-                show_dialogue(stdscr, ["Something touched you!"])
+                show_dialogue(stdscr, ["A Wild Pokémon appeared!"])
                 battlehandler.run_battle(stdscr)
+
+def menu(stdscr):
+    h, w = stdscr.getmaxyx()
+    safe_addstr(stdscr, 10, 0, "+" + "-"*78 + "+")
+    safe_addstr(stdscr, 11, 0, "placeholder1 placeholder2            save,options,etcidk")
+    safe_addstr(stdscr, 12, 0, "placeholder3 placeholder4")
+    safe_addstr(stdscr, 13, 0, "placeholder5 placeholder6")
+    safe_addstr(stdscr, 21, 0, "+" + "-"*78 + "+")
+    stdscr.refresh()
