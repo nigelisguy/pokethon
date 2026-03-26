@@ -48,8 +48,8 @@ def show_dialogue(stdscr, lines):
 
     for line in lines:
         stdscr.move(h - 2, 0)
-        safe_addstr(stdscr, h - 3, 0, "+" + "-"*78 + "+")
-        safe_addstr(stdscr, h - 1, 0, "+" + "-"*78 + "+")
+        safe_addstr(stdscr, h - 3, 0, "+" + "━"*78 + "+")
+        safe_addstr(stdscr, h - 1, 0, "+" + "━"*78 + "+")
         stdscr.clrtoeol()
         type_text(stdscr, line)
         stdscr.refresh()
@@ -71,19 +71,19 @@ def draw(stdscr, py, px):
         for x in range(WIDTH):
 
             char = "෴"
-            color = curses.color_pair(1)  
+            color = curses.color_pair(5)  
 
             if (y, x) in grass_tiles:
                 char = GRASS
-                color = curses.color_pair(4)
+                color = curses.color_pair(8)
 
             if (y, x) in npcs:
                 char = npcs[(y, x)][0]
-                color = curses.color_pair(3)
+                color = curses.color_pair(7)
 
             if y == py and x == px:
                 char = PLAYER
-                color = curses.color_pair(2)
+                color = curses.color_pair(6)
 
             stdscr.addstr(y, x * 2, char, color)
 
@@ -96,10 +96,10 @@ def overworld(stdscr):
     curses.start_color()
     curses.use_default_colors()
 
-    curses.init_pair(1, curses.COLOR_GREEN, -1)   # ground
-    curses.init_pair(2, curses.COLOR_WHITE, -1)  # player
-    curses.init_pair(3, curses.COLOR_CYAN, -1)    # NPC
-    curses.init_pair(4, curses.COLOR_GREEN, -1)   # grass (ew flip u)
+    curses.init_pair(5, curses.COLOR_GREEN, -1)   # ground
+    curses.init_pair(6, curses.COLOR_WHITE, -1)  # player
+    curses.init_pair(7, curses.COLOR_CYAN, -1)    # NPC
+    curses.init_pair(8, curses.COLOR_GREEN, -1)   # grass (ew flip u)
 
     py, px = 0, 0
     while True:
@@ -136,9 +136,9 @@ def overworld(stdscr):
 
 def menu(stdscr):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 10, 0, "+" + "-"*78 + "+")
+    safe_addstr(stdscr, 10, 0, "+" + "━"*78 + "+")
     safe_addstr(stdscr, 11, 0, "placeholder1 placeholder2            save,options,etcidk")
     safe_addstr(stdscr, 12, 0, "placeholder3 placeholder4")
     safe_addstr(stdscr, 13, 0, "placeholder5 placeholder6")
-    safe_addstr(stdscr, 21, 0, "+" + "-"*78 + "+")
+    safe_addstr(stdscr, 21, 0, "+" + "━"*78 + "+")
     stdscr.refresh()

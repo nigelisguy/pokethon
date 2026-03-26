@@ -152,7 +152,7 @@ def draw_stats(stdscr, mon, dexno):
     title = mon.call().capitalize()
     stdscr.addstr(0, 0, title)
 
-    divider = "-" * 70 
+    divider = "━" * 70 
     stdscr.addstr(1, 0, divider)
 
     col1, col2, col3, col4 = 0, 14, 30, 50

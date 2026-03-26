@@ -47,12 +47,12 @@ def apply_status(status_list, new_status, clears=None):
 
 def draw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 0, 0, "+" + "-"*(w-2) + "+", 0)
+    safe_addstr(stdscr, 0, 0, "+" + "━"*(w-2) + "+", 0)
     safe_addstr(stdscr, 1, 2, "mons png here", 0)
 
 def sdraw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 0, 0, "+" + "-"*(w-2) + "+", 0)
+    safe_addstr(stdscr, 0, 0, "+" + "━"*(w-2) + "+", 0)
     safe_addstr(stdscr, 1, 2, "mons png here", 0)
 def poison(target):
     apply_status(target.statuses, "poison", ["burn", "sleep", "confuse", "flinch"])
@@ -227,15 +227,14 @@ def safe_addstr(stdscr, y, x, text,y_offset=EASY_OFFSET):
         pass 
 
 def draw_divider(stdscr, y):
-    h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, y, 0, "-" * 40)
+    h, w = stdscr.getmaxyx()#pls delete
 
 def textbox(stdscr, text):
     h, w = stdscr.getmaxyx()
     top = max(0, h - 4)
-    safe_addstr(stdscr, top + 1, 0, "+" + "-" * (w - 2) + "+",0)
-    safe_addstr(stdscr, top + 2, 0, "|" + " " * (w - 2) + "|",0)
-    safe_addstr(stdscr, top + 3, 0, "+" + "-" * (w - 2) + "+",0)
+    safe_addstr(stdscr, top + 1, 0, "╔" + "═" * (w - 2) + "╗ ",0)
+    safe_addstr(stdscr, top + 2, 0, "║" + " " * (w - 2) + "║",0)
+    safe_addstr(stdscr, top + 3, 0, "╚" + "═" * (w - 2) + "╝",0)
     line = ""
     for ch in text:
         line += ch
@@ -344,7 +343,7 @@ def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
             redraw_battle(stdscr, player, enemy)
         else:
             redraw_battle(stdscr, attacker, defender)
-        delay = max(1, int(dmg / 10)*20)
+        delay = max(1, int(1000/dmg))
         curses.napms(delay)
 
     return dmg
@@ -380,7 +379,7 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
 
             for i in range(4):
                 y = 4 + i
-                mname = "-"
+                mname = "━"
                 if moves[i]:
                     mname = moves[i].call().capitalize()[:20]
                 prefix = "> " if selected and row == i + 1 and not move_menu else "  "
@@ -469,31 +468,35 @@ def apply_stage(stat, stage):
 def draw_header(stdscr, player, enemy):
     left = f"{player.base.name} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
     right = f"{enemy.base.name} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"  
-    safe_addstr(stdscr, 0, 0, f"{left} ------ {right}",14)
+    safe_addstr(stdscr, 0, 0, f"┃          {left:^20} ------ {right:^20}          ┃",14)
     draw_divider(stdscr, 1)
 
 def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 13, 0, "+" + "-" * (w - 2) + "+",0)
-    safe_addstr(stdscr, 15, 0,"!insertlvlhpbarhere!" * 2 + "+" + "-" * 38 + "+",0)
-    safe_addstr(stdscr, 17, 0, "|" + " " * 38 + "|",0)
-    safe_addstr(stdscr, 18, 0, "|" + " " * 38 + "|",0)
-    safe_addstr(stdscr, 20, 40, "+" + "-" * 38 + "+",0)
-    safe_addstr(stdscr, 21, 0, "+" + "-" * (w - 2) + "+",0)
+    
+    safe_addstr(stdscr, 13, 0, "┏" + "━" * (w - 2) + "┓",0)
+    safe_addstr(stdscr, 15, 0,"├HP██████████ LVL99  HP██████████ LVL99-"  + "┬" + "━" * 38 + "┤",0)
+    safe_addstr(stdscr, 16, 0,"├" + "━" * 39 + "┤" + " " * 38 + "┃",0)
+    safe_addstr(stdscr, 17, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
+    safe_addstr(stdscr, 18, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
+    safe_addstr(stdscr, 19, 0,"├" + "━" * 39 + "┤" +  " " * 38 + "┃",0)
+    safe_addstr(stdscr, 20, 0,"┃",0)
+    safe_addstr(stdscr, 20, 40,"├" + "━" * 38 + "┤",0)
+    safe_addstr(stdscr, 21, 0, "┗" + "━" * (w - 2) + "┛",0)
     draw_top_banner(stdscr)
-    menu = ["Fight","Pokémon","Bag","Run","Dynamax","Tera","MegaEvo","Z-MOVE"]
+    menu = ["-----Fight------|","----Pokémon----|","------Bag-------|","------Run------|","Dynamax","Tera","MegaEvo","Z-MOVE"]
     row_start = 1
     col_spacing = 10
     for i in range(4):
         row = row_start + 1 + (i // 2)
-        col = (i % 2) * col_spacing
-        text = f"| [{menu[i]}]"
+        col = (i % 2) * (col_spacing+8)
+        text = f"[{menu[i]}]"
         if i == menu_pos:
             stdscr.attron(curses.color_pair(1))
-            safe_addstr(stdscr, row, col, text)
+            safe_addstr(stdscr, row, col+2, text)
             stdscr.attroff(curses.color_pair(1))
         else:
-            safe_addstr(stdscr, row, col, text)
+            safe_addstr(stdscr, row, col+2, text)
 
     draw_divider(stdscr, 4)
 
@@ -505,11 +508,11 @@ def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
         color = curses.color_pair(bottom_colors[i-4])
         if i == menu_pos:
             stdscr.attron(curses.color_pair(1))
-            safe_addstr(stdscr, row, col, text)
+            safe_addstr(stdscr, row, col+1, text)
             stdscr.attroff(curses.color_pair(1))
         else:
             stdscr.attron(color)
-            safe_addstr(stdscr, row, col, text)
+            safe_addstr(stdscr, row, col+1, text)
             stdscr.attroff(color)
 
     if show_moves and player:
@@ -523,7 +526,7 @@ def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
     if col is None: col = 40
     if row_start is None: row_start = 1
     for idx, move in enumerate(mon.moves):
-        text = f"|        [{f'{move.name} PP{move.pp}/{move.pp_max}':^20}]        |"
+        text = f"┃        [{f'{move.name} PP{move.pp}/{move.pp_max}':^20}]        ┃"
         if idx == highlight:
             stdscr.attron(curses.color_pair(1))
             safe_addstr(stdscr, row_start + idx, col, text)
@@ -589,7 +592,9 @@ def afightui(stdscr, player, enemy):
             choice = key_map[key]
             textbox(stdscr, f"{['Dynamax','Tera','Mega Evo','Z-MOVE'][choice-4]} does not work yet")
             continue
-
+        elif key==ord("z") and menu_pos==3:
+            textbox(stdscr,f"You ran away!")
+            return "run"
         elif key==ord("z") and menu_pos==0:
             player_move = move_menu(stdscr, player, enemy)
             if player_move is None:
