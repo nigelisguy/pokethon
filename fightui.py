@@ -474,7 +474,7 @@ def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
     for y in rows:
         safe_addstr(stdscr, y, 0, "┃" + " " * (w - 2) + "┃", 0)
     safe_addstr(stdscr, 13, 0, "┏" + "━" * (w - 2) + "┓",0)
-    safe_addstr(stdscr, 15, 0,("├HP██████████ LVL99  HP██████████ LVL99-" + "┬" + "━" * 38 + "┤"),0)
+    safe_addstr(stdscr, 15, 0,("├HP██████████ LVL99  HP██████████ LVL99-" + "┬" + "━" * 38 ),0)
     safe_addstr(stdscr, 16, 0,"├" + "━" * 39 + "┤" + " " * 38 + "┃",0)
     safe_addstr(stdscr, 17, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
     safe_addstr(stdscr, 18, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
