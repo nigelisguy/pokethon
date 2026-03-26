@@ -45,10 +45,10 @@ def apply_status(status_list, new_status, clears=None):
                 status_list.remove(s)
     status_list.append(new_status)
 
+
 def draw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
     safe_addstr(stdscr, 0, 0, "+" + "━"*(w-2) + "+", 0)
-    safe_addstr(stdscr, 1, 2, "mons png here", 0)
 
 def sdraw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
@@ -115,10 +115,6 @@ def battle_setup(stdscr):
     moves_list
     )
     curses.start_color()
-    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
-    curses.init_pair(2, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     player = BattleMon(p_mon, 50, p_moves)
     enemy = BattleMon(e_mon, 50, e_moves)
     return afightui(stdscr, player, enemy)
@@ -248,8 +244,9 @@ def textbox(stdscr, text):
 def redraw_battle(stdscr, player, enemy, menu_pos=0):
     stdscr.clear()
     draw_top_banner(stdscr)
-    draw_header(stdscr, player, enemy)  
     draw_main_menu(stdscr, menu_pos)
+    stats.substitude.draw(stdscr)
+    draw_header(stdscr, player, enemy)
     stdscr.refresh()
 
 PHYSICAL_TYPES = ["normal", "fight", "poison", "ground", "flying", "bug", "rock", "ghost", "steel"]
@@ -473,9 +470,11 @@ def draw_header(stdscr, player, enemy):
 
 def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
     h, w = stdscr.getmaxyx()
-    
+    rows = list(range(1, 13)) + [14] 
+    for y in rows:
+        safe_addstr(stdscr, y, 0, "┃" + " " * (w - 2) + "┃", 0)
     safe_addstr(stdscr, 13, 0, "┏" + "━" * (w - 2) + "┓",0)
-    safe_addstr(stdscr, 15, 0,"├HP██████████ LVL99  HP██████████ LVL99-"  + "┬" + "━" * 38 + "┤",0)
+    safe_addstr(stdscr, 15, 0,("├HP██████████ LVL99  HP██████████ LVL99-" + "┬" + "━" * 38 + "┤"),0)
     safe_addstr(stdscr, 16, 0,"├" + "━" * 39 + "┤" + " " * 38 + "┃",0)
     safe_addstr(stdscr, 17, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
     safe_addstr(stdscr, 18, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
@@ -484,7 +483,7 @@ def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
     safe_addstr(stdscr, 20, 40,"├" + "━" * 38 + "┤",0)
     safe_addstr(stdscr, 21, 0, "┗" + "━" * (w - 2) + "┛",0)
     draw_top_banner(stdscr)
-    menu = ["-----Fight------|","----Pokémon----|","------Bag-------|","------Run------|","Dynamax","Tera","MegaEvo","Z-MOVE"]
+    menu = ["-----Fight-----|","----Pokémon---|","------Bag-------|","------Run------|","Dynamax","Tera","Mega","ZMOVE"]
     row_start = 1
     col_spacing = 10
     for i in range(4):
@@ -540,9 +539,10 @@ def move_menu(stdscr, player, enemy):
     while True:
         stdscr.clear()
         draw_top_banner(stdscr)
-        draw_header(stdscr, player, enemy)
         draw_main_menu(stdscr, 0, player)  
+        stats.substitude.draw(stdscr)
         draw_moves(stdscr, player, highlight)
+        draw_header(stdscr, player, enemy)
         key = stdscr.getch()
 
         if key == curses.KEY_UP:
@@ -559,6 +559,7 @@ def move_menu(stdscr, player, enemy):
                 return move
 
 def afightui(stdscr, player, enemy):
+    import stats
     curses.curs_set(0)
     stdscr.keypad(True)
     key_map = {
@@ -572,8 +573,9 @@ def afightui(stdscr, player, enemy):
 
     while True:
         stdscr.clear()
-        draw_header(stdscr, player, enemy)
         draw_main_menu(stdscr, menu_pos, player)
+        stats.substitude.draw(stdscr)
+        draw_header(stdscr, player, enemy)
         stdscr.refresh()
 
         key = stdscr.getch()
@@ -590,7 +592,7 @@ def afightui(stdscr, player, enemy):
 
         elif key in key_map:
             choice = key_map[key]
-            textbox(stdscr, f"{['Dynamax','Tera','Mega Evo','Z-MOVE'][choice-4]} does not work yet")
+            textbox(stdscr, f"{['Dynamax','Tera','Mega Ev','Z-MOVE'][choice-4]} does not work yet")
             continue
         elif key==ord("z") and menu_pos==3:
             textbox(stdscr,f"You ran away!")

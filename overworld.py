@@ -71,19 +71,19 @@ def draw(stdscr, py, px):
         for x in range(WIDTH):
 
             char = "෴"
-            color = curses.color_pair(5)  
+            color = curses.color_pair(4)  
 
             if (y, x) in grass_tiles:
                 char = GRASS
-                color = curses.color_pair(8)
+                color = curses.color_pair(4)
 
             if (y, x) in npcs:
                 char = npcs[(y, x)][0]
-                color = curses.color_pair(7)
+                color = curses.color_pair(6)
 
             if y == py and x == px:
                 char = PLAYER
-                color = curses.color_pair(6)
+                color = curses.color_pair(7)
 
             stdscr.addstr(y, x * 2, char, color)
 
@@ -96,10 +96,6 @@ def overworld(stdscr):
     curses.start_color()
     curses.use_default_colors()
 
-    curses.init_pair(5, curses.COLOR_GREEN, -1)   # ground
-    curses.init_pair(6, curses.COLOR_WHITE, -1)  # player
-    curses.init_pair(7, curses.COLOR_CYAN, -1)    # NPC
-    curses.init_pair(8, curses.COLOR_GREEN, -1)   # grass (ew flip u)
 
     py, px = 0, 0
     while True:

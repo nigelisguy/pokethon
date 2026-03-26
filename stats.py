@@ -595,3 +595,48 @@ move385 = Moves("""wrap""","normal",20,15,85,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil"""
 move386 = Moves("""yawn""","normal",10,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""drowsy""",False,0,False,0,0,"""this move makes the target drowsy. after the next turn, it will fall asleep.""")
 move387 = Moves("""zap cannon""","electric",5,100,50,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""paralyse""",False,0,False,0,0,"""this move paralyzes the target.""")
 move388 = Moves("""placeholder""","water",40,0,-50,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"no",0,0,"""no""")
+
+import curses
+
+class RenderImage:
+    def __init__(self, art, color_map, default_color=1):
+        self.art = art.strip("\n").split("\n")
+        self.color_map = color_map
+        self.default_color = default_color
+
+    def draw(self, stdscr):
+        h, w = stdscr.getmaxyx()
+        start_y = 2
+
+        for y, line in enumerate(self.art):
+            start_x = w // 2 - len(line) // 2  
+
+            for x, ch in enumerate(line):
+                color = self.color_map.get(ch, self.default_color)
+                try:
+                    stdscr.addstr(start_y + y, start_x + x, ch, curses.color_pair(color))
+                except curses.error:
+                    pass
+
+
+substitude = RenderImage("""
+        --     @:   
+       --------==   
+     -:=:----^--=@  
+     ===▼-----..==  
+      +++++++++++=  
+   --=++++++-:--++  
+    ++@.    %=++++  
+    @@.      .++++  
+  ++=..   ...-:--=  
+  ++++.......=+++=  
+         @@  ++++@  
+""",
+{
+    "@": 2,
+    "+": 3,
+    "=": 4,
+    "-": 4,
+    ":": 1,
+    ".": 3,
+})
