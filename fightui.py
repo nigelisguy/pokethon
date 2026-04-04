@@ -1,6 +1,7 @@
 import curses
 import random
 import stats
+import overworld
 player_result = []
 enemy_result = []
 EASY_OFFSET=15
@@ -299,10 +300,10 @@ class BattleMon:
         self.level = level
         self.statuses = []
         self.max_hp = int(((2*base.hp*level)/100) + level + 10)
-        if hp < -1:
+        if hp <= -1:
             self.hp = int(((2*base.hp*level)/100) + level + 10)
         else:
-            self.hp = self.max_hp
+            self.hp = hp
         self.at = int(((2*base.at*level)/100) + 5)
         self.de = int(((2*base.de*level)/100) + 5)
         self.spa = int(((2*base.sp_at*level)/100) + 5)      
@@ -544,7 +545,7 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
     safe_addstr(stdscr, 20, 40,"├" + "━" * 38 + "┤",0)
     safe_addstr(stdscr, 21, 0, "┗" + "━" * (w - 2) + "┛",0)
     draw_top_banner(stdscr)
-    menu = ["-----Fight-----|","----Pokémon----|","------Bag------|","------Run------|","Dynamax","Tera","Mega Evo","ZMOVE"]
+    menu = ["-----Fight-----|","----Pokémon----|","------Bag------|","------Run------|","-","-","-","-"]
     row_start = 1
     col_spacing = 10
     bottom_colors = [7,2,4,6]
@@ -682,7 +683,7 @@ def afightui(stdscr, player, enemy):
 
                 target = enemy if user == player else player
                 move.pp -= 1
-                pplist[move.order] = move.pp - 1
+                pplist[move.order] = move.pp
 
                 redraw_battle(stdscr, player, enemy)
                 if random.randint(1, 100) > move.acc and move.acc != -1:
@@ -743,8 +744,7 @@ def afightui(stdscr, player, enemy):
 
                         player_result = player.result()
                         enemy_result = enemy.result()
-                        textbox(stdscr, [f"Player: {player_result}"])
-                        textbox(stdscr, [f"Enemy: {enemy_result}"])
+                        overworld.hpstorage = [player_result[2],enemy_result[2]]
                         return player_result,enemy_result
 
             status_effect_manager(stdscr, player)

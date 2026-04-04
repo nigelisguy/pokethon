@@ -1,40 +1,55 @@
 import curses
 import time
 import random
+import battlehandler
 import fightui
-
-WIDTH = 20
-HEIGHT = 10
-
-pokemon=(0,0,0,0,0,0)
-pokemonhp=(0,0,0,0,0,0)
-exp=(0,0,0,0,0,0)
-nextexp=(0,0,0,0,0,0)
 
 PLAYER = "@"
 GRASS = "#"
 NURSE = "♥"
 ENEMY = "☺"
-IMPT = "#"
 POKEMON = "█"
 NPC_ICON = "☺"
-
+hpstorage = [-1,-1]
 TEXT_SPEED = 0.02
+class MonOver:
+    def __init__(self,rotation, id, name, moves, level, exp, maxexp):
+        self.ord = rotation
+        self.id = id
+        self.name = name
+        self.moves = moves
+        self.level = level
+        self.exp = exp
+        self.maxexp = maxexp
 
+    
+    def menu(self):
+        return f"{self.name} -- [HP {'FULL' if hpstorage[0] == -1 else hpstorage[0]}] -- [ EXP {self.exp}/{self.maxexp} LVL {self.level}]"
+    
+    def expgain(self,stdscr, gainedexp):
+        self.exp += gainedexp
+        if self.exp >= self.maxexp:
+            show_dialogue(stdscr, ["Level Up!"])
+            self.exp=0
+            self.level+=1
 
-npcs = {
-    (2, 5): (NPC_ICON, ["hello!", "welcome to the test map!","I'll give you some tips for your journey","# are people you need to meet","☺ are your normal townsfolk","some still have somethings to offer, but are not mandatory","lastly, enemies are similar to townsfolk, ","but challenge you to a pokemon battle when in range","thats really the bulk of it","If you want to hear that again, talk to me again"]), #PLACEHOLDER TIPS
-    (2, 6): (NURSE, ["hello, would you like to heal your pokémon?","Ok, I'll heal them back.","Tadah! Your Pokémon are all healthy again!","We hope to see you soon!"]),
-    (2, 7): (ENEMY, ["we made eye contact, now lets fight!","Oh wait, the developer hasn't implemented it yet"]),
-    (2, 8): (POKEMON, ["Jigglypuff: Piu Piu Piu Piu!"]),
-    (2, 9): (IMPT, ["BILL: I'm Bill, and I'm Very Important","BILL: Trust Me","Obtained the Teachy TV!","BILL: I dont want that its useless","Upon recieving it, The Teachy TV breaks instantly, rendering it unusable.","BILL: See what did i say"]),
-    (6, 20): (NPC_ICON, ["psst you found me", "im the secret npc"]) 
-}
+Mon1 = MonOver(
+    rotation=1,
+    id=1,
+    name="Bulbasaur",
+    moves=[340,340,340,340],
+    level=5,
+    exp=67,
+    maxexp=69,
+)
 
-grass_tiles = set()
-def door(originalroom,x,y,destination):
-    print("hi")
-
+class Room:
+    def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None):
+        self.width = width
+        self.height = height
+        self.npcs = npcs or {}
+        self.grass_tiles = grass_tiles or set()
+        self.doors = doors or {}  
 
 def safe_addstr(stdscr, y, x, text):
     try:
@@ -42,12 +57,7 @@ def safe_addstr(stdscr, y, x, text):
         if y < h and x < w:
             stdscr.addstr(y, x, str(text)[:w - x])
     except curses.error:
-        pass 
-
-# touch graassss
-for y in range(HEIGHT - 5, HEIGHT):
-    for x in range(WIDTH - 5, WIDTH):
-        grass_tiles.add((y, x))
+        pass
 
 def type_text(stdscr, text):
     h, w = stdscr.getmaxyx()
@@ -59,43 +69,47 @@ def type_text(stdscr, text):
         stdscr.refresh()
         time.sleep(TEXT_SPEED)
 
+
 def show_dialogue(stdscr, lines):
     h, w = stdscr.getmaxyx()
 
     for line in lines:
-        safe_addstr(stdscr, h - 3, 0, "╔" + "═" * (w - 2) + "╗ ")
+        if callable(line):
+            line()
+            continue
+
+        safe_addstr(stdscr, h - 3, 0, "╔" + "═" * (w - 2) + "╗")
         safe_addstr(stdscr, h - 2, 0, "║" + " " * (w - 2) + "║")
         safe_addstr(stdscr, h - 1, 0, "╚" + "═" * (w - 2) + "╝")
-        stdscr.clrtoeol()
+
         type_text(stdscr, line)
-        stdscr.refresh()
 
         while True:
             key = stdscr.getch()
             if key == ord("z"):
                 break
 
-    stdscr.move(h - 2, 0)
-    stdscr.clrtoeol()
-    stdscr.move(h - 1, 0)
-    stdscr.clrtoeol()
-
-def draw(stdscr, py, px):
     stdscr.clear()
 
-    for y in range(HEIGHT):
-        for x in range(WIDTH):
+def draw(stdscr, room, py, px):
+    stdscr.clear()
+
+    for y in range(room.height):
+        for x in range(room.width):
 
             char = "෴"
-            color = curses.color_pair(4)  
+            color = curses.color_pair(4)
 
-            if (y, x) in grass_tiles:
+            if (y, x) in room.grass_tiles:
                 char = GRASS
-                color = curses.color_pair(4)
 
-            if (y, x) in npcs:
-                char = npcs[(y, x)][0]
+            if (y, x) in room.npcs:
+                char = room.npcs[(y, x)][0]
                 color = curses.color_pair(6)
+
+            if (y, x) in room.doors:
+                char = "D"
+                color = curses.color_pair(5)
 
             if y == py and x == px:
                 char = PLAYER
@@ -105,18 +119,55 @@ def draw(stdscr, py, px):
 
     stdscr.refresh()
 
+def heal_player():
+    hpstorage[0] = -1
+    fightui.pplist = [-1,-1,-1,-1]
+def create_rooms():
+    # ROOM 1
+    npcs1 = {
+        (2, 5): (NPC_ICON, ["hello!", "welcome to room 1"]),
+        (2, 6): (NURSE, ["healing...",lambda: heal_player(), "done!"]),
+    }
+
+    grass1 = set()
+    for y in range(5, 10):
+        for x in range(5, 10):
+            grass1.add((y, x))
+
+    room1 = Room(20, 10, npcs1, grass1)
+
+    npcs2 = {
+        (1, 1): (NPC_ICON, ["you made it to room 2"]),
+        (3, 3): (ENEMY, ["jdvb hcc hcdhcbhcbdh"]),
+    }
+
+    grass2 = {(6,6), (6,7), (7,6), (7,7)}
+
+    room2 = Room(20, 10, npcs2, grass2)
+
+    room1.doors[(0, 10)] = (room2, 9, 10)
+    room2.doors[(9, 10)] = (room1, 0, 10)
+
+    return room1
+def menu(stdscr): 
+    h, w = stdscr.getmaxyx()
+    safe_addstr(stdscr, 10, 0, "+" + "━"*78 + "+") 
+    safe_addstr(stdscr, 11, 0, Mon1.menu()) 
+    safe_addstr(stdscr, 21, 0, "+" + "━"*78 + "+") 
+    stdscr.refresh()
+
 def overworld(stdscr):
-    import battlehandler
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
-    curses.use_default_colors()
 
-
+    current_room = create_rooms()
     py, px = 0, 0
+
     while True:
-        draw(stdscr, py, px)
+        draw(stdscr, current_room, py, px)
         menu(stdscr)
+
         key = stdscr.getch()
 
         ny, nx = py, px
@@ -131,25 +182,23 @@ def overworld(stdscr):
             nx += 1
         elif key == ord("q"):
             break
-        if 0 <= ny < HEIGHT and 0 <= nx < WIDTH:
-            if (ny, nx) not in npcs:
+
+        if 0 <= ny < current_room.height and 0 <= nx < current_room.width:
+            if (ny, nx) not in current_room.npcs:
                 py, px = ny, nx
+
+        if (py, px) in current_room.doors:
+            current_room, py, px = current_room.doors[(py, px)]
 
         if key == ord("z"):
             for dy, dx in [(-1,0),(1,0),(0,-1),(0,1)]:
                 check = (py + dy, px + dx)
-                if check in npcs:
-                    show_dialogue(stdscr, npcs[check][1])
+                if check in current_room.npcs:
+                    show_dialogue(stdscr, current_room.npcs[check][1])
 
-        if (py, px) in grass_tiles:
+        if (py, px) in current_room.grass_tiles:
             if random.random() < 0.2:
-                show_dialogue(stdscr, ["A Wild Pokémon appeared!"])
+                show_dialogue(stdscr, ["A wild Pokémon appeared!"])
                 battlehandler.run_battle(stdscr,1)
-def menu(stdscr):
-    h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 10, 0, "+" + "━"*78 + "+")
-    safe_addstr(stdscr, 11, 0, "placeholder1 placeholder2            save,options,etcidk")
-    safe_addstr(stdscr, 12, 0, "placeholder3 placeholder4")
-    safe_addstr(stdscr, 13, 0, "placeholder5 placeholder6")
-    safe_addstr(stdscr, 21, 0, "+" + "━"*78 + "+")
-    stdscr.refresh()
+                Mon1.expgain(stdscr,9)
+
