@@ -1,7 +1,8 @@
 import curses
 import random
 import stats
-
+player_result = []
+enemy_result = []
 EASY_OFFSET=15
 
 STAT_DISPLAY = {
@@ -34,7 +35,7 @@ ENEMY_MAP = {
 def effect_heal_self(stdscr, user):
     heal = user.max_hp // 2
     user.hp = min(user.max_hp, user.hp + heal)
-    textbox(stdscr, f"{user.name()} regained health!")
+    textbox(stdscr, f"{user.base.name.capitalize()} regained health!")
 
 def apply_status(status_list, new_status, clears=None):
     if new_status in status_list:
@@ -123,24 +124,24 @@ def status_effect_manager(stdscr, mon):
     if "poison" in mon.statuses:
         dmg = mon.max_hp // 8
         mon.hp = max(0, mon.hp - dmg)
-        textbox(stdscr, f"{mon.name()} is hurt by poison!")
+        textbox(stdscr, f"{mon.base.name.capitalize()} is hurt by poison!")
     if "burn" in mon.statuses:
         dmg = mon.max_hp // 16
         mon.hp = max(0, mon.hp - dmg)
-        textbox(stdscr, f"{mon.name()} is hurt by its burn!")
+        textbox(stdscr, f"{mon.base.name.capitalize()} is hurt by its burn!")
     if "sleep" in mon.statuses:
-        textbox(stdscr, f"{mon.name()} is fast asleep!")
+        textbox(stdscr, f"{mon.base.name.capitalize()} is fast asleep!")
     if "bind" in mon.statuses:
         dmg = mon.max_hp // 16
         mon.hp = max(0, mon.hp - dmg)
-        textbox(stdscr, f"{mon.name()} is hurt by binding!")
+        textbox(stdscr, f"{mon.base.name.capitalize()} is hurt by binding!")
     if "confuse" in mon.statuses:
         if random.random() < 0.5:
             dmg = damage_calc(mon, mon, random.choice(mon.moves))
-            textbox(stdscr, f"{mon.name()} hurt itself in its confusion!")
+            textbox(stdscr, f"{mon.base.name.capitalize()} hurt itself in its confusion!")
             redraw_battle(stdscr, mon)
     if "flinch" in mon.statuses:
-        textbox(stdscr, f"{mon.name()} flinched!")
+        textbox(stdscr, f"{mon.base.name.capitalize()} flinched!")
         mon.statuses.remove("flinch")
 
 def select_from_list_scroll(stdscr, items, title, show_type=False):
@@ -154,7 +155,7 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
         visible_items = items[view:view+6]
 
         if view > 0:
-            safe_addstr(stdscr,1,5,"▲")
+            safe_addstr(stdscr,1,5,"▲",0)
 
         for i,item in enumerate(visible_items):
             idx = view + i
@@ -163,7 +164,7 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
             safe_addstr(stdscr,2+i,5,prefix+name,0)
 
         if view+6 < len(items):
-            safe_addstr(stdscr,8,5,"▼")
+            safe_addstr(stdscr,8,5,"▼",0)
 
         key = stdscr.getch()
 
@@ -244,24 +245,28 @@ def textbox(stdscr, text):
 def redraw_battle(stdscr, player, enemy, menu_pos=0):
     stdscr.clear()
     draw_top_banner(stdscr)
-    draw_main_menu(stdscr, menu_pos)
+    draw_main_menu(stdscr, menu_pos, player, enemy)
     stats.substitude.draw(stdscr)
     draw_header(stdscr, player, enemy)
     stdscr.refresh()
 
 PHYSICAL_TYPES = ["normal", "fight", "poison", "ground", "flying", "bug", "rock", "ghost", "steel"]
 SPECIAL_TYPES = ["fire", "water", "electric", "grass", "ice", "psychic", "dragon", "dark"]
-
+pplist = [-1,-1,-1,-1]
 class BattleMove:
-    def __init__(self, move):
+    def __init__(self, move, order):
         self.enefc = move.enefc
         self.name = move.name.capitalize()
         self.type = move.type.lower()
         self.pp_max = move.pp
-        self.pp = move.pp
+        if int(pplist[order]) == -1:
+            self.pp = move.pp
+        else:
+            self.pp = pplist[order]
         self.power = move.pow
         self.acc = move.acc
         self.desc = move.desc
+        self.order = order
 
         self.at = move.at
         self.de = move.de
@@ -289,18 +294,21 @@ class BattleMove:
             self.category = "status"
 
 class BattleMon:
-    def __init__(self, base, level, moves):
+    def __init__(self, base, level, moves, hp=-1):
         self.base = base
         self.level = level
         self.statuses = []
         self.max_hp = int(((2*base.hp*level)/100) + level + 10)
-        self.hp = self.max_hp
+        if hp < -1:
+            self.hp = int(((2*base.hp*level)/100) + level + 10)
+        else:
+            self.hp = self.max_hp
         self.at = int(((2*base.at*level)/100) + 5)
         self.de = int(((2*base.de*level)/100) + 5)
         self.spa = int(((2*base.sp_at*level)/100) + 5)      
         self.spd_def = int(((2*base.sp_de*level)/100) + 5)  
         self.spd = int(((2*base.spd*level)/100) + 5)      
-        self.moves = [BattleMove(m) for m in moves]
+        self.moves = [BattleMove(move_instance, order=i) for i, move_instance in enumerate(moves)]
 
         # Temporary battle stage stats
         self.stage_at = 0       
@@ -313,6 +321,8 @@ class BattleMon:
 
     def name(self):
         return self.base.name
+    def result(self):
+        return (self.base.name, self.level, self.hp, self.max_hp, self.statuses)
  
 def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
     if move.power <= 0:
@@ -361,18 +371,18 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
     while True:
         stdscr.clear()
 
-        safe_addstr(stdscr,0,5,"Player")
-        safe_addstr(stdscr,0,30,"CPU")
+        safe_addstr(stdscr,0,5,"Player",0)
+        safe_addstr(stdscr,0,30,"CPU",0)
 
         if move_menu:
             menu_x = 5
             menu_y = 0
-            safe_addstr(stdscr,menu_y,menu_x,"Select Move")
+            safe_addstr(stdscr,menu_y,menu_x,"Select Move",0)
 
         def draw_side(x, mon, moves, selected):
             name = "[Select Pokémon]" if not mon else mon.call().capitalize()
             prefix = "> " if selected and row == 0 and not move_menu else "  "
-            safe_addstr(stdscr, 2, x, prefix + name)
+            safe_addstr(stdscr, 2, x, prefix + name,0)
 
             for i in range(4):
                 y = 4 + i
@@ -380,13 +390,13 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
                 if moves[i]:
                     mname = moves[i].call().capitalize()[:20]
                 prefix = "> " if selected and row == i + 1 and not move_menu else "  "
-                safe_addstr(stdscr, y, x, prefix + mname)
+                safe_addstr(stdscr, y, x, prefix + mname,0)
 
         draw_side(5,player_mon,player_moves,col==0)
         draw_side(30,cpu_mon,cpu_moves,col==1)
 
         if move_menu:
-            safe_addstr(stdscr,1,55,"▲" if move_view>0 else " ")
+            safe_addstr(stdscr,1,55,"▲" if move_view>0 else " ",0)
 
             visible_moves = moves_list[move_view:move_view+6]
 
@@ -394,13 +404,13 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
                 idx = move_view + i
                 name = m.call().capitalize()
                 prefix="> " if idx==move_cursor else "  "
-                safe_addstr(stdscr,menu_y+2+i,menu_x,prefix+name)
+                safe_addstr(stdscr,menu_y+2+i,menu_x,prefix+name,0)
                 
             if move_view+6 < len(moves_list):
-                safe_addstr(stdscr,8,55,"▼")
+                safe_addstr(stdscr,8,55,"▼",0)
     
         ok_prefix="> " if row==5 and not move_menu else "  "
-        safe_addstr(stdscr,9,20,ok_prefix+"[ OK ]")
+        safe_addstr(stdscr,9,20,ok_prefix+"[ OK ]",0)
 
         key=stdscr.getch()
 
@@ -463,18 +473,69 @@ def apply_stage(stat, stage):
         return stat * 2 / (2 - stage)
 
 def draw_header(stdscr, player, enemy):
-    left = f"{player.base.name} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
-    right = f"{enemy.base.name} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"  
-    safe_addstr(stdscr, 0, 0, f"┃          {left:^20} ------ {right:^20}          ┃",14)
+    # capitalize first letter
+    p_name = player.base.name.capitalize()
+    e_name = enemy.base.name.capitalize()
+
+    # build strings with level inside
+    left = f"{p_name} LVL{player.level} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
+    right = f"{e_name} LVL{enemy.level} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"
+
+    # center both sides nicely
+    line = f"┃ {left:^35} ------ {right:^35} ┃"
+
+    safe_addstr(stdscr, 0, 0, line, 14)
     draw_divider(stdscr, 1)
 
-def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
+blocks = "▏▎▍▌▋▊▉█"
+def make_hp_bar(current, max_hp, length=10):
+    if max_hp <= 0:
+        return " " * length, 15
+
+    ratio = max(0, min(1, current / max_hp))
+
+    # color logic
+    if ratio > 0.5:
+        color = 13
+    elif ratio > 0.2:
+        color = 14
+    else:
+        color = 15
+
+    total = ratio * length
+    full = int(total)
+    remainder = total - full
+
+    bar = "█" * full
+    if full < length and remainder > 0:
+        index = int(remainder * (len(blocks) - 1))
+        bar += blocks[index]
+
+    if current > 0 and bar == "":
+        bar = "▏"
+
+    bar = bar.ljust(length)
+
+    return bar, color
+
+def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
     h, w = stdscr.getmaxyx()
     rows = list(range(1, 13)) + [14] 
     for y in rows:
         safe_addstr(stdscr, y, 0, "┃" + " " * (w - 2) + "┃", 0)
     safe_addstr(stdscr, 13, 0, "┏" + "━" * (w - 2) + "┓",0)
-    safe_addstr(stdscr, 15, 0,("├HP██████████ LVL99  HP██████████ LVL99-" + "┬" + "━" * 38 ),0)
+    line = f"├"+  " "*39 + "┬" + "━" * 38 + "┤"
+    safe_addstr(stdscr, 15, 0, line[:w].ljust(w), 0)
+    player_bar, p_color = make_hp_bar(player.hp, player.max_hp)
+    enemy_bar, e_color = make_hp_bar(enemy.hp, enemy.max_hp)
+    safe_addstr(stdscr, 15, 2, "HP",0)
+    stdscr.attron(curses.color_pair(p_color))
+    safe_addstr(stdscr, 15, 4, player_bar,0)
+    stdscr.attroff(curses.color_pair(p_color))
+    safe_addstr(stdscr, 15, 25, "HP",0)
+    stdscr.attron(curses.color_pair(e_color))
+    safe_addstr(stdscr, 15, 27, enemy_bar,0)
+    stdscr.attroff(curses.color_pair(e_color))
     safe_addstr(stdscr, 16, 0,"├" + "━" * 39 + "┤" + " " * 38 + "┃",0)
     safe_addstr(stdscr, 17, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
     safe_addstr(stdscr, 18, 0, "┃" + " " * 38 + " ┃" + " " * 38 + "┃",0)
@@ -483,23 +544,27 @@ def draw_main_menu(stdscr, menu_pos, player=None, show_moves=False):
     safe_addstr(stdscr, 20, 40,"├" + "━" * 38 + "┤",0)
     safe_addstr(stdscr, 21, 0, "┗" + "━" * (w - 2) + "┛",0)
     draw_top_banner(stdscr)
-    menu = ["-----Fight-----|","----Pokémon---|","------Bag-------|","------Run------|","Dynamax","Tera","Mega","ZMOVE"]
+    menu = ["-----Fight-----|","----Pokémon----|","------Bag------|","------Run------|","Dynamax","Tera","Mega Evo","ZMOVE"]
     row_start = 1
     col_spacing = 10
+    bottom_colors = [7,2,4,6]
     for i in range(4):
         row = row_start + 1 + (i // 2)
         col = (i % 2) * (col_spacing+8)
         text = f"[{menu[i]}]"
+        color = curses.color_pair(bottom_colors[i-4])
         if i == menu_pos:
-            stdscr.attron(curses.color_pair(1))
+            stdscr.attron(curses.color_pair(8))
             safe_addstr(stdscr, row, col+2, text)
-            stdscr.attroff(curses.color_pair(1))
+            stdscr.attroff(curses.color_pair(8))
         else:
+            stdscr.attron(color)
             safe_addstr(stdscr, row, col+2, text)
+            stdscr.attroff(color)
 
     draw_divider(stdscr, 4)
 
-    bottom_colors = [2,3,4,0]
+    bottom_colors = [5,3,2,2]
     row = row_start + 4
     for i in range(4,8):
         col = (i-4)*col_spacing
@@ -539,7 +604,7 @@ def move_menu(stdscr, player, enemy):
     while True:
         stdscr.clear()
         draw_top_banner(stdscr)
-        draw_main_menu(stdscr, 0, player)  
+        draw_main_menu(stdscr, 0, player, enemy)  
         stats.substitude.draw(stdscr)
         draw_moves(stdscr, player, highlight)
         draw_header(stdscr, player, enemy)
@@ -573,7 +638,7 @@ def afightui(stdscr, player, enemy):
 
     while True:
         stdscr.clear()
-        draw_main_menu(stdscr, menu_pos, player)
+        draw_main_menu(stdscr, menu_pos, player, enemy)
         stats.substitude.draw(stdscr)
         draw_header(stdscr, player, enemy)
         stdscr.refresh()
@@ -617,13 +682,14 @@ def afightui(stdscr, player, enemy):
 
                 target = enemy if user == player else player
                 move.pp -= 1
+                pplist[move.order] = move.pp - 1
 
                 redraw_battle(stdscr, player, enemy)
                 if random.randint(1, 100) > move.acc and move.acc != -1:
-                    textbox(stdscr, f"{user.name()} used {move.name}!")
-                    textbox(stdscr, f"{user.name()} missed!")
+                    textbox(stdscr, f"{user.base.name.capitalize()} used {move.name}!")
+                    textbox(stdscr, f"{user.base.name.capitalize()} missed!")
                 else:
-                    textbox(stdscr, f"{user.name()} used {move.name}!")
+                    textbox(stdscr, f"{user.base.name.capitalize()} used {move.name}!")
                     if move.enefc in EFFECT_HANDLERS:
                         EFFECT_HANDLERS[move.enefc](stdscr, user, target)
                         
@@ -637,7 +703,7 @@ def afightui(stdscr, player, enemy):
                             )
                             textbox(
                                 stdscr,
-                                f"{user.name()}'s {STAT_DISPLAY[stat]} rose!"
+                                f"{user.base.name.capitalize()}'s {STAT_DISPLAY[stat]} rose!"
                             )
 
                         en_change = getattr(move, ENEMY_MAP[stat], 0)
@@ -649,7 +715,7 @@ def afightui(stdscr, player, enemy):
                             )
                             textbox(
                                 stdscr,
-                                f"{target.name()}'s {STAT_DISPLAY[stat]} fell!"
+                                f"{target.base.name.capitalize()}'s {STAT_DISPLAY[stat]} fell!"
                             )
 
                     dmg = damage_calc(user, target, move, stdscr, player=player, enemy=enemy)
@@ -663,8 +729,23 @@ def afightui(stdscr, player, enemy):
                             textbox(stdscr, "It's not very effective...")
                     if target.hp <= 0:
                         redraw_battle(stdscr, player, enemy)
-                        textbox(stdscr, f"{target.name()} fainted!")
-                        return "win" if target == enemy else "lose"
+                        textbox(stdscr, f"{target.base.name.capitalize()} fainted!")
+                        if target == enemy:
+                            exp = 9
+                            textbox(stdscr, f"gained {exp} exp!")
+                            pokecoin=0
+                            if pokecoin > 0:
+                                textbox(stdscr, f"earned {pokecoin}P$!")
+                        else:
+                            #uh
+                            exp = 0
+                            pokecoin = 0
+
+                        player_result = player.result()
+                        enemy_result = enemy.result()
+                        textbox(stdscr, [f"Player: {player_result}"])
+                        textbox(stdscr, [f"Enemy: {enemy_result}"])
+                        return player_result,enemy_result
 
             status_effect_manager(stdscr, player)
             status_effect_manager(stdscr, enemy)

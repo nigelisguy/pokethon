@@ -618,7 +618,6 @@ class RenderImage:
                 except curses.error:
                     pass
 
-
 substitude = RenderImage("""
         --     @:   
        --------==   

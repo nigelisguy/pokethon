@@ -17,6 +17,15 @@ curses.init_pair(4, curses.COLOR_GREEN, -1)
 curses.init_pair(5, curses.COLOR_MAGENTA, -1)
 curses.init_pair(6, curses.COLOR_BLUE, -1)
 curses.init_pair(7, curses.COLOR_RED, -1)
+curses.init_pair(8, curses.COLOR_BLACK, curses.COLOR_WHITE)
+curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_RED)
+curses.init_pair(10, curses.COLOR_BLACK, curses.COLOR_YELLOW)
+curses.init_pair(11, curses.COLOR_BLACK, curses.COLOR_GREEN)
+curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_BLUE)
+curses.init_pair(13, curses.COLOR_GREEN, curses.COLOR_WHITE)
+curses.init_pair(14, curses.COLOR_YELLOW, curses.COLOR_WHITE)
+curses.init_pair(15, curses.COLOR_RED, curses.COLOR_WHITE)
+
 
 #variables
 textspeed = 0.01
