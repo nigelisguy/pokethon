@@ -57,7 +57,8 @@ def mainm(stdscr):
         "Debug Battle",
         "Overworld",
         "Pokedex",
-        "Settings"
+        "Settings",
+        "Mystery Gift"
     ]
 
     y = 1
