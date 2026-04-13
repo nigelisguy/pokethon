@@ -110,7 +110,7 @@ EFFECT_HANDLERS = {
 
 def battle_setup(stdscr):
     pool = mons.copy()
-    (p_mon, p_moves), (e_mon, e_moves) = select_teams_and_moves(
+    (p_mon, p_moves), (e_mon, e_moves), mode = select_teams_and_moves(
     stdscr,
     pool,
     pool.copy(),
@@ -119,7 +119,7 @@ def battle_setup(stdscr):
     curses.start_color()
     player = BattleMon(p_mon, 50, p_moves)
     enemy = BattleMon(e_mon, 50, e_moves)
-    return afightui(stdscr, player, enemy)
+    return afightui(stdscr, player, enemy, mode)
 
 def status_effect_manager(stdscr, mon):
     if "poison" in mon.statuses:
@@ -138,7 +138,7 @@ def status_effect_manager(stdscr, mon):
         textbox(stdscr, f"{mon.base.name.capitalize()} is hurt by binding!")
     if "confuse" in mon.statuses:
         if random.random() < 0.5:
-            dmg = damage_calc(mon, mon, random.choice(mon.moves))
+            dmg = damage_calc(mon, mon, random.choice(mon.moves), stdscr)
             textbox(stdscr, f"{mon.base.name.capitalize()} hurt itself in its confusion!")
             redraw_battle(stdscr, mon)
     if "flinch" in mon.statuses:
@@ -356,7 +356,29 @@ def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
 
     return dmg
 
+def choose_mode(stdscr):
+    options = ["Player vs Player [NEW!!!!!!!!!]", "Player vs Clanker","Multiplayer, if i ever learn to use api(s)..."]
+    cursor = 0
+
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 5, "Choose Mode", 0)
+
+        for i, opt in enumerate(options):
+            prefix = "> " if i == cursor else "  "
+            safe_addstr(stdscr, 4 + i, 5, prefix + opt, 0)
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and cursor > 0:
+            cursor -= 1
+        elif key == curses.KEY_DOWN and cursor < len(options) - 1:
+            cursor += 1
+        elif key == ord("z"):
+            return cursor  
+        
 def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
+    mode = choose_mode(stdscr)
     player_mon=None
     cpu_mon=None
     player_moves=[None]*4
@@ -463,7 +485,7 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
 
             elif row==5:
                 if player_mon and cpu_mon:
-                    return (player_mon,player_moves),(cpu_mon,cpu_moves)
+                    return (player_mon,player_moves),(cpu_mon,cpu_moves), mode
                 else:
                     textbox(stdscr, "Fill In Everything First Please")
     
@@ -624,7 +646,7 @@ def move_menu(stdscr, player, enemy):
             if move.pp > 0:
                 return move
 
-def afightui(stdscr, player, enemy):
+def afightui(stdscr, player, enemy, mode):
     import stats
     curses.curs_set(0)
     stdscr.keypad(True)
@@ -667,10 +689,14 @@ def afightui(stdscr, player, enemy):
             player_move = move_menu(stdscr, player, enemy)
             if player_move is None:
                 continue
-
-            usable = [m for m in enemy.moves if m.pp>0]
-            enemy_move = random.choice(usable) if usable else None
-
+            if mode == 0:  
+                textbox(stdscr, "Player 2, choose your move!")
+                enemy_move = move_menu(stdscr, enemy, player)
+                if enemy_move is None:
+                    continue
+            else:  
+                usable = [m for m in enemy.moves if m.pp > 0]
+                enemy_move = random.choice(usable) if usable else None
             turn = sorted(
                 [(player, player_move), (enemy, enemy_move)],
                 key=lambda x: x[0].spd,

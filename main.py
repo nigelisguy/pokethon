@@ -53,12 +53,13 @@ def mainm(stdscr):
     curses.init_pair(1, curses.COLOR_BLUE, -1)
 
     menu = [
-        "--Pokethon--",
+        "-->POKETHON<--",
         "Debug Battle",
         "Overworld",
-        "Pokedex",
+        "Placeholder Pokedex",
         "Settings",
-        "Mystery Gift"
+        "Mystery Gift [NOT AVAILABLE]",
+        "Start Game [NOT AVAILABLE]"
     ]
 
     y = 1
