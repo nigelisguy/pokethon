@@ -255,9 +255,23 @@ def mon_menu(stdscr):
 
         stdscr.refresh()
 
+def main(stdscr):
+    height, width = stdscr.getmaxyx()
+
+    if height != 24 or width != 80:
+        stdscr.clear()
+        stdscr.addstr(0, 0, "For this game, it requires your terminal to be 80x24!")
+        stdscr.refresh()
+        stdscr.getch()
+        return
+
+    stdscr.addstr(0, 0, "Size is correct, Loading...")
+    mainm(stdscr)
+
 while True:
-    curses.wrapper(mainm)
+    curses.wrapper(main)
 
 #test
 print("hi")
 print(stats.mon1.call())
+import curses

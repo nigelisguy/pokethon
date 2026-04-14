@@ -300,7 +300,7 @@ class BattleMon:
         self.level = level
         self.statuses = []
         self.max_hp = int(((2*base.hp*level)/100) + level + 10)
-        if hp <= -1:
+        if hp is None or hp <= -1:
             self.hp = int(((2*base.hp*level)/100) + level + 10)
         else:
             self.hp = hp
@@ -757,21 +757,13 @@ def afightui(stdscr, player, enemy, mode):
                     if target.hp <= 0:
                         redraw_battle(stdscr, player, enemy)
                         textbox(stdscr, f"{target.base.name.capitalize()} fainted!")
-                        if target == enemy:
-                            exp = 9
-                            textbox(stdscr, f"gained {exp} exp!")
-                            pokecoin=0
-                            if pokecoin > 0:
-                                textbox(stdscr, f"earned {pokecoin}P$!")
-                        else:
-                            #uh
-                            exp = 0
-                            pokecoin = 0
-
                         player_result = player.result()
                         enemy_result = enemy.result()
                         overworld.hpstorage = [player_result[2],enemy_result[2]]
-                        return player_result,enemy_result
+                        if target == enemy:
+                            return "win"
+                        else:
+                            return "lose"
 
             status_effect_manager(stdscr, player)
             status_effect_manager(stdscr, enemy)

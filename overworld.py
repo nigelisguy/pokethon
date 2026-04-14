@@ -201,6 +201,7 @@ def overworld(stdscr):
         if (py, px) in current_room.grass_tiles:
             if random.random() < 0.2:
                 show_dialogue(stdscr, ["A wild Pokémon appeared!"])
-                battlehandler.run_battle(stdscr,1)
-                Mon1.expgain(stdscr,9)
+                result = battlehandler.make_enemy(16, 5, 6, 7, 8, lvl=2)
+                if result == "win":
+                    overworld.Mon1.expgain(stdscr, 9)
 
