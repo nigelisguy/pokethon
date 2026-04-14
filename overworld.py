@@ -4,6 +4,70 @@ import random
 import battlehandler
 import fightui
 import datetime
+import json
+import os
+
+SAVE_FILE = "save.json"
+
+DEFAULT_SAVE = {
+    "settings": {
+        "textspeed": 0.01
+    },
+    "player": {
+        "name": "Player",
+        "money": 1000
+    },
+    "pokedex": {
+        "seen": [],
+        "caught": []
+    }
+}
+
+
+def load_save():
+    if not os.path.exists(SAVE_FILE):
+        return DEFAULT_SAVE.copy()
+
+    try:
+        with open(SAVE_FILE, "r") as f:
+            data = json.load(f)
+
+        return merge_defaults(data, DEFAULT_SAVE)
+
+    except (json.JSONDecodeError, IOError):
+        return DEFAULT_SAVE.copy()
+
+
+def save_game(data):
+    temp_file = SAVE_FILE + ".tmp"
+
+    with open(temp_file, "w") as f:
+        json.dump(data, f, indent=4)
+
+    os.replace(temp_file, SAVE_FILE)
+
+
+def merge_defaults(data, default):
+    """fills missing keys safely"""
+    for key, value in default.items():
+        if key not in data:
+            data[key] = value
+        elif isinstance(value, dict):
+            merge_defaults(data[key], value)
+    return data
+
+#placeholder stuff
+name = "Red"
+tmlist= ("")
+pp= [ 
+    {1,1,1,1}
+]
+inventory = [
+    {"potion": 1},
+    {"fullheal": 1},
+    {"pokeball": 5},
+    {"XATTACK idk": 67}
+]
 
 PLAYER = "@"
 GRASS = "#"
@@ -23,6 +87,16 @@ class MonOver:
         self.exp = exp
         self.maxexp = maxexp
 
+    def to_dict(self):
+        return {
+            "rotation": self.ord,
+            "id": self.id,
+            "name": self.name,
+            "moves": self.moves,
+            "level": self.level,
+            "exp": self.exp,
+            "maxexp": self.maxexp
+        }
     
     def menu(self):
         return f"{self.name} -- [HP {'FULL' if hpstorage[0] == -1 else hpstorage[0]}] -- [ EXP {self.exp}/{self.maxexp} LVL {self.level}]"
@@ -70,6 +144,17 @@ def type_text(stdscr, text):
         stdscr.refresh()
         time.sleep(TEXT_SPEED)
 
+def build_save():
+    return {
+        "player": {
+            "name": name
+        },
+        "pokemon": [
+            Mon1.to_dict()
+        ],
+        "inventory": inventory,
+        "pp": fightui.pplist
+    }
 
 def show_dialogue(stdscr, lines):
     h, w = stdscr.getmaxyx()
@@ -197,11 +282,85 @@ def overworld(stdscr):
                 check = (py + dy, px + dx)
                 if check in current_room.npcs:
                     show_dialogue(stdscr, current_room.npcs[check][1])
-
+        if key == ord("c"):
+            save_menu(stdscr)
         if (py, px) in current_room.grass_tiles:
             if random.random() < 0.2:
                 show_dialogue(stdscr, ["A wild Pokémon appeared!"])
-                result = battlehandler.make_enemy(16, 5, 6, 7, 8, lvl=2)
+                result = battlehandler.run_battle(stdscr, 1)
                 if result == "win":
-                    overworld.Mon1.expgain(stdscr, 9)
+                    Mon1.expgain(stdscr, 9)
 
+def save_menu(stdscr):#options menu but only save for now 
+    curses.curs_set(0)
+
+    options = ["Save Game", "Among Us", "Options", "Pokédex", "Cancel", "M. Gift"]
+    y = 0
+
+    while True:
+        h, w = stdscr.getmaxyx()
+        start_x = w - 25  # right side
+
+        # draw box
+        for i in range(6):
+            stdscr.addstr(i, start_x, " " * 24)
+
+        stdscr.addstr(0, start_x, " OPTIONS MENU ")
+
+        for i, opt in enumerate(options):
+            if i == y:
+                stdscr.addstr(i + 2, start_x, f"> {opt}")
+            else:
+                stdscr.addstr(i + 2, start_x, f"  {opt}")
+
+        stdscr.refresh()
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and y > 0:
+            y -= 1
+        elif key == curses.KEY_DOWN and y < len(options) - 1:
+            y += 1
+        elif key == ord("z"):
+            if y == 0:
+                data = build_save()
+                save_game(data)
+                show_dialogue(stdscr, ["Game Saved!"])
+                break
+            else:
+                break
+        elif key == ord("x"):
+            break
+
+def load_pokemon(data):
+    mons = []
+
+    for mon_data in data.get("pokemon", []):
+        mon = MonOver(
+            rotation=mon_data["rotation"],
+            id=mon_data["id"],
+            name=mon_data["name"],
+            moves=mon_data["moves"],
+            level=mon_data["level"],
+            exp=mon_data["exp"],
+            maxexp=mon_data["maxexp"]
+        )
+        mons.append(mon)
+
+    return mons
+
+save_data = load_save()
+
+# load player
+name = save_data["player"]["name"]
+
+# load pokemon
+loaded_mons = load_pokemon(save_data)
+
+if loaded_mons:
+    Mon1 = loaded_mons[0]  
+
+# load inventory
+inventory = save_data.get("inventory", [])
+
+# load pp
+fightui.pplist = save_data.get("pp", [-1, -1, -1, -1])

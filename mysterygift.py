@@ -1,5 +1,6 @@
 import curses
 import datetime
+from datetime import date
 
 def gifted(stdscr):
     stdscr.clear()
@@ -21,7 +22,9 @@ def gifted(stdscr):
         else:
             text += str(key)
             stdscr.addstr(str(key))
-
-    stdscr.addstr(2, 0, f"ERROR: {text} IS A INVALID CODE!")
+    if date.today().weekday() == 1 and text == "67676767":
+        stdscr.addstr(2, 0, f"Redeemed Nothing! Check your game/savefile!")   
+    else:
+        stdscr.addstr(2, 0, f"ERROR: {text} IS INVALID OR THE DATE FOR REDEMPTION HAS EXPIRED!")    
     stdscr.refresh()
     stdscr.getch()

@@ -4,7 +4,6 @@ import time
 import fightui
 import overworld
 import mysterygift
-print(fightui.__file__)
 
 #colors
 curses.initscr()
@@ -29,7 +28,7 @@ curses.init_pair(15, curses.COLOR_RED, curses.COLOR_WHITE)
 
 #variables
 textspeed = 0.01
-VISIBLE = 4
+VISIBLE = 10
 mons = [
     getattr(stats, f"mon{i}")
     for i in range(1, 152)
@@ -56,7 +55,7 @@ def mainm(stdscr):
         "-->POKETHON<--",
         "Debug Battle",
         "Overworld",
-        "Placeholder Pokedex",
+        "Pokedex [PLACEHOLDER]",
         "Settings",
         "Mystery Gift",
         "Start Game [NOT AVAILABLE]"
@@ -139,11 +138,8 @@ def setting(stdscr):
                 break
             else:
                 printdelay("wip")
-
-def draw_stats(stdscr, mon, dexno):
-    curses.start_color()
-    curses.use_default_colors()
-
+                
+def draw_stats(stdscr, mon, start_x):
     type_colors = {
         "Fire": curses.COLOR_RED,
         "Ground": curses.COLOR_YELLOW,
@@ -165,45 +161,33 @@ def draw_stats(stdscr, mon, dexno):
     }
 
     color_pairs = {}
-    pair_id = 1
+    pair_id = 20  # avoid conflict with other pairs
     for t, color in type_colors.items():
         curses.init_pair(pair_id, color, -1)
         color_pairs[t] = curses.color_pair(pair_id)
         pair_id += 1
 
-    stdscr.clear()
-    h, w = stdscr.getmaxyx()
-
+    # Title
     title = mon.call().capitalize()
-    stdscr.addstr(0, 0, title)
+    stdscr.addstr(0, start_x, title)
 
-    divider = "━" * 70 
-    stdscr.addstr(1, 0, divider)
-
-    col1, col2, col3, col4 = 0, 14, 30, 50
+    divider = "━" * 30
+    stdscr.addstr(1, start_x, divider)
 
     type1 = mon.type.capitalize()
     type2 = (mon.type2 or "").capitalize()
-    stdscr.addstr(2, col1, f"{type1:<12}", color_pairs.get(type1, curses.A_NORMAL))
-    stdscr.addstr(2, col2, f"| HP: {mon.hp:<5}")
-    stdscr.addstr(2, col3, f"| Attack: {mon.at:<5}")
-    stdscr.addstr(2, col4, f"| Sp. Atk: {mon.sp_at:<5}")
 
-    stdscr.addstr(3, col1, f"{type2:<12}", color_pairs.get(type2, curses.A_NORMAL))
-    stdscr.addstr(3, col2, f"| Speed: {mon.spd:<5}")
-    stdscr.addstr(3, col3, f"| Defense: {mon.de:<5}")
-    stdscr.addstr(3, col4, f"| Sp. Def: {mon.sp_de:<5}")
+    stdscr.addstr(2, start_x, f"{type1}", color_pairs.get(type1, curses.A_NORMAL))
+    stdscr.addstr(2, start_x + 12, f"{type2}", color_pairs.get(type2, curses.A_NORMAL))
 
-    stdscr.addstr(4, 0, divider)
+    stdscr.addstr(4, start_x, f"HP: {mon.hp}")
+    stdscr.addstr(5, start_x, f"ATK: {mon.at}")
+    stdscr.addstr(6, start_x, f"SP ATK: {mon.sp_at}")
+    stdscr.addstr(7, start_x, f"DEF: {mon.de}")
+    stdscr.addstr(8, start_x, f"SP DEF: {mon.sp_de}")
+    stdscr.addstr(9, start_x, f"SPD: {mon.spd}")
 
-    stdscr.addstr(5, 0, "#placeholder")
-
-    stdscr.addstr(h - 1, 0, "Press X to go back")
-    stdscr.refresh()
-
-    while True:
-        if stdscr.getch() == ord("x"):
-            break
+    stdscr.addstr(3, start_x, divider)
 
 def mon_menu(stdscr):
     curses.curs_set(0)
@@ -215,6 +199,7 @@ def mon_menu(stdscr):
     while True:
         stdscr.clear()
 
+        # LEFT SIDE (list)
         for i in range(VISIBLE):
             idx = scrollno + i
             if idx >= TOTAL:
@@ -222,7 +207,6 @@ def mon_menu(stdscr):
 
             dexno = idx + 1
             name = mons[idx].call().capitalize()
-
             line = f"{dexno:03d} {name}"
 
             if i == cursor:
@@ -230,7 +214,12 @@ def mon_menu(stdscr):
             else:
                 stdscr.addstr(i, 0, f"  {line}")
 
-        stdscr.addstr(VISIBLE + 1, 0, "Press Z to see Stats!")
+        # RIGHT SIDE (stats)
+        selected_idx = scrollno + cursor
+        if selected_idx < TOTAL:
+            draw_stats(stdscr, mons[selected_idx], 30)  # 30 = right side offset
+
+        stdscr.addstr(VISIBLE + 1, 0, "X = back")
 
         key = stdscr.getch()
 
@@ -246,21 +235,19 @@ def mon_menu(stdscr):
             elif scrollno + VISIBLE < TOTAL:
                 scrollno += 1
 
-        elif key == ord("z"):
-            idx = scrollno + cursor
-            draw_stats(stdscr, mons[idx], idx + 1)
-
         elif key == ord("x"):
             break
 
         stdscr.refresh()
-
+    
 def main(stdscr):
     height, width = stdscr.getmaxyx()
 
     if height != 24 or width != 80:
         stdscr.clear()
         stdscr.addstr(0, 0, "For this game, it requires your terminal to be 80x24!")
+        stdscr.addstr(1, 0, f"Current Size: {height} x {width}")
+        stdscr.addstr(3, 0, "Sorry For The Inconvenience!")
         stdscr.refresh()
         stdscr.getch()
         return

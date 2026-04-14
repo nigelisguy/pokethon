@@ -610,16 +610,63 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
             safe_addstr(stdscr, move_row_start + idx, move_col, text)
             
 def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
-    if col is None: col = 40
+    if col is None: col = 42
     if row_start is None: row_start = 1
     for idx, move in enumerate(mon.moves):
-        text = f"┃        [{f'{move.name} PP{move.pp}/{move.pp_max}':^20}]        ┃"
+        text = f"[{f'{move.name} PP{move.pp}/{move.pp_max}':^20}]"
         if idx == highlight:
             stdscr.attron(curses.color_pair(1))
             safe_addstr(stdscr, row_start + idx, col, text)
             stdscr.attroff(curses.color_pair(1))
         else:
             safe_addstr(stdscr, row_start + idx, col, text)
+
+def draw_bag(stdscr, mon, highlight=-1):
+    row_start = 1
+
+    for i, item in enumerate(overworld.inventory):
+        for name, quantity in item.items():
+            text = f"[ {name.upper()} x{quantity} ]"
+
+            if i == highlight:
+                stdscr.attron(curses.color_pair(1))
+                safe_addstr(stdscr, row_start + i, 42, text)
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                safe_addstr(stdscr, row_start + i, 42, text)
+            
+def bag_menu(stdscr, player, enemy):
+    highlight = 0
+
+    items = overworld.inventory
+
+    while True:
+        stdscr.clear()
+        draw_top_banner(stdscr)
+        draw_main_menu(stdscr, 0, player, enemy)
+        stats.substitude.draw(stdscr)
+        draw_bag(stdscr, player, highlight)
+        draw_header(stdscr, player, enemy)
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP:
+            if highlight > 0:
+                highlight -= 1
+
+        elif key == curses.KEY_DOWN:
+            if highlight < len(items) - 1:
+                highlight += 1
+
+        elif key == ord("x"):
+            return None
+
+        elif key == ord("z"):
+            item_dict = items[highlight]
+            item_name = list(item_dict.keys())[0]
+            item_value = item_dict[item_name]
+
+            return item_name, item_value
 
 def move_menu(stdscr, player, enemy):
     highlight = 0
@@ -660,6 +707,7 @@ def afightui(stdscr, player, enemy, mode):
     menu_pos = 0  
 
     while True:
+        turn=None
         stdscr.clear()
         draw_main_menu(stdscr, menu_pos, player, enemy)
         stats.substitude.draw(stdscr)
@@ -680,11 +728,29 @@ def afightui(stdscr, player, enemy, mode):
 
         elif key in key_map:
             choice = key_map[key]
-            textbox(stdscr, f"{['Dynamax','Tera','Mega Ev','Z-MOVE'][choice-4]} does not work yet")
+            #textbox(stdscr, f"{['bro'][choice-4]} does not work yet")
             continue
         elif key==ord("z") and menu_pos==3:
             textbox(stdscr,f"You ran away!")
             return "run"
+        elif key == ord("z") and menu_pos == 2:
+            item = bag_menu(stdscr, player, enemy)
+
+            if item is None:
+                continue
+
+            usable = [m for m in enemy.moves if m.pp > 0]
+            enemy_move = random.choice(usable) if usable else None
+
+            turn = sorted(
+                [
+                    (player, "item", item),
+                    (enemy, "move", enemy_move)
+                ],
+                key=lambda x: x[0].spd,
+                reverse=True
+            )
+
         elif key==ord("z") and menu_pos==0:
             player_move = move_menu(stdscr, player, enemy)
             if player_move is None:
@@ -696,64 +762,75 @@ def afightui(stdscr, player, enemy, mode):
                     continue
             else:  
                 usable = [m for m in enemy.moves if m.pp > 0]
-                enemy_move = random.choice(usable) if usable else None
+                enemy_move = random.choice(usable) if usable else None #sinnoh ahh ai
             turn = sorted(
-                [(player, player_move), (enemy, enemy_move)],
+                [(player, "move", player_move), (enemy, "move",enemy_move)],
                 key=lambda x: x[0].spd,
                 reverse=True
             )
+        if turn is None:
+            continue
+        for user, action_type, action in turn:
 
-            for user, move in turn:
+            target = enemy if user == player else player
+
+            if action_type == "move":
+                move = action
+
                 if move is None or move.pp <= 0:
                     continue
 
-                target = enemy if user == player else player
                 move.pp -= 1
                 pplist[move.order] = move.pp
 
                 redraw_battle(stdscr, player, enemy)
+
                 if random.randint(1, 100) > move.acc and move.acc != -1:
                     textbox(stdscr, f"{user.base.name.capitalize()} used {move.name}!")
-                    textbox(stdscr, f"{user.base.name.capitalize()} missed!")
-                else:
-                    textbox(stdscr, f"{user.base.name.capitalize()} used {move.name}!")
-                    if move.enefc in EFFECT_HANDLERS:
-                        EFFECT_HANDLERS[move.enefc](stdscr, user, target)
-                        
-                    for stat, stage_attr in STAT_MAP.items():
-                        change = getattr(move, stat, 0)
-                        if change != 0:
-                            setattr(
-                                user,
-                                stage_attr,
-                                min(6, max(-6, getattr(user, stage_attr) + change))
-                            )
-                            textbox(
-                                stdscr,
-                                f"{user.base.name.capitalize()}'s {STAT_DISPLAY[stat]} rose!"
-                            )
+                    textbox(stdscr, "But it missed!")
+                    continue
 
-                        en_change = getattr(move, ENEMY_MAP[stat], 0)
-                        if en_change != 0:
-                            setattr(
-                                target,
-                                stage_attr,
-                                min(6, max(-6, getattr(target, stage_attr) + en_change))
-                            )
-                            textbox(
-                                stdscr,
-                                f"{target.base.name.capitalize()}'s {STAT_DISPLAY[stat]} fell!"
-                            )
+                textbox(stdscr, f"{user.base.name.capitalize()} used {move.name}!")
 
-                    dmg = damage_calc(user, target, move, stdscr, player=player, enemy=enemy)
+                if move.enefc in EFFECT_HANDLERS:
+                    EFFECT_HANDLERS[move.enefc](stdscr, user, target)
 
-                    redraw_battle(stdscr, player, enemy)
-                    if dmg > 0:
-                        mult = type_multiplier(move.type, target)
-                        if mult > 1:
-                            textbox(stdscr, "It's super effective!")
-                        elif mult < 1:
-                            textbox(stdscr, "It's not very effective...")
+                for stat, stage_attr in STAT_MAP.items():
+                    change = getattr(move, stat, 0)
+
+                    if change != 0:
+                        setattr(
+                            user,
+                            stage_attr,
+                            min(6, max(-6, getattr(user, stage_attr) + change))
+                        )
+                        textbox(
+                            stdscr,
+                            f"{user.base.name.capitalize()}'s {STAT_DISPLAY[stat]} rose!"
+                        )
+
+                    en_change = getattr(move, ENEMY_MAP[stat], 0)
+
+                    if en_change != 0:
+                        setattr(
+                            target,
+                            stage_attr,
+                            min(6, max(-6, getattr(target, stage_attr) + en_change))
+                        )
+                        textbox(
+                            stdscr,
+                            f"{target.base.name.capitalize()}'s {STAT_DISPLAY[stat]} fell!"
+                        )
+                dmg = damage_calc(user, target, move, stdscr, player=player, enemy=enemy)
+
+                redraw_battle(stdscr, player, enemy)
+
+                if dmg > 0:
+                    mult = type_multiplier(move.type, target)
+                    if mult > 1:
+                        textbox(stdscr, "It's super effective!")
+                    elif mult < 1:
+                        textbox(stdscr, "It's not very effective...")
                     if target.hp <= 0:
                         redraw_battle(stdscr, player, enemy)
                         textbox(stdscr, f"{target.base.name.capitalize()} fainted!")
@@ -764,6 +841,32 @@ def afightui(stdscr, player, enemy, mode):
                             return "win"
                         else:
                             return "lose"
+                        
+            elif action_type == "item":
+                item_name, item_value = action
+
+                textbox(stdscr, f"{user.base.name.capitalize()}'s Trainer used {item_name}!")
+
+                if item_name == "potion":
+                    heal = 20
+                    user.hp = min(user.max_hp, user.hp + heal)
+                    textbox(stdscr, f"{user.base.name.capitalize()} healed {heal} HP!")
+
+                elif item_name == "fullheal":
+                    user.status = None
+                    textbox(stdscr, "All status(es) were cleared!")
+
+                elif item_name == "pokeball":
+                    if target == enemy:  
+                        catch_chance = random.randint(1, 100)
+
+                        if catch_chance > 60:
+                            textbox(stdscr, "Gotcha! The Pokémon was caught!")
+                            return "caught"
+                        else:
+                            textbox(stdscr, "Oh no! The Pokémon broke free!")
+                    else:
+                        textbox(stdscr, "You can't catch a trainers Pokémon!!")
 
             status_effect_manager(stdscr, player)
             status_effect_manager(stdscr, enemy)
