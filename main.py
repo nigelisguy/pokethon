@@ -3,7 +3,7 @@ import curses
 import time
 import fightui
 import overworld
-import battlehandler
+import mysterygift
 print(fightui.__file__)
 
 #colors
@@ -58,7 +58,7 @@ def mainm(stdscr):
         "Overworld",
         "Placeholder Pokedex",
         "Settings",
-        "Mystery Gift [NOT AVAILABLE]",
+        "Mystery Gift",
         "Start Game [NOT AVAILABLE]"
     ]
 
@@ -79,7 +79,7 @@ def mainm(stdscr):
 
         if key == curses.KEY_UP and y > 1:
             y -= 1
-        elif key == curses.KEY_DOWN and y < 4:
+        elif key == curses.KEY_DOWN and y < 5:
             y += 1
         elif key == ord("z"):
             if y == 3:
@@ -91,6 +91,8 @@ def mainm(stdscr):
                 setting(stdscr)
             elif y == 2:
                 overworld.overworld(stdscr)
+            elif y == 5:
+                mysterygift.gifted(stdscr)
 
 def setting(stdscr):
     global textspeed
@@ -107,18 +109,18 @@ def setting(stdscr):
         stdscr.clear()
         menu = [
             f"text speed {textspeed:.2f}",
-            "wip",
-            "wip",
+            "idk bro battle animations???",
+            "dkkuuygdskhjnvdguiyjdaydf",
             "back"
         ]
         for i in range(4):
             text = menu[i].ljust(9)
             if i == y:
                 stdscr.attron(curses.color_pair(1))
-                stdscr.addstr(i * 2, 0, f"< {text} >")
+                stdscr.addstr(i, 0, f"< {text} >")
                 stdscr.attroff(curses.color_pair(1))
             else:
-                stdscr.addstr(i * 2, 0, f" {text} ")
+                stdscr.addstr(i, 0, f" {text} ")
 
         key = stdscr.getch()
 
