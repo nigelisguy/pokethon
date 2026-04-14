@@ -24,7 +24,7 @@ def run_battle(stdscr,room):
     if room == 1:
         enemy = BattleMon(stats.mon16, 2, [stats.move5, stats.move6, stats.move7, stats.move8])
 
-    result = fightui.afightui(stdscr, player, enemy)
+    result = fightui.afightui(stdscr, player, enemy, 1)
     return result
 
     

@@ -3,6 +3,7 @@ import time
 import random
 import battlehandler
 import fightui
+import datetime
 
 PLAYER = "@"
 GRASS = "#"
@@ -153,6 +154,7 @@ def menu(stdscr):
     h, w = stdscr.getmaxyx()
     safe_addstr(stdscr, 10, 0, "+" + "━"*78 + "+") 
     safe_addstr(stdscr, 11, 0, Mon1.menu()) 
+    safe_addstr(stdscr, 18, 0, datetime.datetime.now())
     safe_addstr(stdscr, 21, 0, "+" + "━"*78 + "+") 
     stdscr.refresh()
 

@@ -357,7 +357,7 @@ def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
     return dmg
 
 def choose_mode(stdscr):
-    options = ["Player vs Player [NEW!!!!!!!!!]", "Player vs Clanker","Multiplayer, if i ever learn to use api(s)..."]
+    options = ["Player vs Player [NEW!!!!!!!!!]", "Player vs Clanker","Online, if i ever learn to use api(s)..."]
     cursor = 0
 
     while True:
@@ -366,7 +366,7 @@ def choose_mode(stdscr):
 
         for i, opt in enumerate(options):
             prefix = "> " if i == cursor else "  "
-            safe_addstr(stdscr, 4 + i, 5, prefix + opt, 0)
+            safe_addstr(stdscr, 1+i, 5, prefix + opt, 0)
 
         key = stdscr.getch()
 
@@ -690,7 +690,7 @@ def afightui(stdscr, player, enemy, mode):
             if player_move is None:
                 continue
             if mode == 0:  
-                textbox(stdscr, "Player 2, choose your move!")
+                textbox(stdscr, "Player 2 Turn")
                 enemy_move = move_menu(stdscr, enemy, player)
                 if enemy_move is None:
                     continue
