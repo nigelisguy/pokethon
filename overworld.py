@@ -109,8 +109,8 @@ class MonOver:
 
     def menu(self, hp_value=-1, slot_number=None):
         hp_text = "HEALED!" if hp_value == -1 else hp_value
-        prefix = f"{slot_number}. " if slot_number is not None else ""
-        return f"{prefix}{self.name:^12} -- [HP {hp_text:^3}] -- [ EXP {self.exp:^4}/{self.maxexp:^4} LVL {self.level:^3}]"
+        prefix = f"{slot_number}. " if slot_number is not None else "" #idk might use in future
+        return f"{self.name:^12} -- [HP {hp_text:^3}] -- [ EXP {self.exp:^4}/{self.maxexp:^4} LVL {self.level:^3}]"
 
     def expgain(self, stdscr, gainedexp):
         show_dialogue(stdscr, [f"{self.name} gained {gainedexp} EXP!"])
@@ -135,7 +135,7 @@ class MonOver:
 DEFAULT_PARTY = [
     MonOver(rotation=1, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
     MonOver(rotation=2, id=5, name="boy", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
-    MonOver(rotation=3, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+    MonOver(rotation=3, id=9, name="Mewing", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
     MonOver(rotation=4, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
     MonOver(rotation=5, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
     MonOver(rotation=6, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
@@ -330,7 +330,7 @@ def draw_party_panel(stdscr, selected_index=None, moving_index=None):
         hp_value = hpstorage[index] if index < len(hpstorage) else -1
         marker = ">"
         if moving_index == index:
-            marker = "*"
+            marker = "?"
         elif selected_index != index:
             marker = " "
 
