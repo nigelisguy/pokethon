@@ -38,6 +38,29 @@ def effect_heal_self(stdscr, user):
     user.hp = min(user.max_hp, user.hp + heal)
     textbox(stdscr, f"{user.base.name.capitalize()} regained health!")
 
+def draw_party(stdscr, party, active_idx, highlight, forced=False):
+    row_start = 1
+    col = 42
+
+    for i, mon in enumerate(party):
+        tags = []
+
+        if i == active_idx:
+            tags.append("ACTIVE")
+        if mon.hp <= 0:
+            tags.append("FNT")
+
+        status_text = " ".join(tags)
+        text = f"[ {i+1}. {mon.base.name.capitalize()} HP {mon.hp}/{mon.max_hp} {status_text} ]"
+
+        if i == highlight:
+            stdscr.attron(curses.color_pair(1))
+            safe_addstr(stdscr, row_start + i, col, text[:34])
+            stdscr.attroff(curses.color_pair(1))
+        else:
+            safe_addstr(stdscr, row_start + i, col, text[:34])
+
+
 def apply_status(status_list, new_status, clears=None):
     if new_status in status_list:
         return
@@ -47,6 +70,70 @@ def apply_status(status_list, new_status, clears=None):
                 status_list.remove(s)
     status_list.append(new_status)
 
+def party_menu(stdscr, party, active_idx, enemy):
+    highlight = active_idx
+
+    while True:
+        player = party[active_idx]
+
+        stdscr.clear()
+        draw_top_banner(stdscr)
+        draw_main_menu(stdscr, 1, player, enemy)
+        stats.substitude.draw(stdscr)
+        draw_party(stdscr, party, active_idx, highlight, forced=False)
+        draw_header(stdscr, player, enemy)
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and highlight > 0:
+            highlight -= 1
+        elif key == curses.KEY_DOWN and highlight < len(party) - 1:
+            highlight += 1
+        elif key == ord("x"):
+            return None
+        elif key == ord("z"):
+            if highlight == active_idx:
+                textbox(stdscr, "That Pokémon is already out!")
+                continue
+            if party[highlight].hp <= 0:
+                textbox(stdscr, "That Pokémon has fainted!")
+                continue
+            return highlight
+
+def forced_party_menu(stdscr, party, active_idx, enemy):
+    alive = [i for i, mon in enumerate(party) if mon.hp > 0]
+
+    if not alive:
+        return None
+
+    highlight = alive[0]
+
+    while True:
+        player = party[active_idx] if party[active_idx].hp > 0 else party[highlight]
+
+        stdscr.clear()
+        draw_top_banner(stdscr)
+        draw_main_menu(stdscr, 1, player, enemy)
+        stats.substitude.draw(stdscr)
+        draw_party(stdscr, party, active_idx, highlight, forced=True)
+        draw_header(stdscr, player, enemy)
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP:
+            pos = alive.index(highlight)
+            if pos > 0:
+                highlight = alive[pos - 1]
+
+        elif key == curses.KEY_DOWN:
+            pos = alive.index(highlight)
+            if pos < len(alive) - 1:
+                highlight = alive[pos + 1]
+
+        elif key == ord("z"):
+            return highlight
 
 def draw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
@@ -153,7 +240,7 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
         stdscr.clear()
         safe_addstr(stdscr,0,5,title,0)
 
-        visible_items = items[view:view+6]
+        visible_items = items[view:view+22]
 
         if view > 0:
             safe_addstr(stdscr,1,5,"▲",0)
@@ -164,8 +251,8 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
             prefix = "> " if idx == cursor else "  "
             safe_addstr(stdscr,2+i,5,prefix+name,0)
 
-        if view+6 < len(items):
-            safe_addstr(stdscr,8,5,"▼",0)
+        if view+10 < len(items):
+            safe_addstr(stdscr,23,5,"▼",0)
 
         key = stdscr.getch()
 
@@ -180,8 +267,8 @@ def select_from_list_scroll(stdscr, items, title, show_type=False):
 
         if cursor < view:
             view = cursor
-        elif cursor >= view + 6:
-            view = cursor - 5
+        elif cursor >= view + 20:
+            view = cursor - 19
 
 TYPE_EFFECTIVENESS = {
     "normal": {"normal": 1,"fight": 1,"flying": 1,"poison": 1,"ground": 1,"rock": 0.5,"bug": 1,"ghost": 0,"steel": 0.5,"fire": 1,"water": 1,"grass": 1,"electric": 1,"psychic": 1,"ice": 1,"dragon": 1,"dark": 1 },
@@ -253,7 +340,9 @@ def redraw_battle(stdscr, player, enemy, menu_pos=0):
 
 PHYSICAL_TYPES = ["normal", "fight", "poison", "ground", "flying", "bug", "rock", "ghost", "steel"]
 SPECIAL_TYPES = ["fire", "water", "electric", "grass", "ice", "psychic", "dragon", "dark"]
+
 pplist = [-1,-1,-1,-1]
+
 class BattleMove:
     def __init__(self, move, order):
         self.enefc = move.enefc
@@ -691,9 +780,11 @@ def move_menu(stdscr, player, enemy):
         elif key == ord("z"):
             move = player.moves[highlight]
             if move.pp > 0:
-                return move
-
-def afightui(stdscr, player, enemy, mode):
+                return move       
+            
+def afightui(stdscr, party, enemy, mode, active_idx=0):
+    player = party[active_idx]
+    overworld.last_battle_slot = getattr(player, "party_index", 0)
     import stats
     curses.curs_set(0)
     stdscr.keypad(True)
@@ -750,6 +841,15 @@ def afightui(stdscr, player, enemy, mode):
                 key=lambda x: x[0].spd,
                 reverse=True
             )
+
+        elif key == ord("z") and menu_pos == 1:
+            new_idx = party_menu(stdscr, party, active_idx, enemy)
+            if new_idx is not None:
+                textbox(stdscr, f"Go! {party[new_idx].base.name.capitalize()}!")
+                active_idx = new_idx
+                player = party[active_idx]
+                overworld.last_battle_slot = getattr(player, "party_index", 0)
+                continue
 
         elif key==ord("z") and menu_pos==0:
             player_move = move_menu(stdscr, player, enemy)
@@ -822,25 +922,40 @@ def afightui(stdscr, player, enemy, mode):
                             f"{target.base.name.capitalize()}'s {STAT_DISPLAY[stat]} fell!"
                         )
                 dmg = damage_calc(user, target, move, stdscr, player=player, enemy=enemy)
-
                 redraw_battle(stdscr, player, enemy)
-
                 if dmg > 0:
                     mult = type_multiplier(move.type, target)
                     if mult > 1:
                         textbox(stdscr, "It's super effective!")
                     elif mult < 1:
                         textbox(stdscr, "It's not very effective...")
-                    if target.hp <= 0:
-                        redraw_battle(stdscr, player, enemy)
-                        textbox(stdscr, f"{target.base.name.capitalize()} fainted!")
-                        player_result = player.result()
-                        enemy_result = enemy.result()
-                        overworld.hpstorage = [player_result[2],enemy_result[2]]
-                        if target == enemy:
-                            return "win"
-                        else:
+
+                if target.hp <= 0:
+                    redraw_battle(stdscr, player, enemy)
+                    textbox(stdscr, f"{target.base.name.capitalize()} fainted!")
+                    player_result = player.result()
+                    enemy_result = enemy.result()
+                    for mon in party:
+                        if hasattr(mon, "party_index"):
+                            overworld.hpstorage[mon.party_index] = mon.hp
+
+                    if target == enemy:
+                        return "win"
+                    else:
+                        alive = [i for i, mon in enumerate(party) if mon.hp > 0]
+                        if not alive:
                             return "lose"
+
+                        new_idx = forced_party_menu(stdscr, party, active_idx, enemy)
+                        if new_idx is None:
+                            return "lose"
+
+                        active_idx = new_idx
+                        player = party[active_idx]
+                        overworld.last_battle_slot = getattr(player, "party_index", 0)
+                        textbox(stdscr, f"Go! {player.base.name.capitalize()}!")
+                        redraw_battle(stdscr, player, enemy)
+                        continue
                         
             elif action_type == "item":
                 item_name, item_value = action

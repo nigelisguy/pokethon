@@ -14,13 +14,19 @@ DEFAULT_SAVE = {
         "textspeed": 0.01
     },
     "player": {
-        "name": "Player",
-        "money": 1000
+        "name": "placeholder!",
     },
     "pokedex": {
         "seen": [],
         "caught": []
-    }
+    },
+    "pokemon": [],
+    "pcmons": [],
+    "inventory": [
+        {"potion": 5},
+        {"pokeball": 5}
+    ],
+    "pp": [-1, -1, -1, -1]
 }
 
 
@@ -56,11 +62,11 @@ def merge_defaults(data, default):
             merge_defaults(data[key], value)
     return data
 
-#placeholder stuff
+
 name = "Red"
-tmlist= ("")
-pp= [ 
-    {1,1,1,1}
+tmlist = ("")
+pp = [
+    {1, 1, 1, 1}
 ]
 inventory = [
     {"potion": 1},
@@ -75,10 +81,13 @@ NURSE = "♥"
 ENEMY = "☺"
 POKEMON = "█"
 NPC_ICON = "☺"
-hpstorage = [-1,-1]
+hpstorage = [-1, -1, -1, -1, -1, -1]
+last_battle_slot = 0
 TEXT_SPEED = 0.02
+
+
 class MonOver:
-    def __init__(self,rotation, id, name, moves, level, exp, maxexp):
+    def __init__(self, rotation, id, name, moves, level, exp, maxexp):
         self.ord = rotation
         self.id = id
         self.name = name
@@ -97,26 +106,90 @@ class MonOver:
             "exp": self.exp,
             "maxexp": self.maxexp
         }
-    
-    def menu(self):
-        return f"{self.name} -- [HP {'FULL' if hpstorage[0] == -1 else hpstorage[0]}] -- [ EXP {self.exp}/{self.maxexp} LVL {self.level}]"
-    
-    def expgain(self,stdscr, gainedexp):
-        self.exp += gainedexp
-        if self.exp >= self.maxexp:
-            show_dialogue(stdscr, ["Level Up!"])
-            self.exp=0
-            self.level+=1
 
-Mon1 = MonOver(
-    rotation=1,
-    id=1,
-    name="Bulbasaur",
-    moves=[340,340,340,340],
-    level=5,
-    exp=67,
-    maxexp=69,
-)
+    def menu(self, hp_value=-1, slot_number=None):
+        hp_text = "HEALED!" if hp_value == -1 else hp_value
+        prefix = f"{slot_number}. " if slot_number is not None else ""
+        return f"{prefix}{self.name:^12} -- [HP {hp_text:^3}] -- [ EXP {self.exp:^4}/{self.maxexp:^4} LVL {self.level:^3}]"
+
+    def expgain(self, stdscr, gainedexp):
+        show_dialogue(stdscr, [f"{self.name} gained {gainedexp} EXP!"])
+        self.exp += gainedexp
+        while self.exp >= self.maxexp:
+            self.exp -= self.maxexp
+            self.level += 1
+            show_dialogue(stdscr, [f"{self.name} leveled up to LVL {self.level}!"])
+
+    def copy(self):
+        return MonOver(
+            rotation=self.ord,
+            id=self.id,
+            name=self.name,
+            moves=list(self.moves),
+            level=self.level,
+            exp=self.exp,
+            maxexp=self.maxexp
+        )
+
+
+DEFAULT_PARTY = [
+    MonOver(rotation=1, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+    MonOver(rotation=2, id=5, name="boy", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+    MonOver(rotation=3, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+    MonOver(rotation=4, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+    MonOver(rotation=5, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+    MonOver(rotation=6, id=1, name="Bulbasaur", moves=[340, 340, 340, 340], level=5, exp=67, maxexp=69),
+]
+
+party_mons = [mon.copy() for mon in DEFAULT_PARTY]
+
+
+def ensure_hpstorage_size(size=6):
+    while len(hpstorage) < size:
+        hpstorage.append(-1)
+    if len(hpstorage) > size:
+        del hpstorage[size:]
+
+
+def normalize_party():
+    global party_mons
+    party_mons = [mon for mon in party_mons if mon is not None][:6]
+    while len(party_mons) < 6:
+        default_index = len(party_mons)
+        party_mons.append(DEFAULT_PARTY[default_index].copy())
+
+
+def sync_party_slots():
+    global Mon1, Mon2, Mon3, Mon4, Mon5, Mon6
+    normalize_party()
+    Mon1, Mon2, Mon3, Mon4, Mon5, Mon6 = party_mons[:6]
+
+
+def get_party():
+    return party_mons[:6]
+
+
+def get_party_mon(index):
+    if 0 <= index < len(party_mons):
+        return party_mons[index]
+    return None
+
+
+def reorder_party(old_index, new_index):
+    if not (0 <= old_index < len(party_mons) and 0 <= new_index < len(party_mons)):
+        return
+
+    mon = party_mons.pop(old_index)
+    party_mons.insert(new_index, mon)
+
+    hp = hpstorage.pop(old_index)
+    hpstorage.insert(new_index, hp)
+
+    sync_party_slots()
+
+
+sync_party_slots()
+
 
 class Room:
     def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None):
@@ -124,7 +197,8 @@ class Room:
         self.height = height
         self.npcs = npcs or {}
         self.grass_tiles = grass_tiles or set()
-        self.doors = doors or {}  
+        self.doors = doors or {}
+
 
 def safe_addstr(stdscr, y, x, text):
     try:
@@ -133,6 +207,7 @@ def safe_addstr(stdscr, y, x, text):
             stdscr.addstr(y, x, str(text)[:w - x])
     except curses.error:
         pass
+
 
 def type_text(stdscr, text):
     h, w = stdscr.getmaxyx()
@@ -144,17 +219,25 @@ def type_text(stdscr, text):
         stdscr.refresh()
         time.sleep(TEXT_SPEED)
 
+
 def build_save():
     return {
+        "settings": {
+            "textspeed": 0.01
+        },
         "player": {
             "name": name
         },
-        "pokemon": [
-            Mon1.to_dict()
-        ],
+        "pokedex": {
+            "seen": [],
+            "caught": []
+        },
+        "pokemon": [mon.to_dict() for mon in get_party()],
+        "pcmons": [],
         "inventory": inventory,
         "pp": fightui.pplist
     }
+
 
 def show_dialogue(stdscr, lines):
     h, w = stdscr.getmaxyx()
@@ -177,12 +260,12 @@ def show_dialogue(stdscr, lines):
 
     stdscr.clear()
 
+
 def draw(stdscr, room, py, px):
     stdscr.clear()
 
     for y in range(room.height):
         for x in range(room.width):
-
             char = "෴"
             color = curses.color_pair(4)
 
@@ -205,14 +288,18 @@ def draw(stdscr, room, py, px):
 
     stdscr.refresh()
 
+
 def heal_player():
-    hpstorage[0] = -1
-    fightui.pplist = [-1,-1,-1,-1]
+    ensure_hpstorage_size()
+    for i in range(6):
+        hpstorage[i] = -1
+    fightui.pplist = [-1, -1, -1, -1]
+
+
 def create_rooms():
-    # ROOM 1
     npcs1 = {
         (2, 5): (NPC_ICON, ["hello!", "welcome to room 1"]),
-        (2, 6): (NURSE, ["healing...",lambda: heal_player(), "done!"]),
+        (2, 6): (NURSE, ["healing...", lambda: heal_player(), "done!"]),
     }
 
     grass1 = set()
@@ -227,7 +314,7 @@ def create_rooms():
         (3, 3): (ENEMY, ["jdvb hcc hcdhcbhcbdh"]),
     }
 
-    grass2 = {(6,6), (6,7), (7,6), (7,7)}
+    grass2 = {(6, 6), (6, 7), (7, 6), (7, 7)}
 
     room2 = Room(20, 10, npcs2, grass2)
 
@@ -235,20 +322,57 @@ def create_rooms():
     room2.doors[(9, 10)] = (room1, 0, 10)
 
     return room1
-def menu(stdscr): 
-    h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 10, 0, "+" + "━"*78 + "+") 
-    safe_addstr(stdscr, 11, 0, Mon1.menu()) 
-    safe_addstr(stdscr, 12, 0, Mon1.menu())
-    safe_addstr(stdscr, 13, 0, Mon1.menu())
-    safe_addstr(stdscr, 14, 0, Mon1.menu())
-    safe_addstr(stdscr, 15, 0, Mon1.menu())
-    safe_addstr(stdscr, 16, 0, Mon1.menu())
+
+
+def draw_party_panel(stdscr, selected_index=None, moving_index=None):
+    safe_addstr(stdscr, 10, 0, "+" + "━" * 78 + "+")
+    for index, mon in enumerate(get_party()):
+        hp_value = hpstorage[index] if index < len(hpstorage) else -1
+        marker = ">"
+        if moving_index == index:
+            marker = "*"
+        elif selected_index != index:
+            marker = " "
+
+        safe_addstr(stdscr, 11 + index, 0, f"{marker} {mon.menu(hp_value, index + 1)}")
+
     now = datetime.datetime.now()
-    date_str = now.strftime("%d %B, %Y - %H:%M:%S") 
+    date_str = now.strftime("%d %B, %Y - %H:%M:%S")
     safe_addstr(stdscr, 18, 0, date_str)
-    safe_addstr(stdscr, 21, 0, "+" + "━"*78 + "+") 
+    safe_addstr(stdscr, 21, 0, "+" + "━" * 78 + "+")
+
+
+def menu(stdscr):
+    draw_party_panel(stdscr)
     stdscr.refresh()
+
+
+def party_menu(stdscr):
+    selected = 0
+    moving = None
+
+    while True:
+        draw(stdscr, create_rooms(), -100, -100)
+        draw_party_panel(stdscr, selected_index=selected, moving_index=moving)
+        safe_addstr(stdscr, 22, 0, "IN PARTY MENU")
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < len(get_party()) - 1:
+            selected += 1
+        elif key == ord("x"):
+            return
+        elif key == ord("z"):
+            if moving is None:
+                moving = selected
+            else:
+                reorder_party(moving, selected)
+                moving = None
+                selected = min(selected, len(get_party()) - 1)
+
 
 def overworld(stdscr):
     curses.curs_set(0)
@@ -285,30 +409,34 @@ def overworld(stdscr):
             current_room, py, px = current_room.doors[(py, px)]
 
         if key == ord("z"):
-            for dy, dx in [(-1,0),(1,0),(0,-1),(0,1)]:
+            for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 check = (py + dy, px + dx)
                 if check in current_room.npcs:
                     show_dialogue(stdscr, current_room.npcs[check][1])
+
         if key == ord("c"):
             save_menu(stdscr)
+
         if (py, px) in current_room.grass_tiles:
             if random.random() < 0.2:
                 show_dialogue(stdscr, ["A wild Pokémon appeared!"])
                 result = battlehandler.run_battle(stdscr, 1)
                 if result == "win":
-                    Mon1.expgain(stdscr, 9)
+                    active_mon = get_party_mon(last_battle_slot)
+                    if active_mon is not None:
+                        active_mon.expgain(stdscr, 9)
 
-def save_menu(stdscr):#options menu but only save for now 
+
+def save_menu(stdscr):
     curses.curs_set(0)
 
-    options = ["Save Game", "Among Us", "Options", "Pokédex", "Cancel", "M. Gift"]
+    options = ["Save Game", "Pokémon", "Options", "Pokédex", "Cancel", "M. Gift"]
     y = 0
 
     while True:
         h, w = stdscr.getmaxyx()
-        start_x = w - 25  # right side
+        start_x = w - 25
 
-        # draw box
         for i in range(6):
             stdscr.addstr(i, start_x, " " * 24)
 
@@ -333,10 +461,15 @@ def save_menu(stdscr):#options menu but only save for now
                 save_game(data)
                 show_dialogue(stdscr, ["Game Saved!"])
                 break
+            elif y == 1:
+                party_menu(stdscr)
+                current_room = create_rooms()
+                break
             else:
                 break
         elif key == ord("x"):
             break
+
 
 def load_pokemon(data):
     mons = []
@@ -355,19 +488,20 @@ def load_pokemon(data):
 
     return mons
 
+
 save_data = load_save()
 
-# load player
 name = save_data["player"]["name"]
 
-# load pokemon
 loaded_mons = load_pokemon(save_data)
 
 if loaded_mons:
-    Mon1 = loaded_mons[0]  
+    party_mons = loaded_mons[:6]
+else:
+    party_mons = [mon.copy() for mon in DEFAULT_PARTY]
 
-# load inventory
 inventory = save_data.get("inventory", [])
 
-# load pp
 fightui.pplist = save_data.get("pp", [-1, -1, -1, -1])
+ensure_hpstorage_size()
+sync_party_slots()

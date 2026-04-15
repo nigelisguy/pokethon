@@ -3,6 +3,7 @@ import random
 import overworld
 import fightui , stats
 #pls what the sigamammam
+
 def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
 
     stat_block = getattr(stats, f"mon{mon_id}")
@@ -25,6 +26,73 @@ def make_enemy(mon_id, *moves, lvl=1, enemytype="wild"):
         enemytype=enemytype
     )
 
+def to_battle_party():
+    raw_party = [
+        getattr(overworld, "Mon1", None),
+        getattr(overworld, "Mon2", None),
+        getattr(overworld, "Mon3", None),
+        getattr(overworld, "Mon4", None),
+        getattr(overworld, "Mon5", None),
+        getattr(overworld, "Mon6", None),
+    ]
+
+    party = []
+    for i, mon in enumerate(raw_party):
+        if mon is None:
+            continue
+
+        hp = overworld.hpstorage[i] if i < len(overworld.hpstorage) else -1
+
+        battle_mon = create_mon(
+            mon_id=mon.id,
+            level=mon.level,
+            move_ids=mon.moves,
+            hp=hp,
+            enemytype="player"
+        )
+        battle_mon.party_index = i
+        party.append(battle_mon)
+
+    return party
+
+def to_battle_party():
+    raw_party = [
+        getattr(overworld, "Mon1", None),
+        getattr(overworld, "Mon2", None),
+        getattr(overworld, "Mon3", None),
+        getattr(overworld, "Mon4", None),
+        getattr(overworld, "Mon5", None),
+        getattr(overworld, "Mon6", None),
+    ]
+
+    party = []
+    for i, mon in enumerate(raw_party):
+        if mon is None:
+            continue
+
+        hp = overworld.hpstorage[i] if i < len(overworld.hpstorage) else -1
+
+        battle_mon = create_mon(
+            mon_id=mon.id,
+            level=mon.level,
+            move_ids=mon.moves,
+            hp=hp,
+            enemytype="player"
+        )
+        battle_mon.party_index = i
+        party.append(battle_mon)
+
+    return party
+
+def run_battle(stdscr, room):
+    player_party = to_battle_party()
+
+    if room == 1:
+        enemy = make_enemy(16, 5, 6, 7, 8, lvl=2)
+
+    result = fightui.afightui(stdscr, player_party, enemy, 1)
+    return result
+
 def to_battle_mon(mon):
     return create_mon(
         mon_id=mon.id,
@@ -33,15 +101,3 @@ def to_battle_mon(mon):
         hp=overworld.hpstorage[0],
         enemytype="player"
     )
-
-def run_battle(stdscr, room):
-    import overworld
-    import fightui
-
-    player = to_battle_mon(overworld.Mon1)
-
-    if room == 1:
-        enemy = make_enemy(16, 5, 6, 7, 8, lvl=2)
-
-    result = fightui.afightui(stdscr, player, enemy, 1)
-    return result
