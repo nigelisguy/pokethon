@@ -88,7 +88,7 @@ def run_battle(stdscr, room):
     player_party = to_battle_party()
 
     if room == 1:
-        enemy = make_enemy(16, 5, 6, 7, 8, lvl=2)
+        enemy = make_enemy(340, 340, 340, 340, 340, lvl=2)
 
     result = fightui.afightui(stdscr, player_party, enemy, 1)
     return result

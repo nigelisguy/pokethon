@@ -975,9 +975,9 @@ def afightui(stdscr, party, enemy, mode, active_idx=0):
                     if target == enemy:  
                         catch_chance = random.randint(1, 100)
 
-                        if catch_chance > 60:
+                        if catch_chance > 0:
                             textbox(stdscr, "Gotcha! The Pokémon was caught!")
-                            return "caught"
+                            return ("caught", target)
                         else:
                             textbox(stdscr, "Oh no! The Pokémon broke free!")
                     else:
