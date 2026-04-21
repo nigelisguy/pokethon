@@ -1,4 +1,156 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POKéTHON - About</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #22c55e;
+      --text: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: var(--text);
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 10px;
+      animation: fadeIn 1s ease;
+    }
+
+    header h1 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    nav {
+      margin-top: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    nav button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    nav button:hover {
+      background: var(--accent);
+      color: black;
+      transform: scale(1.05);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      animation: slideUp 0.6s ease;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      opacity: 0.6;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);} 
+      to {opacity: 1; transform: translateY(0);} 
+    }
+
+    @keyframes slideUp {
+      from {opacity: 0; transform: translateY(20px);} 
+      to {opacity: 1; transform: translateY(0);} 
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>POKéTHON</h1>
+  <p>ek</p>
+
+  <nav>
+    <a href="index.html"><button>About</button></a>
+    <a href="developers.html"><button>Credits</button></a>
+    <a href="versions.html"><button>Versions</button></a>
+    <a href="download.html"><button>Download</button></a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>About</h2>
+    <p><strong>Version:</strong> 0.6</p>
+    <p>POKéTHON is an early-build Pokémon-style project with experimental features and multiplayer elements.</p>
+
+    <h2 style="margin-top:20px;">Note for Early Build Testers</h2>
+    <p>
+      If you have any build that doesn't include save functionality (pre-0.6), delete it before updating.
+      Transfer your save file between versions when needed.
+    </p>
+
+    <h2 style="margin-top:20px;">Controls</h2>
+    <ul>
+      <li><b>Z</b> = Enter</li>
+      <li><b>X</b> = Cancel</li>
+      <li><b>C</b> = Menu</li>
+      <li><b>Arrow Keys</b> = Movement</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <p>POKéTHON © 2026</p>
+</footer>
+
+</body>
+</html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>POKéTHON - Credits</title>
