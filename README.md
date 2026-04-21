@@ -4,11 +4,8 @@
 <!-- NAVIGATION BUTTONS -->
 <p align="center">
   <a href="#about"><button>About</button></a>
-  <a href="#developers"><button>Developers</button></a>
-  <a href="#controls"><button>Controls</button></a>
-  <a href="#version-06"><button>Version 0.6</button></a>
-  <a href="#future-plans"><button>Future Plans</button></a>
-  <a href="#roadmap"><button>Roadmap</button></a>
+  <a href="#developers"><button>Credits</button></a>
+  <a href="#versions"><button>Versions</button></a>
   <a href="#download"><button>Download</button></a>
 </p>
 
