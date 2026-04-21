@@ -54,8 +54,10 @@ For future builds, transfer your save file between versions. Compatibility issue
   <li>Multiplayer Functionality</li>
   <li>Weird Route with a Deer (Joke)</li>
   <li>Added Rooms</li>
-  <li>Basic NPC Functionality</li>
 </ul>
+<h2>Next Updates</h2>
+<ul>
+  <li>Basic NPC Functionality</li>
   <li>Multiple Pokémon usage</li>
   <li>In-game Pokédex</li>
   <li>Test maps for Alpha</li>
