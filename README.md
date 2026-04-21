@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POKéTHON</title>
+  <title>POKéTHON - About</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -30,7 +30,6 @@
     header {
       text-align: center;
       padding: 30px 10px;
-      border-bottom: 1px solid #334155;
       animation: fadeIn 1s ease;
     }
 
@@ -76,7 +75,6 @@
       background: var(--card);
       padding: 20px;
       border-radius: 16px;
-      margin-bottom: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
       animation: slideUp 0.6s ease;
     }
@@ -88,27 +86,6 @@
 
     ul {
       padding-left: 20px;
-    }
-
-    .download-btn {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .download-btn button {
-      background: var(--accent);
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .download-btn button:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 20px var(--accent);
     }
 
     footer {
@@ -136,58 +113,33 @@
   <p>ek</p>
 
   <nav>
-    <a href="#about"><button>About</button></a>
-    <a href="#developers"><button>Credits</button></a>
-    <a href="#versions"><button>Versions</button></a>
-    <a href="#download"><button>Download</button></a>
+    <a href="index.html"><button>About</button></a>
+    <a href="developers.html"><button>Credits</button></a>
+    <a href="versions.html"><button>Versions</button></a>
+    <a href="download.html"><button>Download</button></a>
   </nav>
 </header>
 
 <div class="container">
 
-  <div class="card" id="about">
+  <div class="card">
     <h2>About</h2>
     <p><strong>Version:</strong> 0.6</p>
     <p>POKéTHON is an early-build Pokémon-style project with experimental features and multiplayer elements.</p>
-  </div>
 
-  <div class="card" id="developers">
-    <h2>Developers</h2>
+    <h2 style="margin-top:20px;">Note for Early Build Testers</h2>
+    <p>
+      If you have any build that doesn't include save functionality (pre-0.6), delete it before updating.
+      Transfer your save file between versions when needed.
+    </p>
+
+    <h2 style="margin-top:20px;">Controls</h2>
     <ul>
-      <li>skdsh aka nigelisguy @2026</li>
+      <li><b>Z</b> = Enter</li>
+      <li><b>X</b> = Cancel</li>
+      <li><b>C</b> = Menu</li>
+      <li><b>Arrow Keys</b> = Movement</li>
     </ul>
-
-    <h3>Testers</h3>
-    <ul>
-      <li>tszmariop</li>
-      <li>gnnadia123</li>
-    </ul>
-  </div>
-
-  <div class="card" id="versions">
-    <h2>Versions</h2>
-    <ul>
-      <li>Save system</li>
-      <li>Items + Pokéballs</li>
-      <li>Multiplayer</li>
-    </ul>
-
-    <h2>Next Updates</h2>
-    <ul>
-      <li>NPCs</li>
-      <li>Better maps</li>
-      <li>Enemy trainers</li>
-    </ul>
-  </div>
-
-  <div class="card" id="download">
-    <h2>Download</h2>
-
-    <div class="download-btn">
-      <a href="https://github.com/YOUR-USERNAME/YOUR-REPO/releases/latest">
-        <button>⬇ Download Latest Version</button>
-      </a>
-    </div>
   </div>
 
 </div>
