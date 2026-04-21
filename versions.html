@@ -1,109 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POKéTHON - About</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #22c55e;
-      --text: #e2e8f0;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(180deg, #020617, #0f172a);
-      color: var(--text);
-    }
-
-    header {
-      text-align: center;
-      padding: 30px 10px;
-      animation: fadeIn 1s ease;
-    }
-
-    header h1 {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 24px;
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-
-    nav {
-      margin-top: 15px;
-    }
-
-    nav a {
-      text-decoration: none;
-      margin: 0 10px;
-    }
-
-    nav button {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 8px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    nav button:hover {
-      background: var(--accent);
-      color: black;
-      transform: scale(1.05);
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 30px 20px;
-    }
-
-    .card {
-      background: var(--card);
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      animation: slideUp 0.6s ease;
-    }
-
-    h2 {
-      margin-bottom: 10px;
-      color: var(--accent);
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      opacity: 0.6;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(-10px);} 
-      to {opacity: 1; transform: translateY(0);} 
-    }
-
-    @keyframes slideUp {
-      from {opacity: 0; transform: translateY(20px);} 
-      to {opacity: 1; transform: translateY(0);} 
-    }
-  </style>
+  <title>POKéTHON - Versions</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -121,65 +20,29 @@
 </header>
 
 <div class="container">
-
   <div class="card">
-    <h2>About</h2>
-    <p><strong>Version:</strong> 0.6</p>
-    <p>POKéTHON is an early-build Pokémon-style project with experimental features and multiplayer elements.</p>
-
-    <h2 style="margin-top:20px;">Note for Early Build Testers</h2>
-    <p>
-      If you have any build that doesn't include save functionality (pre-0.6), delete it before updating.
-      Transfer your save file between versions when needed.
-    </p>
-
-    <h2 style="margin-top:20px;">Controls</h2>
+    <h2>Versions</h2>
     <ul>
-      <li><b>Z</b> = Enter</li>
-      <li><b>X</b> = Cancel</li>
-      <li><b>C</b> = Menu</li>
-      <li><b>Arrow Keys</b> = Movement</li>
+      <li>Save system</li>
+      <li>Items + Pokéballs</li>
+      <li>Multiplayer</li>
     </ul>
-  </div>
 
+    <h3>Next Updates</h3>
+    <ul>
+      <li>NPCs</li>
+      <li>Better maps</li>
+      <li>Enemy trainers</li>
+    </ul>
+
+    <h3>Roadmap</h3>
+    <p>Closed → Alpha → Beta → Release</p>
+  </div>
 </div>
 
 <footer>
   <p>POKéTHON © 2026</p>
 </footer>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>POKéTHON - Versions</title>
-</head>
-<body>
-
-<!-- HEADER HERE -->
-
-<h2>Versions</h2>
-<ul>
-  <li>Major Update: Save States</li>
-  <li>Added Herobrine (Joke)</li>
-  <li>Slightly Updated Pokedex</li>
-  <li>Pokeballs, Items added</li>
-  <li>Multiplayer Functionality</li>
-</ul>
-
-<h2>Next Updates</h2>
-<ul>
-  <li>Basic NPC Functionality</li>
-  <li>Multiple Pokémon usage</li>
-  <li>In-game Pokédex</li>
-  <li>Enemy NPCs</li>
-</ul>
-
-<h2>Roadmap</h2>
-<p>
-Closed Build → OmegaAlpha → OpenOmegaAlpha → Demo → Beta → OpenBeta → Release
-</p>
 
 </body>
 </html>
