@@ -45,7 +45,7 @@ For future builds, transfer your save file between versions. Compatibility issue
 </ul>
 
 <!-- VERSION -->
-<h2 id="version-06">Version 0.6</h2>
+<h2 id="future-plans">Version 0.6</h2>
 <ul>
   <li>Major Update: Save States</li>
   <li>Added Herobrine (Joke)</li>
@@ -56,10 +56,6 @@ For future builds, transfer your save file between versions. Compatibility issue
   <li>Added Rooms</li>
   <li>Basic NPC Functionality</li>
 </ul>
-
-<!-- FUTURE -->
-<h2 id="future-plans">Future Plans</h2>
-<ul>
   <li>Multiple Pokémon usage</li>
   <li>In-game Pokédex</li>
   <li>Test maps for Alpha</li>
