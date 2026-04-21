@@ -1,8 +1,4 @@
 body {
-  margin: 0;
-  font-family: "Press Start 2P", cursive;
-
-  /* retro dark background */
   background: linear-gradient(180deg, #020617, #0f172a);
   color: #e2e8f0;
 }
