@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: "Press Start 2P", cursive;
   background: #0f172a;
   color: #e2e8f0;
 }
@@ -20,9 +20,6 @@ header h1, header p{
     0 0 5px #39ff14,
     0 0 10px #22c55e,
     0 0 20px #16a34a;
-}
-hi {
-  font-famil: "Press Start 2P", cursive;
 }
 
 /* NAV */
