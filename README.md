@@ -1,7 +1,11 @@
+theme: jekyll-theme-minimal
+title: POKéTHON
+description: bbbbb
+
 # pokethon
 Version 0.6
 ### Developers
-skdsh aka nigecoding @2026
+skdsh aka nigelisguy @2026
 ### Testers
 tszmariop @2026
 gnnadia123 @2026
