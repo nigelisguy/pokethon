@@ -10,20 +10,16 @@ header {
   text-align: center;
   padding: 30px 10px;
 }
-
 header h1 {
   margin: 0;
-  font-family: "Press Start 2P", monospace;
-  font-size: 3rem;
-  letter-spacing: 3px;
+  font-family: "Press Start 2P", cursive;
+  font-size: 2rem;
   color: #39ff14;
 
-  /* neon glow effect */
   text-shadow:
     0 0 5px #39ff14,
-    0 0 10px #39ff14,
-    0 0 20px #22c55e,
-    0 0 40px #16a34a;
+    0 0 10px #22c55e,
+    0 0 20px #16a34a;
 }
 
 /* NAV */
