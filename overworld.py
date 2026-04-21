@@ -3,6 +3,7 @@ import time
 import random
 import battlehandler
 import fightui
+import stats
 import datetime
 import json
 import os
@@ -108,9 +109,18 @@ class MonOver:
         }
 
     def menu(self, hp_value=-1, slot_number=None):
-        hp_text = "HEALED!" if hp_value == -1 else hp_value
+        base_stats = getattr(stats, f"mon{self.id}")
+        max_hp = int(((2 * base_stats.hp * self.level) / 100) + self.level + 10)
+        current_hp = max_hp if hp_value == -1 else hp_value
+        current_hp = max(0, min(current_hp, max_hp))
+        bar_length = 10
+        filled = int((current_hp / max_hp) * bar_length) if max_hp > 0 else 0
+        hp_bar = "#" * filled + "█" * (bar_length - filled)
         prefix = f"{slot_number}. " if slot_number is not None else "" #idk might use in future
-        return f"{self.name:<10} -- [HP {hp_text:>3}] -- [EXP {self.exp}/{self.maxexp} LVL {self.level}]"
+        return (
+            f"{prefix}{self.name:<10} -- [HP {current_hp:>3}/{max_hp:<3}] "
+            f"[{hp_bar}] -- [EXP {self.exp}/{self.maxexp} LVL {self.level}]"
+        )
 
     def expgain(self, stdscr, gainedexp):
         show_dialogue(stdscr, [f"{self.name} gained {gainedexp} EXP!"])
@@ -124,7 +134,7 @@ class MonOver:
     def copy(self):
         return MonOver(
             rotation=self.ord,
-            id=self.base,
+            id=self.id,
             name=self.name,
             moves=list(self.moves),
             level=self.level,
@@ -195,7 +205,7 @@ def pc_menu(stdscr):
         safe_addstr(stdscr, 0, 0, f"PC BOX {current_box + 1}")
 
         # draw mons
-        for i in range(BOX_SIZE):
+        for i in range(20):
             if i < len(box):
                 mon = box[i]
                 text = f"{i+1}. {mon.name} LVL {mon.level}"
@@ -205,14 +215,14 @@ def pc_menu(stdscr):
             prefix = ">" if i == selected else " "
             safe_addstr(stdscr, 2 + i, 0, f"{prefix} {text}")
 
-        safe_addstr(stdscr, 35, 0, "[Z] Select  [X] Exit  [←/→] Switch Box")
+        safe_addstr(stdscr, 23, 0, "[Z] Select  [X] Exit  [←/→] Switch Box")
 
         stdscr.refresh()
         key = stdscr.getch()
 
         if key == curses.KEY_UP and selected > 0:
             selected -= 1
-        elif key == curses.KEY_DOWN and selected < BOX_SIZE - 1:
+        elif key == curses.KEY_DOWN and selected < 19:
             selected += 1
 
         elif key == curses.KEY_LEFT:
@@ -361,6 +371,8 @@ def type_text(stdscr, text):
 
 
 def build_save():
+    party_data = [mon.to_dict() for mon in get_party() if mon is not None]
+
     return {
         "settings": {
             "textspeed": 0.01
@@ -372,7 +384,7 @@ def build_save():
             "seen": [],
             "caught": []
         },
-        "pokemon": [mon.to_dict() for mon in get_party()],
+        "pokemon": party_data,
         "inventory": inventory,
         "pp": fightui.pplist,
         "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes],
@@ -470,7 +482,7 @@ def create_rooms():
 
     npcs2 = {
         (1, 1): (NPC_ICON, ["you made it to room 2"]),
-        (3, 3): (ENEMY, ["jdvb hcc hcdhcbhcbdh"]),
+        (3, 3): (ENEMY, ["6767676767"]),
     }
 
     grass2 = {(6, 6), (6, 7), (7, 6), (7, 7)}
@@ -484,7 +496,7 @@ def create_rooms():
 
 
 def draw_party_panel(stdscr, selected_index=None, moving_index=None):
-    safe_addstr(stdscr, 10, 0, "+" + "━" * 78 + "+")
+    safe_addstr(stdscr, 10, 0, "█" + "█" * 78 + "█")
     for index, mon in enumerate(get_party()):
         hp_value = hpstorage[index] if index < len(hpstorage) else -1
 
@@ -502,11 +514,11 @@ def draw_party_panel(stdscr, selected_index=None, moving_index=None):
         safe_addstr(stdscr, 11 + index, 0, f"{marker} {display}")
     now = datetime.datetime.now()
     date_str = now.strftime("%d %B, %Y - %H:%M:%S")
-    safe_addstr(stdscr, 17, 0, "+" + "━" * 78 + "+")
+    safe_addstr(stdscr, 17, 0, "█" + "█" * 78 + "█")
     safe_addstr(stdscr, 18, 0, date_str)
     safe_addstr(stdscr, 19, 0, "Did you know? This game exists!")
     safe_addstr(stdscr, 20, 0, "#placeholder#lol")
-    safe_addstr(stdscr, 21, 0, "+" + "━" * 78 + "+")
+    safe_addstr(stdscr, 21, 0, "█" + "█" * 78 + "█")
 
 
 def menu(stdscr):
@@ -579,6 +591,7 @@ def overworld(stdscr):
             for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 check = (py + dy, px + dx)
                 if check in current_room.npcs:
+                    
                     show_dialogue(stdscr, current_room.npcs[check][1])
 
         if key == ord("c"):
@@ -593,9 +606,9 @@ def overworld(stdscr):
 
                     new_mon = MonOver(
                         rotation=len(party_mons) + 1,
-                        id=enemy.id,
+                        id=enemy.base.id, 
                         name=enemy.base.name,
-                        moves=enemy.moves,
+                        moves=list(getattr(enemy, "move_ids", [])),
                         level=enemy.level,
                         exp=0
                     )
@@ -603,8 +616,10 @@ def overworld(stdscr):
                     add_to_party_or_pc(stdscr, new_mon)
                 if result == "win":
                     active_mon = get_party_mon(last_battle_slot)
-                    if active_mon is not None:
-                        active_mon.expgain(stdscr, 9)
+                    enemy = battlehandler.last_enemy
+                    if active_mon is not None and enemy is not None:
+                        gained_exp = battlehandler.calculate_exp_gain(enemy)
+                        active_mon.expgain(stdscr, gained_exp)
 
 
 def save_menu(stdscr):
@@ -615,18 +630,23 @@ def save_menu(stdscr):
 
     while True:
         h, w = stdscr.getmaxyx()
-        start_x = w - 20
+        start_x = w - 14
 
-        for i in range(6):
-            stdscr.addstr(i, start_x, " " * 24)
+        for i in range(10):
+            safe_addstr(stdscr, i, start_x, " " * 16)
 
-        stdscr.addstr(11, start_x, " OPTIONS MENU ")
+        safe_addstr(stdscr, 0, start_x, "█" * 14)
+        for row in range(1, 9):
+            safe_addstr(stdscr, row, start_x, "█")
+            safe_addstr(stdscr, row, start_x + 13, "█")
+        safe_addstr(stdscr, 9, start_x, "█" * 14)
+        safe_addstr(stdscr, 1, start_x+1, "  OPTIONS")
 
         for i, opt in enumerate(options):
             if i == y:
-                stdscr.addstr(i + 13, start_x, f"> {opt}")
+                safe_addstr(stdscr, i + 3, start_x + 1, f" >{opt}")
             else:
-                stdscr.addstr(i + 13, start_x, f"  {opt}")
+                safe_addstr(stdscr, i + 3, start_x + 1, f"  {opt}")
 
         stdscr.refresh()
         key = stdscr.getch()

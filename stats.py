@@ -1,7 +1,9 @@
 #pokemon
 
 class Mon:
-    def __init__(self, name, type, type2 , hp, at, de, sp_at, sp_de, spd,):
+    def __init__(self, name, type, type2 , hp, at, de, sp_at, sp_de, spd, mon_id=None, base_exp=0):
+        self.id = mon_id
+        self.base_exp = base_exp
         self.name = name
         self.type = type
         self.type2 = type2
@@ -168,6 +170,12 @@ mon148=Mon("""dragonair""","""dragon""","nil",61,84,65,70,70,70)
 mon149=Mon("""dragonite""","""dragon""","""flying""",91,134,95,100,100,80)
 mon150=Mon("""mewtwo""","""psychic""","""nil""",106,110,90,154,90,130)
 mon151=Mon("""mew""","""psychic""","""nil""",100,100,100,100,100,100)
+
+for mon_id in range(1, 152):
+    globals()[f"mon{mon_id}"].id = mon_id
+
+# Base EXP yields used by the Gen 1-4 battle reward formula.
+mon5.base_exp = 142
 
 #moves
 class Moves:

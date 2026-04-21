@@ -4,6 +4,7 @@ import time
 import fightui
 import overworld
 import mysterygift
+import cutscene
 
 #colors
 curses.initscr()
@@ -58,7 +59,9 @@ def mainm(stdscr):
         "Pokedex [PLACEHOLDER]",
         "Settings",
         "Mystery Gift",
-        "Start Game [NOT AVAILABLE]"
+        "Start Game [NOT AVAILABLE]",
+        "",
+        "Recommended to look at README by pressing C!"
     ]
 
     y = 1
@@ -80,6 +83,8 @@ def mainm(stdscr):
             y -= 1
         elif key == curses.KEY_DOWN and y < 5:
             y += 1
+        elif key == ord("c"):
+            cutscene.show_readme(stdscr)
         elif key == ord("z"):
             if y == 3:
                 mon_menu(stdscr)
@@ -253,6 +258,9 @@ def main(stdscr):
         return
 
     stdscr.addstr(0, 0, "Size is correct, Loading...")
+    stdscr.refresh()
+    curses.napms(120)
+    cutscene.title_screen(stdscr)
     mainm(stdscr)
 
 while True:
@@ -262,3 +270,36 @@ while True:
 print("hi")
 print(stats.mon1.call())
 import curses
+"""
+       █████████
+    █████#####█████
+  ███#############███
+ ███#####█████#####███
+ █████████   █████████
+ ███     █████     ███
+  ███             ███
+    █████     █████
+       █████████
+"""
+"""
+      █████████
+    █████#####█████
+ ███#############███
+███#####█████#####███
+█████████   █████████
+███     █████     ███
+ ███             ███
+   █████     █████
+       █████████
+"""
+"""
+           █████████
+        █████#####█████
+      ███#############███
+     ███#####█████#####███
+    █████████   █████████
+    ███     █████     ███
+     ███             ███
+      █████     █████
+         █████████
+"""
