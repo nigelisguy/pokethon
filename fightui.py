@@ -137,11 +137,11 @@ def forced_party_menu(stdscr, party, active_idx, enemy):
 
 def draw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 0, 0, "█" + "█"*(w-2) + "█", 0)
+    safe_addstr(stdscr, 0, 0, "#" + "#"*(w-2) + "#", 0)
 
 def sdraw_top_banner(stdscr):
     h, w = stdscr.getmaxyx()
-    safe_addstr(stdscr, 0, 0, "█" + "█"*(w-2) + "█", 0)
+    safe_addstr(stdscr, 0, 0, "#" + "#"*(w-2) + "#", 0)
     safe_addstr(stdscr, 1, 2, "mons png here", 0)
 def poison(target):
     apply_status(target.statuses, "poison", ["burn", "sleep", "confuse", "flinch"])
@@ -498,7 +498,7 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
 
             for i in range(4):
                 y = 4 + i
-                mname = "█"
+                mname = "#"
                 if moves[i]:
                     mname = moves[i].call().capitalize()[:20]
                 prefix = "> " if selected and row == i + 1 and not move_menu else "  "
@@ -589,7 +589,7 @@ def draw_header(stdscr, player, enemy):
     e_name = enemy.base.name.capitalize()
     left = f"{p_name} LVL{player.level} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
     right = f"{e_name} LVL{enemy.level} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"
-    line = f"┃ {left:^35} ------ {right:^35} ┃"
+    line = f"# {left:^35} ------ {right:^35} #"
     safe_addstr(stdscr, 0, 0, line, 14)
     draw_divider(stdscr, 1)
 
@@ -628,9 +628,9 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
     h, w = stdscr.getmaxyx()
     rows = list(range(1, 13)) + [14] 
     for y in rows:
-        safe_addstr(stdscr, y, 0, "█" + " " * (w - 2) + "█", 0)
-    safe_addstr(stdscr, 13, 0, "█" + "█" * (w - 2) + "█",0)
-    line = f"█"+  " "*39 + "█" + "█" * 38 + "█"
+        safe_addstr(stdscr, y, 0, "#" + " " * (w - 2) + "#", 0)
+    safe_addstr(stdscr, 13, 0, "#" + "#" * (w - 2) + "#",0)
+    line = f"#"+  " "*39 + "#" + "#" * 38 + "#"
     safe_addstr(stdscr, 15, 0, line[:w].ljust(w), 0)
     player_bar, p_color = make_hp_bar(player.hp, player.max_hp)
     enemy_bar, e_color = make_hp_bar(enemy.hp, enemy.max_hp)
@@ -642,15 +642,15 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
     stdscr.attron(curses.color_pair(e_color))
     safe_addstr(stdscr, 15, 27, enemy_bar,0)
     stdscr.attroff(curses.color_pair(e_color))
-    safe_addstr(stdscr, 16, 0,"█" + "█" * 39 + "█" + " " * 38 + "█",0)
-    safe_addstr(stdscr, 17, 0, "█" + " " * 38 + " █" + " " * 38 + "█",0)
-    safe_addstr(stdscr, 18, 0, "█" + " " * 38 + " █" + " " * 38 + "█",0)
-    safe_addstr(stdscr, 19, 0,"█" + "█" * 39 + "█" +  " " * 38 + "█",0)
-    safe_addstr(stdscr, 20, 0,"█",0)
-    safe_addstr(stdscr, 20, 40,"█" + "█" * 38 + "█",0)
-    safe_addstr(stdscr, 21, 0, "█" + "█" * (w - 2) + "█",0)
+    safe_addstr(stdscr, 16, 0,"#" + "#" * 39 + "#" + " " * 38 + "#",0)
+    safe_addstr(stdscr, 17, 0, "#" + " " * 38 + " #" + " " * 38 + "#",0)
+    safe_addstr(stdscr, 18, 0, "#" + " " * 38 + " #" + " " * 38 + "#",0)
+    safe_addstr(stdscr, 19, 0,"#" + "#" * 39 + "#" +  " " * 38 + "#",0)
+    safe_addstr(stdscr, 20, 0,"#",0)
+    safe_addstr(stdscr, 20, 40,"#" + "#" * 38 + "#",0)
+    safe_addstr(stdscr, 21, 0, "#" + "#" * (w - 2) + "#",0)
     draw_top_banner(stdscr)
-    menu = ["-----Fight-----|","----Pokémon----|","------Bag------|","------Run------|","█","█","█","█"]
+    menu = ["-----Fight-----|","----Pokémon----|","------Bag------|","------Run------|","#","#","#","#"]
     row_start = 1
     col_spacing = 10
     bottom_colors = [7,2,4,6]
@@ -776,7 +776,7 @@ def move_menu(stdscr, player, enemy):
             if move.pp > 0:
                 return move       
             
-def afightui(stdscr, party, enemy, mode, active_idx=0):
+def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
     player = party[active_idx]
     overworld.last_battle_slot = getattr(player, "party_index", 0)
     import stats
@@ -816,6 +816,9 @@ def afightui(stdscr, party, enemy, mode, active_idx=0):
             #textbox(stdscr, f"{['bro'][choice-4]} does not work yet")
             continue
         elif key==ord("z") and menu_pos==3:
+            if not can_run:
+                textbox(stdscr, "You can't run from a trainer battle!")
+                continue
             textbox(stdscr,f"You ran away!")
             return "run"
         elif key == ord("z") and menu_pos == 2:
@@ -967,10 +970,8 @@ def afightui(stdscr, party, enemy, mode, active_idx=0):
                     textbox(stdscr, "All status(es) were cleared!")
 
                 elif item_name == "pokeball":
-                    if target == enemy:  
+                    if target == enemy and getattr(enemy, "enemytype", "wild") == "wild":
                         catch_chance = random.randint(1, 100)
-                        for i in range(3):
-                            safe_addstr()
 
                         if catch_chance > 10:
                             textbox(stdscr, "Gotcha! The Pokémon was caught!")
@@ -978,7 +979,7 @@ def afightui(stdscr, party, enemy, mode, active_idx=0):
                         else:
                             textbox(stdscr, "Oh no! The Pokémon broke free!")
                     else:
-                        textbox(stdscr, "You can't catch a trainers Pokémon!!")
+                        textbox(stdscr, "You can't catch a trainer's Pokémon!")
 
             status_effect_manager(stdscr, player)
             status_effect_manager(stdscr, enemy)

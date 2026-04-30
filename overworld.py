@@ -7,6 +7,7 @@ import stats
 import datetime
 import json
 import os
+import copy
 
 SAVE_FILE = "save.json"
 pc_boxes = [
@@ -32,6 +33,8 @@ DEFAULT_SAVE = {
         {"potion": 5},
         {"pokeball": 5}
     ],
+    "picked_items": [],
+    "cut_trees": [],
     "pp": [-1, -1, -1, -1],
     "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes]
 }
@@ -39,17 +42,17 @@ DEFAULT_SAVE = {
 
 def load_save():
     if not os.path.exists(SAVE_FILE):
-        return DEFAULT_SAVE.copy()
+        return copy.deepcopy(DEFAULT_SAVE)
 
     try:
         with open(SAVE_FILE, "r") as f:
             data = json.load(f)
 
-        return merge_defaults(data, DEFAULT_SAVE)
+        return merge_defaults(data, copy.deepcopy(DEFAULT_SAVE))
     
 
     except (json.JSONDecodeError, IOError):
-        return DEFAULT_SAVE.copy()
+        return copy.deepcopy(DEFAULT_SAVE)
     
 
 
@@ -59,6 +62,22 @@ def save_game(data):
         json.dump(data, f, indent=4)
 
     os.replace(temp_file, SAVE_FILE)
+
+
+def save_exists():
+    return os.path.exists(SAVE_FILE)
+
+
+def delete_save():
+    if os.path.exists(SAVE_FILE):
+        os.remove(SAVE_FILE)
+    reset_game_state(copy.deepcopy(DEFAULT_SAVE))
+
+
+def create_new_save():
+    data = copy.deepcopy(DEFAULT_SAVE)
+    save_game(data)
+    reset_game_state(data)
 
 
 def merge_defaults(data, default):
@@ -75,13 +94,18 @@ tmlist = ("")
 pp = [1, 1, 1, 1]
 PLAYER = "@"
 GRASS = "#"
+ITEM = "●"
+CUT_TREE = "↟"
 NURSE = "♥"
 ENEMY = "☺"
-POKEMON = "█"
+POKEMON = "#"
 NPC_ICON = "☺"
 hpstorage = [-1, -1, -1, -1, -1, -1]
 last_battle_slot = 0
 TEXT_SPEED = 0.02
+battled_trainers = set()
+picked_items = set()
+cut_trees = set()
 
 
 class MonOver:
@@ -115,7 +139,7 @@ class MonOver:
         current_hp = max(0, min(current_hp, max_hp))
         bar_length = 10
         filled = int((current_hp / max_hp) * bar_length) if max_hp > 0 else 0
-        hp_bar = "#" * filled + "█" * (bar_length - filled)
+        hp_bar = "█" * filled + "░" * (bar_length - filled)
         prefix = f"{slot_number}. " if slot_number is not None else "" #idk might use in future
         return (
             f"{prefix}{self.name:<10} -- [HP {current_hp:>3}/{max_hp:<3}] "
@@ -191,6 +215,63 @@ def add_to_party_or_pc(stdscr, mon):
         show_dialogue(stdscr, [f"Party full! {mon.name} was sent to the PC."])
 
     sync_party_slots()
+
+def item_label(item_name):
+    return item_name.replace("_", " ").title()
+
+ITEM_DESCRIPTIONS = {
+    "potion": "Restores 20 HP to one Pokemon during battle.",
+    "pokeball": "A ball used to catch wild Pokemon.",
+    "fullheal": "Clears all status conditions from one Pokemon.",
+    "hm_cut": "Lets any Pokemon with sharp claws cut down small trees in the overworld. Not be confused with TM CUT.",
+}
+
+BAG_SECTIONS = [
+    ("Pokeballs", {"pokeball"}),
+    ("Recover", {"potion", "fullheal"}),
+    ("Key Items", {"hm_cut"}),
+    ("Other", set()),
+]
+
+
+def item_description(item_name):
+    return ITEM_DESCRIPTIONS.get(item_name, "No description yet.")
+
+
+def inventory_entries():
+    entries = []
+    for item in inventory:
+        for name, quantity in item.items():
+            if quantity > 0:
+                entries.append((name, quantity))
+    return entries
+
+
+def bag_section_for_item(item_name):
+    for section_name, section_items in BAG_SECTIONS:
+        if section_name != "Other" and item_name in section_items:
+            return section_name
+    return "Other"
+
+
+def inventory_entries_for_section(section_name):
+    return [
+        (name, quantity)
+        for name, quantity in inventory_entries()
+        if bag_section_for_item(name) == section_name
+    ]
+
+
+def add_item(item_name, amount=1):
+    for item in inventory:
+        if item_name in item:
+            item[item_name] += amount
+            return
+
+    inventory.append({item_name: amount})
+
+def has_item(item_name):
+    return any(item.get(item_name, 0) > 0 for item in inventory)
 
 def pc_menu(stdscr):
     global current_box
@@ -342,12 +423,15 @@ sync_party_slots()
 
 
 class Room:
-    def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None):
+    def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None, items=None, cut_trees=None, room_id="room"):
         self.width = width
         self.height = height
         self.npcs = npcs or {}
         self.grass_tiles = grass_tiles or set()
         self.doors = doors or {}
+        self.items = items or {}
+        self.cut_trees = cut_trees or set()
+        self.room_id = room_id
 
 
 def safe_addstr(stdscr, y, x, text):
@@ -386,6 +470,8 @@ def build_save():
         },
         "pokemon": party_data,
         "inventory": inventory,
+        "picked_items": sorted(picked_items),
+        "cut_trees": sorted(cut_trees),
         "pp": fightui.pplist,
         "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes],
     }
@@ -412,6 +498,49 @@ def show_dialogue(stdscr, lines):
 
     stdscr.clear()
 
+def npc_dialogue(npc):
+    return npc[1]
+
+def npc_trainer_id(npc):
+    if len(npc) >= 3:
+        return npc[2]
+    return None
+
+def map_object_id(room, pos):
+    y, x = pos
+    return f"{room.room_id}:{y}:{x}"
+
+def is_blocked(room, pos):
+    return pos in room.npcs or (
+        pos in room.cut_trees and map_object_id(room, pos) not in cut_trees
+    )
+
+def pickup_item(stdscr, room, pos):
+    if pos not in room.items:
+        return
+
+    item_id = map_object_id(room, pos)
+    if item_id in picked_items:
+        return
+
+    item_name, amount = room.items[pos]
+    add_item(item_name, amount)
+    picked_items.add(item_id)
+    show_dialogue(stdscr, [f"Found {item_label(item_name)} x{amount}!"])
+
+def try_cut_tree(stdscr, room, pos):
+    tree_id = map_object_id(room, pos)
+    if pos not in room.cut_trees or tree_id in cut_trees:
+        return False
+
+    if not has_item("hm_cut"):
+        show_dialogue(stdscr, ["This tree looks cuttable.", "You need HM Cut."])
+        return True
+
+    show_dialogue(stdscr, ["Your Pokémon used HM Cut!"])
+    cut_trees.add(tree_id)
+    return True
+
 
 def draw(stdscr, room, py, px):
     stdscr.clear()
@@ -423,6 +552,16 @@ def draw(stdscr, room, py, px):
 
             if (y, x) in room.grass_tiles:
                 char = GRASS
+
+            object_id = map_object_id(room, (y, x))
+
+            if (y, x) in room.items and object_id not in picked_items:
+                char = ITEM
+                color = curses.color_pair(7)
+
+            if (y, x) in room.cut_trees and object_id not in cut_trees:
+                char = CUT_TREE
+                color = curses.color_pair(4)
 
             if (y, x) in room.npcs:
                 char = room.npcs[(y, x)][0]
@@ -478,16 +617,29 @@ def create_rooms():
         for x in range(5, 10):
             grass1.add((y, x))
 
-    room1 = Room(20, 10, npcs1, grass1)
+    items1 = {
+        (1, 4): ("hm_cut", 1),
+        (8, 12): ("potion", 1),
+    }
+
+    cut_trees1 = {
+        (4, 10),
+    }
+
+    room1 = Room(20, 10, npcs1, grass1, items=items1, cut_trees=cut_trees1, room_id="room1")
 
     npcs2 = {
         (1, 1): (NPC_ICON, ["you made it to room 2"]),
-        (3, 3): (ENEMY, ["6767676767"]),
+        (3, 3): (ENEMY, ["You there!", "Let's battle!"], "room2_guard"),
     }
 
     grass2 = {(6, 6), (6, 7), (7, 6), (7, 7)}
 
-    room2 = Room(20, 10, npcs2, grass2)
+    items2 = {
+        (5, 5): ("pokeball", 2),
+    }
+
+    room2 = Room(20, 10, npcs2, grass2, items=items2, room_id="room2")
 
     room1.doors[(0, 10)] = (room2, 9, 10)
     room2.doors[(9, 10)] = (room1, 0, 10)
@@ -496,7 +648,7 @@ def create_rooms():
 
 
 def draw_party_panel(stdscr, selected_index=None, moving_index=None):
-    safe_addstr(stdscr, 10, 0, "█" + "█" * 78 + "█")
+    safe_addstr(stdscr, 10, 0, "#" + "#" * 78 + "#")
     for index, mon in enumerate(get_party()):
         hp_value = hpstorage[index] if index < len(hpstorage) else -1
 
@@ -514,16 +666,100 @@ def draw_party_panel(stdscr, selected_index=None, moving_index=None):
         safe_addstr(stdscr, 11 + index, 0, f"{marker} {display}")
     now = datetime.datetime.now()
     date_str = now.strftime("%d %B, %Y - %H:%M:%S")
-    safe_addstr(stdscr, 17, 0, "█" + "█" * 78 + "█")
+    safe_addstr(stdscr, 17, 0, "#" + "#" * 78 + "#")
     safe_addstr(stdscr, 18, 0, date_str)
     safe_addstr(stdscr, 19, 0, "Did you know? This game exists!")
     safe_addstr(stdscr, 20, 0, "#placeholder#lol")
-    safe_addstr(stdscr, 21, 0, "█" + "█" * 78 + "█")
+    safe_addstr(stdscr, 21, 0, "#" + "#" * 78 + "#")
 
 
 def menu(stdscr):
     draw_party_panel(stdscr)
     stdscr.refresh()
+
+
+def wrap_text(text, width):
+    words = text.split()
+    lines = []
+    line = ""
+
+    for word in words:
+        if not line:
+            line = word
+        elif len(line) + len(word) + 1 <= width:
+            line += " " + word
+        else:
+            lines.append(line)
+            line = word
+
+    if line:
+        lines.append(line)
+
+    return lines or [""]
+
+
+def bag_menu(stdscr):
+    section = 0
+    selected = 0
+    top = 0
+
+    while True:
+        section_name = BAG_SECTIONS[section][0]
+        entries = inventory_entries_for_section(section_name)
+        h, w = stdscr.getmaxyx()
+        visible_rows = max(1, min(10, h - 8))
+        selected = min(selected, max(0, len(entries) - 1))
+
+        if selected < top:
+            top = selected
+        elif selected >= top + visible_rows:
+            top = selected - visible_rows + 1
+
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 0, f"BAG  < {section_name} >")
+        safe_addstr(stdscr, 1, 0, "#" * min(w - 1, 50))
+
+        if not entries:
+            safe_addstr(stdscr, 3, 2, f"No items in {section_name}. lol")
+        else:
+            for row, (name, quantity) in enumerate(entries[top:top + visible_rows]):
+                index = top + row
+                marker = ">" if index == selected else " "
+                text = f"{marker} {item_label(name):<18} x{quantity}"
+                if index == selected:
+                    stdscr.attron(curses.color_pair(1))
+                    safe_addstr(stdscr, row+2, 1, text)
+                    stdscr.attroff(curses.color_pair(1))
+                else:
+                    safe_addstr(stdscr, row+2, 1, text)
+
+
+            desc_y = 5 + visible_rows
+            name, quantity = entries[selected]
+            safe_addstr(stdscr, desc_y, 0, "#" * min(w - 1, 50))
+            safe_addstr(stdscr, desc_y+1, 2, f"{item_label(name)} x{quantity}")
+            for i, line in enumerate(wrap_text(item_description(name), max(10, w - 4))[:3]):
+                safe_addstr(stdscr, desc_y + 2 + i, 2, line)
+
+        safe_addstr(stdscr, h - 1, 0, "[LEFT/RIGHT] Section  [UP/DOWN] Move  [X] Back")
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_LEFT:
+            section = (section - 1) % len(BAG_SECTIONS)
+            selected = 0
+            top = 0
+        elif key == curses.KEY_RIGHT:
+            section = (section + 1) % len(BAG_SECTIONS)
+            selected = 0
+            top = 0
+        elif key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < len(entries) - 1:
+            selected += 1
+        elif key == ord("x"):
+            return
 
 
 def party_menu(stdscr):
@@ -581,8 +817,9 @@ def overworld(stdscr):
             break
 
         if 0 <= ny < current_room.height and 0 <= nx < current_room.width:
-            if (ny, nx) not in current_room.npcs:
+            if not is_blocked(current_room, (ny, nx)):
                 py, px = ny, nx
+                pickup_item(stdscr, current_room, (py, px))
 
         if (py, px) in current_room.doors:
             current_room, py, px = current_room.doors[(py, px)]
@@ -590,9 +827,30 @@ def overworld(stdscr):
         if key == ord("z"):
             for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 check = (py + dy, px + dx)
+                if try_cut_tree(stdscr, current_room, check):
+                    break
+
                 if check in current_room.npcs:
-                    
-                    show_dialogue(stdscr, current_room.npcs[check][1])
+                    npc = current_room.npcs[check]
+                    trainer_id = npc_trainer_id(npc)
+
+                    if trainer_id is not None and trainer_id in battled_trainers:
+                        show_dialogue(stdscr, ["We already battled."])
+                        continue
+
+                    show_dialogue(stdscr, npc_dialogue(npc))
+
+                    if trainer_id is not None:
+                        result = battlehandler.run_trainer_battle(stdscr, trainer_id)
+                        if result == "win":
+                            battled_trainers.add(trainer_id)
+                            show_dialogue(stdscr, ["You won the trainer battle!"])
+                        elif result == "lose":
+                            show_dialogue(stdscr, ["You lost the trainer battle..."])
+                        elif result == "run":
+                            show_dialogue(stdscr, ["You ran from the trainer battle."])
+
+                    break
 
         if key == ord("c"):
             save_menu(stdscr)
@@ -625,21 +883,23 @@ def overworld(stdscr):
 def save_menu(stdscr):
     curses.curs_set(0)
 
-    options = ["Save Game", "Pokémon", "PC", "Options", "Pokédex", "M.Gift"]
+    options = ["Save Game", "Pokémon", "Bag", "PC", "Options", "Pokédex", "M.Gift"]
     y = 0
 
     while True:
         h, w = stdscr.getmaxyx()
         start_x = w - 14
 
-        for i in range(10):
+        menu_height = len(options) + 4
+
+        for i in range(menu_height + 1):
             safe_addstr(stdscr, i, start_x, " " * 16)
 
-        safe_addstr(stdscr, 0, start_x, "█" * 14)
-        for row in range(1, 9):
-            safe_addstr(stdscr, row, start_x, "█")
-            safe_addstr(stdscr, row, start_x + 13, "█")
-        safe_addstr(stdscr, 9, start_x, "█" * 14)
+        safe_addstr(stdscr, 0, start_x, "#" * 14)
+        for row in range(1, menu_height):
+            safe_addstr(stdscr, row, start_x, "#")
+            safe_addstr(stdscr, row, start_x + 13, "#")
+        safe_addstr(stdscr, menu_height, start_x, "#" * 14)
         safe_addstr(stdscr, 1, start_x+1, "  OPTIONS")
 
         for i, opt in enumerate(options):
@@ -666,6 +926,8 @@ def save_menu(stdscr):
                 current_room = create_rooms()
                 break
             elif y == 2:
+                bag_menu(stdscr)
+            elif y == 3:
                 pc_menu(stdscr)
             else:
                 break
@@ -691,40 +953,54 @@ def load_pokemon(data):
     return mons
 
 
-save_data = load_save()
+def reset_game_state(data=None):
+    global save_data, name, party_mons, inventory, picked_items, cut_trees
+    global pc_boxes, current_box, battled_trainers
 
-name = save_data["player"]["name"]
+    if data is None:
+        data = load_save()
+    else:
+        data = merge_defaults(data, copy.deepcopy(DEFAULT_SAVE))
 
-loaded_mons = load_pokemon(save_data)
+    save_data = data
+    name = save_data["player"]["name"]
 
-if loaded_mons:
-    party_mons = loaded_mons[:6]
-else:
-    party_mons = [mon.copy() for mon in DEFAULT_PARTY]
+    loaded_mons = load_pokemon(save_data)
+    if loaded_mons:
+        party_mons = loaded_mons[:6]
+    else:
+        party_mons = [mon.copy() for mon in DEFAULT_PARTY]
 
-inventory = save_data.get("inventory", [])
+    inventory = copy.deepcopy(save_data.get("inventory", []))
+    picked_items = set(save_data.get("picked_items", []))
+    cut_trees = set(save_data.get("cut_trees", []))
 
-fightui.pplist = save_data.get("pp", [-1, -1, -1, -1])
-ensure_hpstorage_size()
-sync_party_slots()
+    fightui.pplist = list(save_data.get("pp", [-1, -1, -1, -1]))
+    ensure_hpstorage_size()
+    sync_party_slots()
 
-pc_boxes = []
+    current_box = 0
+    battled_trainers = set()
+    pc_boxes = []
 
-for box in save_data.get("pcmons", [[]]):
-    loaded_box = []
-    for mon_data in box:
-        mon = MonOver(
-            rotation=mon_data["rotation"],
-            id=mon_data["id"],
-            name=mon_data["name"],
-            moves=mon_data["moves"],
-            level=mon_data["level"],
-            exp=mon_data["exp"],
-            maxexp=mon_data["maxexp"]
-        )
-        loaded_box.append(mon)
+    for box in save_data.get("pcmons", [[]]):
+        loaded_box = []
+        for mon_data in box:
+            mon = MonOver(
+                rotation=mon_data["rotation"],
+                id=mon_data["id"],
+                name=mon_data["name"],
+                moves=mon_data["moves"],
+                level=mon_data["level"],
+                exp=mon_data["exp"],
+                maxexp=mon_data["maxexp"]
+            )
+            loaded_box.append(mon)
 
-    pc_boxes.append(loaded_box)
+        pc_boxes.append(loaded_box)
 
-if not pc_boxes:
-    pc_boxes = [[]]
+    if not pc_boxes:
+        pc_boxes = [[]]
+
+
+reset_game_state()

@@ -4,15 +4,28 @@ from pathlib import Path
 
 
 TITLE_ART = [
-    "          █████████           ",
-    "       █████#####█████        ",
-    "     ███#############███      ",
-    "    ███#####█████#####███     ",
+    "         █████████           ",
+    "      █████#####█████        ",
+    "    ███#############███      ",
+    "   ███#####█████#####███     ",
     "    █████████   █████████      ",
     "    ███     █████     ███      ",
     "     ███             ███       ",
     "       █████     █████         ",
     "          █████████            ",
+]
+
+
+BACKGROUND_STARS = [
+    (2, 6, "."),
+    (4, 58, "."),
+    (6, 18, "*"),
+    (8, 67, "."),
+    (10, 8, "."),
+    (12, 62, "*"),
+    (14, 23, "."),
+    (16, 71, "."),
+    (18, 11, "*"),
 ]
 
 
@@ -52,23 +65,64 @@ def flash_white(stdscr, duration_ms=120):
     curses.napms(duration_ms)
 
 
-def draw_title(stdscr):
+def draw_background(stdscr, phase=0):
+    h, w = stdscr.getmaxyx()
+    for index, (y, x, char) in enumerate(BACKGROUND_STARS):
+        if y >= h or x >= w:
+            continue
+        attr = curses.color_pair(33) if (phase + index) % 3 == 0 else curses.color_pair(31)
+        safe_addstr(stdscr, y, x, char, attr)
+
+
+def art_line_for_phase(line, phase, line_index):
+    chars = list(line)
+    highlight = (phase + line_index * 3) % (len(chars) + 8)
+
+    for i, char in enumerate(chars):
+        if char == "#" and highlight - 2 <= i <= highlight:
+            chars[i] = "@"
+        elif char == "█" and (i + phase + line_index) % 11 == 0:
+            chars[i] = "▓"
+
+    return "".join(chars)
+
+
+def draw_title(stdscr, phase=0, show_prompt=True, visible_lines=None):
     stdscr.clear()
     h, _ = stdscr.getmaxyx()
     top = max(1, (h - len(TITLE_ART) - 6) // 2)
+    draw_background(stdscr, phase)
 
     for i, line in enumerate(TITLE_ART):
-        safe_addstr(stdscr, top + i, center_x(stdscr, line), line, curses.color_pair(31))
+        if visible_lines is not None and i >= visible_lines:
+            break
+        rendered_line = art_line_for_phase(line, phase, i)
+        safe_addstr(stdscr, top + i, center_x(stdscr, rendered_line), rendered_line, curses.color_pair(31))
 
-    title = "POKETHON"
+    title = "POKéTERMINAL"
     subtitle = "PreAlpha v0.6"
-    prompt = "Press Z -- C to README -- X to Debug Menu"
+    prompt = "Press Z"
 
-    safe_addstr(stdscr,top - 2,center_x(stdscr, title),title,curses.color_pair(32) | curses.A_BOLD,)
-    safe_addstr(stdscr,top + len(TITLE_ART) + 1,center_x(stdscr, subtitle),subtitle,curses.color_pair(33),)
-    safe_addstr(stdscr,top + len(TITLE_ART) + 3,center_x(stdscr, prompt),prompt, curses.A_BOLD, )
+    title_attr = curses.color_pair(32) | curses.A_BOLD
+    if phase % 2 == 0:
+        title_attr |= curses.A_BLINK
+
+    safe_addstr(stdscr, top - 2, center_x(stdscr, title), title, title_attr)
+    safe_addstr(stdscr, top + len(TITLE_ART) + 1, center_x(stdscr, subtitle), subtitle, curses.color_pair(33))
+    if show_prompt:
+        safe_addstr(stdscr, top + len(TITLE_ART) + 3, center_x(stdscr, prompt), prompt, curses.A_BOLD)
 
     stdscr.refresh()
+
+
+def animate_title_intro(stdscr):
+    for visible_lines in range(1, len(TITLE_ART) + 1):
+        draw_title(stdscr, phase=visible_lines, show_prompt=False, visible_lines=visible_lines)
+        curses.napms(70)
+
+    for phase in range(4):
+        draw_title(stdscr, phase=phase, show_prompt=True)
+        curses.napms(80)
 
 
 def title_screen(stdscr):
@@ -80,10 +134,11 @@ def title_screen(stdscr):
     stdscr.clear()
     stdscr.refresh()
     curses.napms(80)
-    draw_title(stdscr)
+    animate_title_intro(stdscr)
 
     blink_on = True
     last_toggle = time.time()
+    phase = 0
 
     while True:
         stdscr.timeout(120)
@@ -92,7 +147,7 @@ def title_screen(stdscr):
         if key == ord("c"):
             stdscr.timeout(-1)
             show_readme(stdscr)
-            draw_title(stdscr)
+            draw_title(stdscr, phase=phase, show_prompt=blink_on)
             blink_on = True
             last_toggle = time.time()
             continue
@@ -108,20 +163,8 @@ def title_screen(stdscr):
 
         last_toggle = now
         blink_on = not blink_on
-        draw_title(stdscr)
-
-        if blink_on:
-            continue
-
-        h, _ = stdscr.getmaxyx()
-        prompt = "Press Z to start"
-        safe_addstr(
-            stdscr,
-            max(0, h // 2 + 6),
-            center_x(stdscr, prompt),
-            " " * len(prompt),
-        )
-        stdscr.refresh()
+        phase += 1
+        draw_title(stdscr, phase=phase, show_prompt=blink_on)
 
 
 def show_readme(stdscr):

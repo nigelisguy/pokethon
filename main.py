@@ -44,6 +44,86 @@ def printdelay(text):
     for char in text:
         print(char, end='', flush=True)
         time.sleep(textspeed) 
+
+def confirm_menu(stdscr, title, detail):
+    y = 1
+    options = ["No", "Yes"]
+
+    while True:
+        stdscr.clear()
+        stdscr.addstr(0, 0, title)
+        stdscr.addstr(2, 0, detail)
+        stdscr.addstr(3, 0, "ALL DATA WILL BE ERASED.")
+
+        for i, option in enumerate(options):
+            if i == y:
+                stdscr.attron(curses.color_pair(1))
+                stdscr.addstr(6 + i, 0, f"> {option}")
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                stdscr.addstr(6 + i, 0, f"  {option}")
+
+        stdscr.addstr(10, 0, "Z = confirm   X = back")
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and y > 0:
+            y -= 1
+        elif key == curses.KEY_DOWN and y < len(options) - 1:
+            y += 1
+        elif key == ord("z"):
+            return y == 1
+        elif key == ord("x"):
+            return False
+
+
+def overworld_save_menu(stdscr):
+    y = 0
+
+    while True:
+        has_save = overworld.save_exists()
+        options = ["Continue", "New Save", "Delete Save", "Back"] if has_save else ["New Save", "Back"]
+
+        stdscr.clear()
+        stdscr.addstr(0, 0, "SAVE MENU")
+        stdscr.addstr(2, 0, f"Save slot: {'save.json' if has_save else 'empty'}")
+
+        if y >= len(options):
+            y = len(options) - 1
+
+        for i, option in enumerate(options):
+            if i == y:
+                stdscr.attron(curses.color_pair(1))
+                stdscr.addstr(4 + i, 0, f"> {option}")
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                stdscr.addstr(4 + i, 0, f"  {option}")
+
+        stdscr.addstr(10, 0, "Z = select   X = back")
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and y > 0:
+            y -= 1
+        elif key == curses.KEY_DOWN and y < len(options) - 1:
+            y += 1
+        elif key == ord("x"):
+            return
+        elif key == ord("z"):
+            choice = options[y]
+
+            if choice == "Continue":
+                overworld.reset_game_state()
+                overworld.overworld(stdscr)
+            elif choice == "New Save":
+                if not has_save or confirm_menu(stdscr, "CREATE NEW SAVE?", "Your current save will be deleted."):
+                    overworld.create_new_save()
+                    overworld.overworld(stdscr)
+            elif choice == "Delete Save":
+                if confirm_menu(stdscr, "DELETE SAVE?", "This will delete save.json."):
+                    overworld.delete_save()
+                    y = 0
+            elif choice == "Back":
+                return
+
 def mainm(stdscr):
     import fightui
     curses.curs_set(0)
@@ -94,7 +174,7 @@ def mainm(stdscr):
             elif y == 4:
                 setting(stdscr)
             elif y == 2:
-                overworld.overworld(stdscr)
+                overworld_save_menu(stdscr)
             elif y == 5:
                 mysterygift.gifted(stdscr)
 
