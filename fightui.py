@@ -220,7 +220,7 @@ def status_effect_manager(stdscr, mon):
     if "sleep" in mon.statuses:
         textbox(stdscr, f"{mon.base.name.capitalize()} is fast asleep!")
     if "bind" in mon.statuses:
-        dmg = mon.max_hp // 16
+        dmg = mon.max_hp // 16 #57 
         mon.hp = max(0, mon.hp - dmg)
         textbox(stdscr, f"{mon.base.name.capitalize()} is hurt by binding!")
     if "confuse" in mon.statuses:
@@ -596,7 +596,7 @@ def draw_header(stdscr, player, enemy):
 blocks = "▏▎▍▌▋▊▉█"
 def make_hp_bar(current, max_hp, length=10):
     if max_hp <= 0:
-        return " " * length, 15
+        return "░" * length, 15
 
     ratio = max(0, min(1, current / max_hp))
 
@@ -608,19 +608,16 @@ def make_hp_bar(current, max_hp, length=10):
     else:
         color = 15
 
-    total = ratio * length
-    full = int(total)
-    remainder = total - full
+    total_blocks = ratio * length
+    full_blocks = int(total_blocks)
+    remainder = total_blocks - full_blocks
 
-    bar = "█" * full
-    if full < length and remainder > 0:
-        index = int(remainder * (len(blocks) - 1))
-        bar += blocks[index]
+    bar = "█" * full_blocks
+    if full_blocks < length and remainder > 0:
+        partial_index = max(0, min(int(remainder * len(blocks)), len(blocks) - 1))
+        bar += blocks[partial_index]
 
-    if current > 0 and bar == "":
-        bar = "▏"
-
-    bar = bar.ljust(length)
+    bar = bar.ljust(length, "░")
 
     return bar, color
 
@@ -760,8 +757,15 @@ def move_menu(stdscr, player, enemy):
         draw_main_menu(stdscr, 0, player, enemy)  
         stats.substitude.draw(stdscr)
         draw_moves(stdscr, player, highlight)
+        if max_moves == 0:
+            safe_addstr(stdscr, 1, 42, "[    No moves    ]")
         draw_header(stdscr, player, enemy)
         key = stdscr.getch()
+
+        if max_moves == 0:
+            if key in (ord("x"), ord("z")):
+                return None
+            continue
 
         if key == curses.KEY_UP:
             if highlight > 0:

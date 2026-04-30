@@ -95,7 +95,9 @@ pp = [1, 1, 1, 1]
 PLAYER = "@"
 GRASS = "#"
 ITEM = "●"
-CUT_TREE = "↟"
+CUT_TREE = "▲"
+REAL_TREE = "⬜"
+LEGENDARY = "M"
 NURSE = "♥"
 ENEMY = "☺"
 POKEMON = "#"
@@ -138,12 +140,15 @@ class MonOver:
         current_hp = max_hp if hp_value == -1 else hp_value
         current_hp = max(0, min(current_hp, max_hp))
         bar_length = 10
-        filled = int((current_hp / max_hp) * bar_length) if max_hp > 0 else 0
-        hp_bar = "█" * filled + "░" * (bar_length - filled)
+        hp_filled = int((current_hp / max_hp) * bar_length) if max_hp > 0 else 0
+        hp_bar = "█" * hp_filled + "░" * (bar_length - hp_filled)
+        exp_filled = int((self.exp / self.maxexp) * bar_length) if self.maxexp > 0 else 0
+        exp_filled = max(0, min(exp_filled, bar_length))
+        exp_bar = "█" * exp_filled + "░" * (bar_length - exp_filled)
         prefix = f"{slot_number}. " if slot_number is not None else "" #idk might use in future
         return (
             f"{prefix}{self.name:<10} -- [HP {current_hp:>3}/{max_hp:<3}] "
-            f"[{hp_bar}] -- [EXP {self.exp}/{self.maxexp} LVL {self.level}]"
+            f"[{hp_bar}] -- [EXP {exp_bar}] LVL {self.level}"
         )
 
     def expgain(self, stdscr, gainedexp):
@@ -168,7 +173,7 @@ class MonOver:
 
 
 DEFAULT_PARTY = [
-    MonOver(rotation=1, id=1, name="Bulbasaur", moves=[340], level=5, exp=67),
+    MonOver(rotation=1, id=1, name="Bulbasaur", moves=[340], level=5, exp=0),
 ]
 
 party_mons = [mon.copy() for mon in DEFAULT_PARTY]
@@ -423,7 +428,7 @@ sync_party_slots()
 
 
 class Room:
-    def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None, items=None, cut_trees=None, room_id="room"):
+    def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None, items=None, cut_trees=None, trees=None, fog=None, room=None, legendary_mons=None, room_id="room"):
         self.width = width
         self.height = height
         self.npcs = npcs or {}
@@ -431,6 +436,10 @@ class Room:
         self.doors = doors or {}
         self.items = items or {}
         self.cut_trees = cut_trees or set()
+        self.trees = trees or set()
+        self.fog = fog or set()
+        self.room = room or {}
+        self.legendary_mons = legendary_mons or {}
         self.room_id = room_id
 
 
@@ -511,8 +520,10 @@ def map_object_id(room, pos):
     return f"{room.room_id}:{y}:{x}"
 
 def is_blocked(room, pos):
-    return pos in room.npcs or (
-        pos in room.cut_trees and map_object_id(room, pos) not in cut_trees
+    return (
+        pos in room.npcs
+        or pos in room.trees
+        or (pos in room.cut_trees and map_object_id(room, pos) not in cut_trees)
     )
 
 def pickup_item(stdscr, room, pos):
@@ -527,6 +538,62 @@ def pickup_item(stdscr, room, pos):
     add_item(item_name, amount)
     picked_items.add(item_id)
     show_dialogue(stdscr, [f"Found {item_label(item_name)} x{amount}!"])
+
+def handle_wild_battle_result(stdscr, result, remove_id=None):
+    if isinstance(result, tuple) and result[0] == "caught":
+        enemy = result[1]
+
+        new_mon = MonOver(
+            rotation=len(party_mons) + 1,
+            id=enemy.base.id,
+            name=enemy.base.name,
+            moves=list(getattr(enemy, "move_ids", [])),
+            level=enemy.level,
+            exp=0
+        )
+
+        add_to_party_or_pc(stdscr, new_mon)
+        if remove_id is not None:
+            picked_items.add(remove_id)
+
+    elif result == "win":
+        active_mon = get_party_mon(last_battle_slot)
+        enemy = battlehandler.last_enemy
+        if active_mon is not None and enemy is not None:
+            gained_exp = battlehandler.calculate_exp_gain(enemy)
+            active_mon.expgain(stdscr, gained_exp)
+        if remove_id is not None:
+            picked_items.add(remove_id)
+
+def run_fixed_wild_battle(stdscr, room, pos):
+    if pos not in room.legendary_mons:
+        return False
+
+    encounter_id = map_object_id(room, pos)
+    if encounter_id in picked_items:
+        return False
+
+    encounter = room.legendary_mons[pos]
+    show_dialogue(stdscr, [f"{encounter['name']} appeared!"])
+
+    player_party = battlehandler.to_battle_party()
+    active_idx = battlehandler.active_battle_index(player_party)
+    if active_idx is None:
+        return True
+
+    enemy = battlehandler.create_mon(
+        mon_id=encounter["mon_id"],
+        level=encounter["level"],
+        move_ids=encounter["moves"],
+        hp=-1,
+        enemytype="legendary"
+    )
+    battlehandler.last_enemy = enemy
+
+    result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx)
+    battlehandler.sync_player_hp(player_party)
+    handle_wild_battle_result(stdscr, result, remove_id=encounter_id)
+    return True
 
 def try_cut_tree(stdscr, room, pos):
     tree_id = map_object_id(room, pos)
@@ -566,6 +633,18 @@ def draw(stdscr, room, py, px):
             if (y, x) in room.npcs:
                 char = room.npcs[(y, x)][0]
                 color = curses.color_pair(6)
+
+            if (y, x) in room.trees:
+                char = REAL_TREE
+                color = curses.color_pair(4)
+
+            if (y, x) in room.fog:
+                char = REAL_TREE
+                color = curses.color_pair(4)
+
+            if (y, x) in room.legendary_mons and object_id not in picked_items:
+                char = LEGENDARY
+                color = curses.color_pair(5)
 
             if (y, x) in room.doors:
                 char = "D"
@@ -625,8 +704,29 @@ def create_rooms():
     cut_trees1 = {
         (4, 10),
     }
+    trees1 = {
+        (4, 6),
+        (4, 7),
+        (5, 6),
+        (5, 7),
+    }
+    fog1 = {
+        (0, 15),
+        (1, 15),
+        (2, 15),
+        (3, 15),
+        (4, 15),
+    }
+    legendary_mons1 = {
+        (7, 15): {
+            "name": "Mewtwo",
+            "mon_id": 150,
+            "level": 50,
+            "moves": [340, 340, 340, 340],
+        },
+    }
 
-    room1 = Room(20, 10, npcs1, grass1, items=items1, cut_trees=cut_trees1, room_id="room1")
+    room1 = Room(20, 10, npcs1, grass1, items=items1, cut_trees=cut_trees1, trees=trees1, fog=fog1, legendary_mons=legendary_mons1, room_id="room1")
 
     npcs2 = {
         (1, 1): (NPC_ICON, ["you made it to room 2"]),
@@ -824,6 +924,9 @@ def overworld(stdscr):
         if (py, px) in current_room.doors:
             current_room, py, px = current_room.doors[(py, px)]
 
+        if run_fixed_wild_battle(stdscr, current_room, (py, px)):
+            continue
+
         if key == ord("z"):
             for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 check = (py + dy, px + dx)
@@ -859,25 +962,7 @@ def overworld(stdscr):
             if random.random() < 0.2:
                 show_dialogue(stdscr, ["A wild Pokémon appeared!"])
                 result = battlehandler.run_battle(stdscr, 1)
-                if isinstance(result, tuple) and result[0] == "caught":
-                    enemy = result[1]
-
-                    new_mon = MonOver(
-                        rotation=len(party_mons) + 1,
-                        id=enemy.base.id, 
-                        name=enemy.base.name,
-                        moves=list(getattr(enemy, "move_ids", [])),
-                        level=enemy.level,
-                        exp=0
-                    )
-
-                    add_to_party_or_pc(stdscr, new_mon)
-                if result == "win":
-                    active_mon = get_party_mon(last_battle_slot)
-                    enemy = battlehandler.last_enemy
-                    if active_mon is not None and enemy is not None:
-                        gained_exp = battlehandler.calculate_exp_gain(enemy)
-                        active_mon.expgain(stdscr, gained_exp)
+                handle_wild_battle_result(stdscr, result)
 
 
 def save_menu(stdscr):

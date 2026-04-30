@@ -19,7 +19,15 @@ TRAINERS = {
 
 def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
     stat_block = getattr(stats, f"mon{mon_id}")
-    move_list = [getattr(stats, f"move{m}") for m in move_ids]
+    move_list = []
+    for move_id in move_ids:
+        try:
+            move_id = int(move_id)
+        except (TypeError, ValueError):
+            continue
+
+        if move_id > 0 and hasattr(stats, f"move{move_id}"):
+            move_list.append(getattr(stats, f"move{move_id}"))
 
     mon = fightui.BattleMon(stat_block, level, move_list, hp)
 
