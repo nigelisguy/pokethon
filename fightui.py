@@ -208,8 +208,8 @@ def battle_setup(stdscr):
     enemy = BattleMon(e_mon, 50, e_moves)
     return afightui(stdscr, player, enemy, mode)
 
-def status_effect_manager(stdscr, mon):
-    if "poison" in mon.statuses:
+def status_effect_manager(stdscr, mon): 
+    if "poison" in mon.statuses: 
         dmg = mon.max_hp // 8
         mon.hp = max(0, mon.hp - dmg)
         textbox(stdscr, f"{mon.base.name.capitalize()} is hurt by poison!")

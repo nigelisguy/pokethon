@@ -33,8 +33,10 @@ DEFAULT_SAVE = {
         {"potion": 5},
         {"pokeball": 5}
     ],
+    "money": 3000,
     "picked_items": [],
     "cut_trees": [],
+    "battled_trainers": [],
     "pp": [-1, -1, -1, -1],
     "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes]
 }
@@ -108,6 +110,7 @@ TEXT_SPEED = 0.02
 battled_trainers = set()
 picked_items = set()
 cut_trees = set()
+money = 3000
 
 
 class MonOver:
@@ -277,6 +280,24 @@ def add_item(item_name, amount=1):
 
 def has_item(item_name):
     return any(item.get(item_name, 0) > 0 for item in inventory)
+
+def spend_money(amount):
+    global money
+    if money < amount:
+        return False
+
+    money -= amount
+    return True
+
+def add_money(amount):
+    global money
+    money += amount
+
+def lose_blackout_money():
+    global money
+    lost = money // 2
+    money -= lost
+    return lost
 
 def pc_menu(stdscr):
     global current_box
@@ -479,8 +500,10 @@ def build_save():
         },
         "pokemon": party_data,
         "inventory": inventory,
+        "money": money,
         "picked_items": sorted(picked_items),
         "cut_trees": sorted(cut_trees),
+        "battled_trainers": sorted(battled_trainers),
         "pp": fightui.pplist,
         "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes],
     }
@@ -511,6 +534,13 @@ def npc_dialogue(npc):
     return npc[1]
 
 def npc_trainer_id(npc):
+    if len(npc) >= 3:
+        action = npc[2]
+        if action != "SHOP":
+            return action
+    return None
+
+def npc_action(npc):
     if len(npc) >= 3:
         return npc[2]
     return None
@@ -579,7 +609,7 @@ def run_fixed_wild_battle(stdscr, room, pos):
     player_party = battlehandler.to_battle_party()
     active_idx = battlehandler.active_battle_index(player_party)
     if active_idx is None:
-        return True
+        return "lose"
 
     enemy = battlehandler.create_mon(
         mon_id=encounter["mon_id"],
@@ -593,7 +623,7 @@ def run_fixed_wild_battle(stdscr, room, pos):
     result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx)
     battlehandler.sync_player_hp(player_party)
     handle_wild_battle_result(stdscr, result, remove_id=encounter_id)
-    return True
+    return result
 
 def try_cut_tree(stdscr, room, pos):
     tree_id = map_object_id(room, pos)
@@ -665,6 +695,36 @@ def heal_player():
         hpstorage[i] = -1
     fightui.pplist = [-1, -1, -1, -1]
 
+def blackout_to_pokemon_center(stdscr, rooms):
+    lost = lose_blackout_money()
+    center_room_id = getattr(stats, "POKEMON_CENTER_ROOM_ID", "map1")
+    center_pos = getattr(stats, "POKEMON_CENTER_PLAYER_POS", (2, 5))
+    nurse_pos = getattr(stats, "POKEMON_CENTER_NURSE_POS", (2, 6))
+    center_room = rooms[center_room_id]
+
+    show_dialogue(stdscr, [
+        "You have no Pokémon left!",
+        f"You blacked out and dropped ${lost}...",
+        "You hurried back to the Pokémon Center!",
+    ])
+
+    py, px = center_pos
+    steps = []
+    step_y = 1 if nurse_pos[0] > py else -1
+    for y in range(py, nurse_pos[0], step_y):
+        steps.append((y, px))
+
+    step_x = 1 if nurse_pos[1] > px else -1
+    for x in range(px, nurse_pos[1], step_x):
+        steps.append((nurse_pos[0], x))
+
+    for step_y, step_x in steps:
+        draw(stdscr, center_room, step_y, step_x)
+        time.sleep(0.08)
+
+    show_dialogue(stdscr, ["healing...", lambda: heal_player(), "done!"])
+    return center_room, py, px
+
 def get_current_box():
     return pc_boxes[current_box]
 
@@ -685,66 +745,52 @@ def remove_from_pc(index):
         return box.pop(index)
     return None
 
-def create_rooms():
-    npcs1 = {
-        (2, 5): (NPC_ICON, ["hello!", "welcome to room 1"]),
-        (2, 6): (NURSE, ["healing...", lambda: heal_player(), "done!"]),
-    }
+def materialize_dialogue(lines):
+    dialogue = []
+    for line in lines:
+        if line == "HEAL_PLAYER":
+            dialogue.append(lambda: heal_player())
+        else:
+            dialogue.append(line)
+    return dialogue
 
-    grass1 = set()
-    for y in range(5, 10):
-        for x in range(5, 10):
-            grass1.add((y, x))
+def create_room_registry():
+    rooms = {}
 
-    items1 = {
-        (1, 4): ("hm_cut", 1),
-        (8, 12): ("potion", 1),
-    }
+    for room_id, data in stats.MAP_ROOMS.items():
+        npcs = {
+            pos: (npc[0], materialize_dialogue(npc[1]), *npc[2:])
+            for pos, npc in copy.deepcopy(data.get("npcs", {})).items()
+        }
 
-    cut_trees1 = {
-        (4, 10),
-    }
-    trees1 = {
-        (4, 6),
-        (4, 7),
-        (5, 6),
-        (5, 7),
-    }
-    fog1 = {
-        (0, 15),
-        (1, 15),
-        (2, 15),
-        (3, 15),
-        (4, 15),
-    }
-    legendary_mons1 = {
-        (7, 15): {
-            "name": "Mewtwo",
-            "mon_id": 150,
-            "level": 50,
-            "moves": [340, 340, 340, 340],
-        },
-    }
+        rooms[room_id] = Room(
+            data["width"],
+            data["height"],
+            npcs=npcs,
+            grass_tiles=set(data.get("grass_tiles", set())),
+            items=copy.deepcopy(data.get("items", {})),
+            cut_trees=set(data.get("cut_trees", set())),
+            trees=set(data.get("trees", set())),
+            fog=set(data.get("fog", set())),
+            legendary_mons=copy.deepcopy(data.get("legendary_mons", {})),
+            room_id=room_id
+        )
 
-    room1 = Room(20, 10, npcs1, grass1, items=items1, cut_trees=cut_trees1, trees=trees1, fog=fog1, legendary_mons=legendary_mons1, room_id="room1")
+    for room_id, data in stats.MAP_ROOMS.items():
+        for pos, (target_id, target_y, target_x) in data.get("doors", {}).items():
+            rooms[room_id].doors[pos] = (rooms[target_id], target_y, target_x)
 
-    npcs2 = {
-        (1, 1): (NPC_ICON, ["you made it to room 2"]),
-        (3, 3): (ENEMY, ["You there!", "Let's battle!"], "room2_guard"),
-    }
+    return rooms
 
-    grass2 = {(6, 6), (6, 7), (7, 6), (7, 7)}
+def create_rooms(start_room_id=None, return_registry=False):
+    rooms = create_room_registry()
+    start_room_id = start_room_id or getattr(stats, "SELECTED_OVERWORLD", "map1")
+    start_room = rooms.get(start_room_id, rooms["map1"])
 
-    items2 = {
-        (5, 5): ("pokeball", 2),
-    }
+    if return_registry:
+        return start_room, rooms
 
-    room2 = Room(20, 10, npcs2, grass2, items=items2, room_id="room2")
-
-    room1.doors[(0, 10)] = (room2, 9, 10)
-    room2.doors[(9, 10)] = (room1, 0, 10)
-
-    return room1
+    return start_room
 
 
 def draw_party_panel(stdscr, selected_index=None, moving_index=None):
@@ -768,7 +814,7 @@ def draw_party_panel(stdscr, selected_index=None, moving_index=None):
     date_str = now.strftime("%d %B, %Y - %H:%M:%S")
     safe_addstr(stdscr, 17, 0, "#" + "#" * 78 + "#")
     safe_addstr(stdscr, 18, 0, date_str)
-    safe_addstr(stdscr, 19, 0, "Did you know? This game exists!")
+    safe_addstr(stdscr, 19, 0, f"Money: ${money}")
     safe_addstr(stdscr, 20, 0, "#placeholder#lol")
     safe_addstr(stdscr, 21, 0, "#" + "#" * 78 + "#")
 
@@ -862,6 +908,39 @@ def bag_menu(stdscr):
             return
 
 
+def shop_menu(stdscr):
+    items = list(stats.SHOP_ITEMS.items())
+    selected = 0
+
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 0, f"POKé MART     Money: ${money}")
+        safe_addstr(stdscr, 1, 0, "#" * 38)
+
+        for i, (item_name, price) in enumerate(items):
+            marker = ">" if i == selected else " "
+            safe_addstr(stdscr, i + 3, 2, f"{marker} {item_label(item_name):<16} ${price}")
+
+        safe_addstr(stdscr, 8, 0, "[Z] Buy  [X] Leave")
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < len(items) - 1:
+            selected += 1
+        elif key == ord("z"):
+            item_name, price = items[selected]
+            if spend_money(price):
+                add_item(item_name)
+                show_dialogue(stdscr, [f"Bought {item_label(item_name)}!"])
+            else:
+                show_dialogue(stdscr, ["Not enough money."])
+        elif key == ord("x"):
+            return
+
+
 def party_menu(stdscr):
     selected = 0
     moving = None
@@ -894,7 +973,7 @@ def overworld(stdscr):
     stdscr.keypad(True)
     curses.start_color()
 
-    current_room = create_rooms()
+    current_room, rooms = create_rooms(return_registry=True)
     py, px = 0, 0
 
     while True:
@@ -924,7 +1003,10 @@ def overworld(stdscr):
         if (py, px) in current_room.doors:
             current_room, py, px = current_room.doors[(py, px)]
 
-        if run_fixed_wild_battle(stdscr, current_room, (py, px)):
+        fixed_result = run_fixed_wild_battle(stdscr, current_room, (py, px))
+        if fixed_result:
+            if fixed_result == "lose":
+                current_room, py, px = blackout_to_pokemon_center(stdscr, rooms)
             continue
 
         if key == ord("z"):
@@ -935,7 +1017,13 @@ def overworld(stdscr):
 
                 if check in current_room.npcs:
                     npc = current_room.npcs[check]
+                    action = npc_action(npc)
                     trainer_id = npc_trainer_id(npc)
+
+                    if action == "SHOP":
+                        show_dialogue(stdscr, npc_dialogue(npc))
+                        shop_menu(stdscr)
+                        break
 
                     if trainer_id is not None and trainer_id in battled_trainers:
                         show_dialogue(stdscr, ["We already battled."])
@@ -947,22 +1035,59 @@ def overworld(stdscr):
                         result = battlehandler.run_trainer_battle(stdscr, trainer_id)
                         if result == "win":
                             battled_trainers.add(trainer_id)
-                            show_dialogue(stdscr, ["You won the trainer battle!"])
+                            reward = stats.TRAINER_REWARDS.get(trainer_id, 100)
+                            add_money(reward)
+                            show_dialogue(stdscr, ["You won the trainer battle!", f"You got ${reward}!"])
                         elif result == "lose":
                             show_dialogue(stdscr, ["You lost the trainer battle..."])
+                            current_room, py, px = blackout_to_pokemon_center(stdscr, rooms)
                         elif result == "run":
                             show_dialogue(stdscr, ["You ran from the trainer battle."])
 
                     break
 
         if key == ord("c"):
-            save_menu(stdscr)
+            spawn_room_id = save_menu(stdscr)
+            if spawn_room_id in rooms:
+                current_room = rooms[spawn_room_id]
+                py, px = stats.MAP_ROOMS[spawn_room_id].get("spawn", (0, 0))
 
         if (py, px) in current_room.grass_tiles:
             if random.random() < 0.2:
                 show_dialogue(stdscr, ["A wild Pokémon appeared!"])
                 result = battlehandler.run_battle(stdscr, 1)
                 handle_wild_battle_result(stdscr, result)
+                if result == "lose":
+                    current_room, py, px = blackout_to_pokemon_center(stdscr, rooms)
+
+
+def debug_spawn_menu(stdscr):
+    room_ids = list(stats.MAP_ROOMS.keys())
+    selected = 0
+
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 0, "ROOM SELECT")
+        safe_addstr(stdscr, 1, 0, "#" * 24)
+
+        for i, room_id in enumerate(room_ids):
+            marker = ">" if i == selected else " "
+            spawn = stats.MAP_ROOMS[room_id].get("spawn", (0, 0))
+            safe_addstr(stdscr, i + 3, 0, f"{marker} {room_id} {spawn}")
+
+        safe_addstr(stdscr, len(room_ids) + 5, 0, "[Z] Spawn  [X] Back")
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < len(room_ids) - 1:
+            selected += 1
+        elif key == ord("z"):
+            return room_ids[selected]
+        elif key == ord("x"):
+            return None
 
 
 def save_menu(stdscr):
@@ -970,6 +1095,7 @@ def save_menu(stdscr):
 
     options = ["Save Game", "Pokémon", "Bag", "PC", "Options", "Pokédex", "M.Gift"]
     y = 0
+    debug_presses = 0
 
     while True:
         h, w = stdscr.getmaxyx()
@@ -1000,24 +1126,27 @@ def save_menu(stdscr):
             y -= 1
         elif key == curses.KEY_DOWN and y < len(options) - 1:
             y += 1
+        elif key == ord("c"):
+            debug_presses += 1
+            if debug_presses >= 5:
+                return debug_spawn_menu(stdscr)
         elif key == ord("z"):
             if y == 0:
                 data = build_save()
                 save_game(data)
                 show_dialogue(stdscr, ["Game Saved!"])
-                break
+                return None
             elif y == 1:
                 party_menu(stdscr)
-                current_room = create_rooms()
-                break
+                return None
             elif y == 2:
                 bag_menu(stdscr)
             elif y == 3:
                 pc_menu(stdscr)
             else:
-                break
+                return None
         elif key == ord("x"):
-            break
+            return None
 
 
 def load_pokemon(data):
@@ -1039,7 +1168,7 @@ def load_pokemon(data):
 
 
 def reset_game_state(data=None):
-    global save_data, name, party_mons, inventory, picked_items, cut_trees
+    global save_data, name, party_mons, inventory, picked_items, cut_trees, money
     global pc_boxes, current_box, battled_trainers
 
     if data is None:
@@ -1057,6 +1186,7 @@ def reset_game_state(data=None):
         party_mons = [mon.copy() for mon in DEFAULT_PARTY]
 
     inventory = copy.deepcopy(save_data.get("inventory", []))
+    money = save_data.get("money", 3000)
     picked_items = set(save_data.get("picked_items", []))
     cut_trees = set(save_data.get("cut_trees", []))
 
@@ -1065,7 +1195,7 @@ def reset_game_state(data=None):
     sync_party_slots()
 
     current_box = 0
-    battled_trainers = set()
+    battled_trainers = set(save_data.get("battled_trainers", []))
     pc_boxes = []
 
     for box in save_data.get("pcmons", [[]]):

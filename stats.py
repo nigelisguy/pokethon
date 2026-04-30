@@ -197,6 +197,71 @@ BASE_EXP_YIELDS = {
 for mon_id, base_exp in BASE_EXP_YIELDS.items():
     globals()[f"mon{mon_id}"].base_exp = base_exp
 
+
+# overworld maps
+SELECTED_OVERWORLD = "map1"
+POKEMON_CENTER_ROOM_ID = "map1"
+POKEMON_CENTER_PLAYER_POS = (3, 6)
+POKEMON_CENTER_NURSE_POS = (2, 6)
+
+SHOP_ITEMS = {
+    "potion": 300,
+    "pokeball": 200,
+    "fullheal": 600,
+}
+
+TRAINER_REWARDS = {
+    "room2_guard": 96,
+}
+
+MAP_ROOMS = {
+    "map1": {
+        "width": 20,
+        "height": 10,
+        "spawn": (0, 0),
+        "npcs": {
+            (2, 5): ("☺", ["hello!", "welcome to room 1"]),
+            (2, 6): ("♥", ["healing...", "HEAL_PLAYER", "done!"]),
+            (2, 7): ("$", ["Welcome to the Poké Mart!"], "SHOP"),
+        },
+        "grass_tiles": {(y, x) for y in range(5, 10) for x in range(5, 10)},
+        "items": {
+            (1, 4): ("hm_cut", 1),
+            (8, 12): ("potion", 1),
+        },
+        "cut_trees": {(4, 10)},
+        "trees": {(y, 15) for y in range(13) if y != 2},
+        "fog": {(y, x) for y in range(1, 7) for x in range(15, 19)},
+        "legendary_mons": {
+            (7, 16): {
+                "name": "Mewtwo",
+                "mon_id": 150,
+                "level": 50,
+                "moves": [340, 340, 340, 340],
+            },
+        },
+        "doors": {
+            (0, 10): ("map2", 9, 10),
+        },
+    },
+    "map2": {
+        "width": 20,
+        "height": 10,
+        "spawn": (9, 10),
+        "npcs": {
+            (1, 1): ("☺", ["you made it to room 2"]),
+            (3, 3): ("☺", ["You there!", "Let's battle!"], "room2_guard"),
+        },
+        "grass_tiles": {(y, x) for y in range(6, 8) for x in range(6, 8)},
+        "items": {
+            (5, 5): ("pokeball", 2),
+        },
+        "doors": {
+            (9, 10): ("map1", 0, 10),
+        },
+    },
+}
+
 #moves
 class Moves:
     def __init__(self,name,type,pp,pow,acc,attack,defence,spattack,spdefence,speed,evasion,enattack,endefence,enspattack,enspdefence,enspeed,emevasion,emaccuracy,weather,eneffect,hitpriority,secondacc,repeatedhit,maxhealth,critstage,desc):
