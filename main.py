@@ -84,7 +84,7 @@ def overworld_save_menu(stdscr):
         options = ["Continue", "New Save", "Delete Save", "Back"] if has_save else ["New Save", "Back"]
 
         stdscr.clear()
-        stdscr.addstr(0, 0, "SAVE MENU")
+        stdscr.addstr(0, 0, "MAIN MENU")
         stdscr.addstr(2, 0, f"Save slot: {'save.json' if has_save else 'empty'}")
 
         if y >= len(options):
@@ -134,14 +134,12 @@ def mainm(stdscr):
 
     menu = [
         "-->POKETHON<--",
+        "Start Game",
         "Debug Battle",
-        "Overworld",
         "Pokedex [PLACEHOLDER]",
         "Settings",
         "Mystery Gift",
-        "Start Game [NOT AVAILABLE]",
-        "",
-        "Recommended to look at README by pressing C!"
+        "tba",
     ]
 
     y = 1
@@ -168,12 +166,12 @@ def mainm(stdscr):
         elif key == ord("z"):
             if y == 3:
                 mon_menu(stdscr)
-            elif y == 1:  
+            elif y == 2:  
                 import fightui
                 fightui.battle_setup(stdscr)
             elif y == 4:
                 setting(stdscr)
-            elif y == 2:
+            elif y == 1:
                 overworld_save_menu(stdscr)
             elif y == 5:
                 mysterygift.gifted(stdscr)

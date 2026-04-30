@@ -77,11 +77,10 @@ def enemy_for_room(room):
 
 def calculate_exp_gain(enemy, participants=1, trainer_battle=False):
     base_exp = getattr(enemy.base, "base_exp", 0)
-    exp_gain = (base_exp * enemy.level) // 7
-    exp_gain //= max(1, participants)
+    participants = max(1, participants)
+    trainer_multiplier = 3 if trainer_battle else 2
 
-    if trainer_battle:
-        exp_gain = (exp_gain * 3) // 2
+    exp_gain = (base_exp * enemy.level * trainer_multiplier) // (7 * participants * 2)
 
     return max(1, exp_gain)
 
