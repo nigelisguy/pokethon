@@ -27,21 +27,21 @@ BASE_COLORS = {
 
 DISPLAY = {
     "empty": "",
-    "grass": "G",
-    "water": "W",
-    "hill": "H",
-    "tree": "T",
-    "cut_tree": "C",
+    "grass": "#",
+    "water": "~",
+    "hill": "",  # handled separately with arrows
+    "tree": "⬜",
+    "cut_tree": "▲",
     "npc": "☺",
-    "item": "I",
-    "legendary": "★",
-    "spawn": "S",
+    "item": "●",
+    "legendary": "M",
+    "spawn": "@",
     "door": "D",
 }
 
 
 class MapData:
-    def __init__(self, w=20, h=10):
+    def __init__(self, w=80, h=10):
         self.width = w
         self.height = h
 
@@ -89,17 +89,28 @@ class Editor:
 
         tk.Button(top, text="Rename Map", command=self.rename_map).pack(side=tk.LEFT)
 
-        self.w_entry = tk.Entry(top, width=5)
-        self.w_entry.insert(0, "20")
+        self.w_var = tk.StringVar(value="80")
+        self.w_entry = ttk.Combobox(
+            top,
+            textvariable=self.w_var,
+            values=[str(i) for i in range(1, 81)],
+            width=5,
+            state="readonly"
+        )
         self.w_entry.pack(side=tk.LEFT)
 
-        self.h_entry = tk.Entry(top, width=5)
-        self.h_entry.insert(0, "10")
+        self.h_var = tk.StringVar(value="10")
+        self.h_entry = ttk.Combobox(
+            top,
+            textvariable=self.h_var,
+            values=[str(i) for i in range(1, 11)],
+            width=5,
+            state="readonly"
+        )
         self.h_entry.pack(side=tk.LEFT)
 
-        ttk.Combobox(top, textvariable=self.mode, values=TILES, state="readonly").pack(side=tk.LEFT)
-
         tk.Button(top, text="Resize Map", command=self.resize_map).pack(side=tk.LEFT)
+        ttk.Combobox(top, textvariable=self.mode, values=TILES, state="readonly").pack(side=tk.LEFT)
         tk.Button(top, text="Undo", command=self.undo_action).pack(side=tk.LEFT)
         tk.Button(top, text="Redo", command=self.redo_action).pack(side=tk.LEFT)
         tk.Button(top, text="Save", command=self.save).pack(side=tk.LEFT)
@@ -211,8 +222,15 @@ class Editor:
         self.item_id.bind("<Return>", lambda e: self.save_item())
         self.item_qty.bind("<Return>", lambda e: self.save_item())
     def build_canvas(self):
-        self.canvas = tk.Canvas(self.root, bg="black")
-        self.canvas.pack(side=tk.LEFT)
+        self.canvas_frame = tk.Frame(self.root)
+        self.canvas_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.canvas = tk.Canvas(self.canvas_frame, bg="black")
+        self.h_scroll = tk.Scrollbar(self.canvas_frame, orient=tk.HORIZONTAL, command=self.canvas.xview)
+        self.canvas.configure(xscrollcommand=self.h_scroll.set)
+
+        self.canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.h_scroll.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.canvas.bind("<Button-1>", self.click)
         self.canvas.bind("<B1-Motion>", self.drag_move)
@@ -490,13 +508,17 @@ class Editor:
 
     def resize_map(self):
         try:
-            w = int(self.w_entry.get())
-            h = int(self.h_entry.get())
+            w = min(80, max(1, int(self.w_entry.get())))
+            h = min(10, max(1, int(self.h_entry.get())))
 
             m = self.cur()
 
             m.width = w
             m.height = h
+
+            # Update UI dropdowns safely (locked readonly)
+            self.w_var.set(str(w))
+            self.h_var.set(str(h))
 
             # remove out-of-bounds tiles
             def clamp_set(s):
@@ -545,12 +567,28 @@ class Editor:
                     fill=BASE_COLORS[t],
                     outline="black"
                 )
+                # Draw symbol if exists
+                symbol = DISPLAY.get(t, "")
+                if symbol:
+                    self.canvas.create_text(
+                        x*TILE_SIZE + TILE_SIZE//2,
+                        y*TILE_SIZE + TILE_SIZE//2,
+                        text=symbol,
+                        fill="black"
+                    )
 
                 if (y, x) in m.hill_tiles:
+                    dir = m.hill_tiles[(y, x)]
+                    arrows = {
+                        "up": "↑",
+                        "down": "↓",
+                        "left": "←",
+                        "right": "→",
+                    }
                     self.canvas.create_text(
-                        x*TILE_SIZE+12,
-                        y*TILE_SIZE+12,
-                        text=m.hill_tiles[(y, x)][0].upper(),
+                        x*TILE_SIZE + TILE_SIZE//2,
+                        y*TILE_SIZE + TILE_SIZE//2,
+                        text=arrows.get(dir, "?"),
                         fill="white"
                     )
                 if (y, x) in m.doors:
@@ -561,6 +599,8 @@ class Editor:
                         fill="black"
                     )
 
+        # Update scroll region to allow full width viewing
+        self.canvas.config(scrollregion=(0, 0, m.width * TILE_SIZE, m.height * TILE_SIZE))
         self.update_inspector()
 
     def push_undo(self):

@@ -5,6 +5,8 @@ import fightui
 import overworld
 import mysterygift
 import cutscene
+import subprocess
+import sys
 
 #colors
 curses.initscr()
@@ -53,6 +55,10 @@ def printdelay(text):
     for char in text:
         print(char, end='', flush=True)
         time.sleep(textspeed) 
+
+def launch_tool(script_path):
+    curses.endwin()
+    subprocess.run([sys.executable, script_path])
 
 def confirm_menu(stdscr, title, detail, warning="ALL DATA WILL BE ERASED."):
     y = 1
@@ -457,6 +463,9 @@ def mainm(stdscr):
         "Settings",
         "Mystery Gift",
         "Save Debug",
+        "GUI Map Editor",
+        "GUI Sprite Editor",
+        "Update Log(placeholder, coming soon)"
     ]
 
     y = 1
@@ -494,6 +503,10 @@ def mainm(stdscr):
                 mysterygift.gifted(stdscr)
             elif y == 6:
                 save_debug_menu(stdscr)
+            elif y == 7:
+                launch_tool("devtools/pokethon_level_builder.py")
+            elif y == 8:
+                launch_tool("devtools/sprite_editor.py")
 
 def setting(stdscr):
     global textspeed
