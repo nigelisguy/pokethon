@@ -198,7 +198,7 @@ for mon_id, base_exp in BASE_EXP_YIELDS.items():
     globals()[f"mon{mon_id}"].base_exp = base_exp
 
 
-# overworld maps
+# overworld maps etc
 SELECTED_OVERWORLD = "map1"
 POKEMON_CENTER_ROOM_ID = "map1"
 POKEMON_CENTER_PLAYER_POS = (3, 6)
@@ -225,6 +225,12 @@ MAP_ROOMS = {
             (2, 7): ("$", ["Welcome to the Poké Mart!"], "SHOP"),
         },
         "grass_tiles": {(y, x) for y in range(5, 10) for x in range(5, 10)},
+        "hill_tiles": {
+            (3, 9): "down",
+            (5, 13): "up",
+            (6, 11): "left",
+            (6, 13): "right",
+        },
         "items": {
             (1, 4): ("hm_cut", 1),
             (8, 12): ("potion", 1),
@@ -253,13 +259,77 @@ MAP_ROOMS = {
             (3, 3): ("☺", ["You there!", "Let's battle!"], "room2_guard"),
         },
         "grass_tiles": {(y, x) for y in range(6, 8) for x in range(6, 8)},
+        "water_tiles": {(y, x) for y in range(1, 6) for x in range(12, 19)},
+        "hill_tiles": {
+            (4, 7): "down",
+        },
         "items": {
+            (2, 2): ("hm_swim", 1),
             (5, 5): ("pokeball", 2),
         },
         "doors": {
             (9, 10): ("map1", 0, 10),
         },
+
     },
+    #template
+    "placeholder": {
+        "width": 20,
+        "height": 10,
+        "spawn": (0, 0),
+        "npcs": {
+            (2, 5): ("☺", ["hello!", "this is a template map"]),
+        },
+        "grass_tiles": {(y, x) for y in range(5, 10) for x in range(5, 10)},
+        "hill_tiles": {
+            (5, 11): "down",
+            (5, 13): "up",
+            (6, 11): "left",
+            (6, 13): "right",
+        },
+        "items": {
+            (8, 12): ("potion", 1),
+        },
+        "cut_trees": {(4, 10)},
+        "trees": {(y, 15) for y in range(13) if y != 2},
+        "fog": {(y, x) for y in range(1, 2) for x in range(2, 5)},
+        "doors": {
+            (0, 10): ("map1", 9, 10),
+        },
+    },
+    #template end
+    "testmap1": {
+        "width": 40,
+        "height": 10,
+        "spawn": (0, 0),
+        "npcs": {
+            (2, 5): ("☺", ["hello!", "this is a template map"]),
+        },
+        "grass_tiles": (
+            {(y, x) for y in range(5, 10) for x in range(5, 10)}
+            | {(y, x) for y in range(12, 17) for x in range(0, 5)}
+        ),
+        "hill_tiles": {
+            (5, 11): "down",
+            (5, 13): "up",
+            (6, 11): "left",
+            (6, 13): "right",
+        },
+        "items": {
+            (8, 12): ("potion", 1),
+        },
+        "cut_trees": {(4, 10)},
+        "trees": (
+        {(y, 15) for y in range(13) if y!=2}
+        ),
+        "fog": {(y, x) for y in range(1, 2) for x in range(2, 5)},
+        "doors": {
+            (0, 10): ("map1", 9, 10),
+        },
+    },
+    #template end
+    'garbage': {'width': 20, 'height': 10, 'spawn': (0, 0), 'npcs': {(6, 10): ('☺', ['hello']), (1, 14): ('☺', ['im lost'])}, 'grass_tiles': [(4, 9), (3, 13), (8, 9), (9, 8), (0, 14), (2, 11), (1, 15), (3, 6), (3, 15), (5, 12), (8, 11), (9, 10), (0, 7), (1, 8), (6, 4), (6, 13), (7, 12), (3, 8), (8, 4), (5, 14), (9, 12), (6, 6), (7, 5), (7, 14), (3, 10), (5, 7), (9, 5), (9, 14), (1, 12), (7, 7), (3, 12), (4, 11), (9, 7), (2, 13), (3, 5), (3, 14), (4, 13), (9, 9), (8, 13), (1, 7), (2, 6), (2, 15), (6, 15), (3, 7), (5, 13), (4, 15), (8, 6), (8, 15), (2, 8), (7, 4), (6, 8), (3, 9), (5, 6), (4, 8), (8, 8), (0, 13), (2, 10), (3, 11), (4, 10), (8, 10), (0, 6), (1, 13), (0, 15), (6, 12), (4, 12), (8, 12), (9, 11), (0, 8), (2, 5), (1, 6), (2, 14), (6, 5), (6, 14), (7, 13), (4, 14), (8, 5), (9, 4), (5, 15), (8, 14), (9, 13), (2, 7), (6, 7), (7, 6), (7, 15), (4, 7), (5, 8), (8, 7), (9, 6), (9, 15), (2, 9), (7, 8)], 'water_tiles': [(5, 4), (4, 6), (9, 2), (8, 3), (6, 2), (4, 5), (5, 3), (8, 2), (7, 3), (4, 4), (5, 5), (9, 3), (7, 2), (6, 3)], 'hill_tiles': {(1, 10): 'right', (1, 11): 'right'}, 'items': {(2, 12): ('pokeball', 1)}, 'cut_trees': [], 'trees': [(0, 10), (0, 9), (0, 12), (1, 9), (0, 11)], 'legendary_mons': {}, 'doors': {}},
+    'route1_test_v1': {'width': 20, 'height': 10, 'spawn': (0, 0), 'npcs': {(0, 6): ('☺', ['Trainer Tip!', 'This game does not autosave.', 'It is recommended to save at any Pokémon Centre.']), (8, 4): ('☺', ['Is that a starter from Oak?', 'You must be lucky!'])}, 'grass_tiles': [(6, 12), (6, 15), (4, 9), (3, 7), (5, 4), (4, 6), (4, 12), (5, 7), (0, 2), (9, 14), (2, 2), (8, 12), (2, 5), (2, 11), (1, 3), (1, 9), (2, 8), (8, 15), (7, 4), (7, 7), (6, 5), (6, 11), (7, 10), (6, 14), (7, 13), (4, 5), (3, 9), (5, 6), (4, 8), (3, 12), (5, 3), (4, 11), (8, 11), (0, 1), (2, 4), (1, 2), (0, 4), (2, 1), (2, 7), (8, 14), (1, 8), (6, 4), (7, 3), (6, 7), (6, 13), (7, 6), (6, 10), (7, 15), (3, 11), (4, 4), (3, 8), (5, 5), (1, 1), (0, 3), (0, 9), (1, 4), (7, 11), (2, 3), (2, 9), (9, 15), (8, 13), (2, 12), (6, 6), (7, 5), (6, 3), (7, 14)], 'water_tiles': [], 'hill_tiles': {(3, 1): 'down', (3, 2): 'down', (3, 3): 'down', (3, 4): 'down', (3, 5): 'down', (3, 6): 'down', (4, 7): 'down', (5, 8): 'down', (5, 9): 'down', (5, 10): 'down', (5, 11): 'down', (5, 12): 'down', (5, 13): 'down', (5, 14): 'down', (5, 15): 'down', (0, 13): 'left', (1, 13): 'left', (8, 7): 'left', (9, 7): 'left'}, 'items': {(0, 15): ('pokeball', 10)}, 'cut_trees': [(3, 13)], 'trees': [(7, 12), (4, 13), (2, 13)], 'legendary_mons': {}, 'doors': {}}
 }
 
 #moves
@@ -689,46 +759,134 @@ move386 = Moves("""yawn""","normal",10,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil"""
 move387 = Moves("""zap cannon""","electric",5,100,50,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""paralyse""",False,0,False,0,0,"""this move paralyzes the target.""")
 move388 = Moves("""placeholder""","water",40,0,-50,0,0,0,0,0,0,0,0,0,0,0,0,0,"""nil""","""nil""",False,-1,"no",0,0,"""no""")
 
+
+
+#POKEMON SPRITES
 import curses
+import textwrap
 
 class RenderImage:
-    def __init__(self, art, color_map, default_color=1):
-        self.art = art.strip("\n").split("\n")
-        self.color_map = color_map
+    def __init__(self, front_art, back_art,
+                 palettes,
+                 default_color=1,
+                 width=25,
+                 height=11):
+
+        self.width = width
+        self.height = height
+
+        self.front = self._build_grid(front_art)
+        self.back = self._build_grid(back_art)
+
+        self.palettes = palettes
         self.default_color = default_color
 
-    def draw(self, stdscr):
-        h, w = stdscr.getmaxyx()
-        start_y = 2
+    def _build_grid(self, art):
+        art = textwrap.dedent(art).strip("\n").split("\n")
 
-        for y, line in enumerate(self.art):
-            start_x = w // 2 - len(line) // 2  
+        grid = []
+        for i in range(self.height):
+            if i < len(art):
+                line = art[i][:self.width].ljust(self.width)
+            else:
+                line = " " * self.width
+            grid.append(line)
+        return grid
 
+    def draw(self, stdscr,
+         sprite="front",
+         variant="normal",
+         char_map=None):
+        if sprite == "front":
+            start_y=2
+            start_x=2
+        else:
+            start_y=2
+            start_x=53
+        color_map = self.palettes.get(variant, self.palettes["normal"])
+
+        art = self.front if sprite == "front" else self.back
+
+        for y, line in enumerate(art):
             for x, ch in enumerate(line):
-                color = self.color_map.get(ch, self.default_color)
+
+                draw_char = char_map.get(ch, ch) if char_map else ch
+                color = color_map.get(ch, self.default_color)
+
                 try:
-                    stdscr.addstr(start_y + y, start_x + x, ch, curses.color_pair(color))
+                    stdscr.addstr(
+                        start_y + y,
+                        start_x + x,
+                        draw_char,
+                        curses.color_pair(color)
+                    )
                 except curses.error:
                     pass
 
-substitude = RenderImage("""
-        --     @:   
-       --------==   
-     -:=:----^--=@  
-     ===▼-----..==  
-      +++++++++++=  
-   --=++++++-:--++  
-    ++@.    %=++++  
-    @@.      .++++  
-  ++=..   ...-:--=  
-  ++++.......=+++=  
-         @@  ++++@  
+#░▒▓█
+spearow = RenderImage(
+front_art="""
+         #   #
+        ##  ###  #
+         ###||#####
+       ####|||##'|#++--
+      ▒▒▒▒|||######++--
+    ▒▒▒▒||||||#█████████
+▒  ▒||||▒||||██████████
+▒▒|▒▒||▒▒▒||██████████
+▒▒|▒▒||▒▒▒||█████████
+▒▒|▒▒▒▒▒▓▓▓▓▓▓████
+ ▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓
 """,
-{
-    "@": 2,
-    "+": 3,
-    "=": 4,
-    "-": 4,
-    ":": 1,
-    ".": 3,
-})
+back_art="""
+     #   #    #
+    ##  #  ##
+   ## #######|
+  ####|'######||| █████
+---+###########||███████
+---+|##########██████████▒ 
+ ###########████████████▒▒
+   ###▓▓##▓▓████████▓▓▒▒▒
+    #▓▓▓▓▓▓▓▓▓▓███▓▓▓▓   
+     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+      ▓▓▓      ▓▓▓
+      ▒▒       ▒▒
+""",
+palettes={
+    "normal": {
+    "█": 7,
+    "#": 16,
+    "▓": 17,
+    "▒": 19,
+    "+": 19,
+    "-": 19,
+    "|": 20,
+    "]": 18,
+    "'": 21,
+    },
+    "shiny": {
+        "█": 11,
+        "#": 3,
+        "▓": 10,
+        "▒": 14,
+        "+": 14,
+        "-": 14,
+        "|": 12,
+        "'": 13,
+    }
+}
+)
+
+#template for mon sprites
+placeholder = RenderImage(
+front_art="""
+""",
+back_art="""
+""",
+palettes={
+    "normal": {
+    },
+    "shiny": {
+    }
+}
+)

@@ -25,6 +25,15 @@ curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_BLUE)
 curses.init_pair(13, curses.COLOR_GREEN, curses.COLOR_WHITE)
 curses.init_pair(14, curses.COLOR_YELLOW, curses.COLOR_WHITE)
 curses.init_pair(15, curses.COLOR_RED, curses.COLOR_WHITE)
+curses.init_color(10, 1000, 500, 0)  
+curses.init_pair(16, 10, -1)# orange (filled)
+curses.init_color(11, 900, 850, 700)  
+curses.init_pair(17, 11, -1) #beige(?)
+curses.init_pair(18, curses.COLOR_BLACK, -1)
+curses.init_color(12, 600, 300, 0)
+curses.init_pair(19, 12, -1) #brown
+curses.init_pair(20, curses.COLOR_BLACK, curses.COLOR_BLACK)
+curses.init_pair(21, curses.COLOR_WHITE, curses.COLOR_WHITE)
 
 
 #variables

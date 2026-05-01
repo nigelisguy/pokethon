@@ -96,9 +96,18 @@ tmlist = ("")
 pp = [1, 1, 1, 1]
 PLAYER = "@"
 GRASS = "#"
+WATER = "~"
 ITEM = "●"
 CUT_TREE = "▲"
 REAL_TREE = "⬜"
+HILL_CHARS = {
+    "up": "↑",
+    "down": "↓",
+    "left": "←",
+    "right": "→",
+}
+HILL_COLOR_PAIR = 16
+HILL_COLOR = 16
 LEGENDARY = "M"
 NURSE = "♥"
 ENEMY = "☺"
@@ -232,12 +241,13 @@ ITEM_DESCRIPTIONS = {
     "pokeball": "A ball used to catch wild Pokemon.",
     "fullheal": "Clears all status conditions from one Pokemon.",
     "hm_cut": "Lets any Pokemon with sharp claws cut down small trees in the overworld. Not be confused with TM CUT.",
+    "hm_swim": "Lets you swim across water in the overworld.",
 }
 
 BAG_SECTIONS = [
     ("Pokeballs", {"pokeball"}),
     ("Recover", {"potion", "fullheal"}),
-    ("Key Items", {"hm_cut"}),
+    ("Key Items", {"hm_cut", "hm_swim"}),
     ("Other", set()),
 ]
 
@@ -449,11 +459,13 @@ sync_party_slots()
 
 
 class Room:
-    def __init__(self, width, height, npcs=None, grass_tiles=None, doors=None, items=None, cut_trees=None, trees=None, fog=None, room=None, legendary_mons=None, room_id="room"):
+    def __init__(self, width, height, npcs=None, grass_tiles=None, water_tiles=None, hill_tiles=None, doors=None, items=None, cut_trees=None, trees=None, fog=None, room=None, legendary_mons=None, room_id="room"):
         self.width = width
         self.height = height
         self.npcs = npcs or {}
         self.grass_tiles = grass_tiles or set()
+        self.water_tiles = water_tiles or set()
+        self.hill_tiles = hill_tiles or {}
         self.doors = doors or {}
         self.items = items or {}
         self.cut_trees = cut_trees or set()
@@ -469,6 +481,25 @@ def safe_addstr(stdscr, y, x, text):
         h, w = stdscr.getmaxyx()
         if y < h and x < w:
             stdscr.addstr(y, x, str(text)[:w - x])
+    except curses.error:
+        pass
+
+def init_overworld_colors():
+    try:
+        curses.use_default_colors()
+    except curses.error:
+        pass
+
+    hill_color = curses.COLOR_YELLOW
+    if curses.has_colors() and curses.can_change_color() and curses.COLORS > HILL_COLOR:
+        try:
+            curses.init_color(HILL_COLOR, 1000, 500, 0)
+            hill_color = HILL_COLOR
+        except curses.error:
+            hill_color = curses.COLOR_YELLOW
+
+    try:
+        curses.init_pair(HILL_COLOR_PAIR, hill_color, -1)
     except curses.error:
         pass
 
@@ -552,9 +583,41 @@ def map_object_id(room, pos):
 def is_blocked(room, pos):
     return (
         pos in room.npcs
+        or (pos in room.water_tiles and not has_item("hm_swim"))
+        or pos in room.hill_tiles
         or pos in room.trees
         or (pos in room.cut_trees and map_object_id(room, pos) not in cut_trees)
     )
+
+def movement_direction(dy, dx):
+    if dy == -1 and dx == 0:
+        return "up"
+    if dy == 1 and dx == 0:
+        return "down"
+    if dy == 0 and dx == -1:
+        return "left"
+    if dy == 0 and dx == 1:
+        return "right"
+    return None
+
+def try_hill_jump(room, py, px, ny, nx):
+    direction = room.hill_tiles.get((ny, nx))
+    if direction is None:
+        return None
+
+    dy = ny - py
+    dx = nx - px
+    if movement_direction(dy, dx) != direction:
+        return (py, px)
+
+    landing = (ny + dy, nx + dx)
+    ly, lx = landing
+    if not (0 <= ly < room.height and 0 <= lx < room.width):
+        return (py, px)
+    if is_blocked(room, landing):
+        return (py, px)
+
+    return landing
 
 def pickup_item(stdscr, room, pos):
     if pos not in room.items:
@@ -649,6 +712,14 @@ def draw(stdscr, room, py, px):
 
             if (y, x) in room.grass_tiles:
                 char = GRASS
+
+            if (y, x) in room.water_tiles:
+                char = WATER
+                color = curses.color_pair(6)
+
+            if (y, x) in room.hill_tiles:
+                char = HILL_CHARS.get(room.hill_tiles[(y, x)], "_")
+                color = curses.color_pair(HILL_COLOR_PAIR)
 
             object_id = map_object_id(room, (y, x))
 
@@ -768,6 +839,8 @@ def create_room_registry():
             data["height"],
             npcs=npcs,
             grass_tiles=set(data.get("grass_tiles", set())),
+            water_tiles=set(data.get("water_tiles", set())),
+            hill_tiles=copy.deepcopy(data.get("hill_tiles", {})),
             items=copy.deepcopy(data.get("items", {})),
             cut_trees=set(data.get("cut_trees", set())),
             trees=set(data.get("trees", set())),
@@ -972,6 +1045,7 @@ def overworld(stdscr):
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
+    init_overworld_colors()
 
     current_room, rooms = create_rooms(return_registry=True)
     py, px = 0, 0
@@ -996,7 +1070,11 @@ def overworld(stdscr):
             break
 
         if 0 <= ny < current_room.height and 0 <= nx < current_room.width:
-            if not is_blocked(current_room, (ny, nx)):
+            hill_jump = try_hill_jump(current_room, py, px, ny, nx)
+            if hill_jump is not None:
+                py, px = hill_jump
+                pickup_item(stdscr, current_room, (py, px))
+            elif not is_blocked(current_room, (ny, nx)):
                 py, px = ny, nx
                 pickup_item(stdscr, current_room, (py, px))
 
