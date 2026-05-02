@@ -476,11 +476,14 @@ class Room:
         self.room_id = room_id
 
 
-def safe_addstr(stdscr, y, x, text):
+def safe_addstr(stdscr, y, x, text, color=None):
     try:
         h, w = stdscr.getmaxyx()
         if y < h and x < w:
-            stdscr.addstr(y, x, str(text)[:w - x])
+            if color is not None:
+                stdscr.addstr(y, x, str(text)[:w - x], color)
+            else:
+                stdscr.addstr(y, x, str(text)[:w - x])
     except curses.error:
         pass
 
@@ -704,9 +707,10 @@ def try_cut_tree(stdscr, room, pos):
 
 def draw(stdscr, room, py, px):
     stdscr.clear()
+    height, width = stdscr.getmaxyx()
 
-    for y in range(room.height):
-        for x in range(room.width):
+    for y in range(min(room.height, height)):
+        for x in range(min(room.width, width // 2)):  # x * 2 for character width
             char = "෴"
             color = curses.color_pair(4)
 
@@ -755,7 +759,10 @@ def draw(stdscr, room, py, px):
                 char = PLAYER
                 color = curses.color_pair(7)
 
-            stdscr.addstr(y, x * 2, char, color)
+            try:
+                safe_addstr(stdscr, y, x * 2, char, color)
+            except curses.error:
+                pass  # Skip if still out of bounds
 
     stdscr.refresh()
 

@@ -62,7 +62,7 @@ DISPLAY = {
 
 
 class MapData:
-    def __init__(self, w=80, h=10):
+    def __init__(self, w=40, h=10):
         self.width = w
         self.height = h
 
@@ -123,10 +123,12 @@ class Editor:
             new_map.spawn = tuple(m.get("spawn", (0, 0)))
 
             def to_set(v):
+                """Convert various formats to a set of tuples."""
                 if isinstance(v, set):
-                    return set(tuple(x) for x in v)
+                    return set(tuple(x) if isinstance(x, (list, tuple)) else x for x in v)
                 if isinstance(v, list):
-                    return set(tuple(x) for x in v)
+                    # Handle both [[0, 5], [1, 3]] and [(0, 5), (1, 3)] formats
+                    return set(tuple(x) if isinstance(x, (list, tuple)) else (x,) for x in v if x)
                 return set()
 
             new_map.grass_tiles = to_set(m.get("grass_tiles", []))
@@ -135,9 +137,20 @@ class Editor:
             new_map.cut_trees = to_set(m.get("cut_trees", []))
 
             def to_dict(v):
+                """Convert various formats to a dict with tuple keys."""
                 if not v:
                     return {}
-                return {tuple(map(int, k.split(","))): v2 for k, v2 in v.items()}
+                if isinstance(v, dict):
+                    result = {}
+                    for k, v2 in v.items():
+                        if isinstance(k, str) and "," in k:
+                            # String key format like "0,5"
+                            result[tuple(map(int, k.split(",")))] = v2
+                        elif isinstance(k, (list, tuple)):
+                            # Direct tuple/list key
+                            result[tuple(k)] = v2
+                    return result
+                return {}
 
             new_map.hill_tiles = to_dict(m.get("hill_tiles", {}))
             new_map.npcs = to_dict(m.get("npcs", {}))
@@ -170,7 +183,7 @@ class Editor:
 
         tk.Button(top, text="Rename Map", command=self.rename_map).pack(side=tk.LEFT)
 
-        self.w_var = tk.StringVar(value="80")
+        self.w_var = tk.StringVar(value="40")
         self.w_entry = ttk.Combobox(
             top,
             textvariable=self.w_var,
@@ -232,11 +245,13 @@ class Editor:
         self.door_map_entry = tk.Entry(self.door_frame)
         self.door_map_entry.pack()
 
-        self.door_y_entry = tk.Entry(self.door_frame, width=5)
-        self.door_y_entry.pack()
-
         self.door_x_entry = tk.Entry(self.door_frame, width=5)
+        self.door_x_entry.insert(0, "0")
         self.door_x_entry.pack()
+
+        self.door_y_entry = tk.Entry(self.door_frame, width=5)
+        self.door_y_entry.insert(0, "0")
+        self.door_y_entry.pack()
 
         self.save_door_btn = tk.Button(
             self.door_frame,
@@ -245,8 +260,6 @@ class Editor:
         )
         self.save_door_btn.pack(pady=5)
         self.door_map_entry.bind("<Return>", lambda e: self.save_door())
-        self.door_y_entry.bind("<Return>", lambda e: self.save_door())
-        self.door_x_entry.bind("<Return>", lambda e: self.save_door())
 
         self.dialog_label = tk.Label(self.npc_frame, text="NPC Dialogue", fg="white", bg="#222")
         self.dialog_label.pack(pady=5)
@@ -386,12 +399,14 @@ class Editor:
 
         mode = self.mode.get()
 
-        for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees]:
-            s.discard((y, x))
-        m.npcs.pop((y, x), None)
-        m.items.pop((y, x), None)
-        m.legendary_mons.pop((y, x), None)
-        m.doors.pop((y, x), None)
+        # Only remove properties if not in door mode (door mode handles removal specially)
+        if mode != "door":
+            for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees]:
+                s.discard((y, x))
+            m.npcs.pop((y, x), None)
+            m.items.pop((y, x), None)
+            m.legendary_mons.pop((y, x), None)
+            m.doors.pop((y, x), None)
 
         if mode == "spawn":
             m.spawn = (y, x)
@@ -428,12 +443,24 @@ class Editor:
             }
 
         elif mode == "door":
-            if self.door_buffer is None:
-                self.door_buffer = (self.current_map, y, x)
-            else:
-                src_map, sy, sx = self.door_buffer
-                m.doors[(sy, sx)] = (self.current_map, y, x)
-                self.door_buffer = None
+            # Single click placement using input fields
+            try:
+                target_map = self.door_map_entry.get().strip() or self.current_map
+                tx = int(self.door_x_entry.get())
+                ty = int(self.door_y_entry.get())
+            except:
+                return
+
+            # Remove existing tile data at this position
+            for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees]:
+                s.discard((y, x))
+            m.npcs.pop((y, x), None)
+            m.items.pop((y, x), None)
+            m.legendary_mons.pop((y, x), None)
+            m.doors.pop((y, x), None)
+
+            # Place door with explicit destination
+            m.doors[(y, x)] = (target_map, ty, tx)
 
         self.update_inspector()
         self.draw()
@@ -458,7 +485,10 @@ class Editor:
         elif (y, x) in m.doors: tile = "door"
         elif m.spawn == (y, x): tile = "spawn"
 
-        self.info.config(text=f"Tile: {tile}\nPos: ({y},{x})")
+        # No buffer system anymore for doors
+        status = ""
+
+        self.info.config(text=f"Tile: {tile}{status}\nPos: ({y},{x})")
 
         self.preview.delete("all")
         self.preview.create_rectangle(
@@ -511,12 +541,6 @@ class Editor:
             data = m.doors[(y, x)]
             self.door_map_entry.delete(0, tk.END)
             self.door_map_entry.insert(0, data[0])
-
-            self.door_y_entry.delete(0, tk.END)
-            self.door_y_entry.insert(0, str(data[1]))
-
-            self.door_x_entry.delete(0, tk.END)
-            self.door_x_entry.insert(0, str(data[2]))
 
 
     def save_npc_dialogue(self):
@@ -587,10 +611,12 @@ class Editor:
 
         if (y, x) in m.doors:
             try:
+                # Preserve destination coordinates, only update target map
+                _, ty, tx = m.doors[(y, x)]
                 m.doors[(y, x)] = (
                     self.door_map_entry.get(),
-                    int(self.door_y_entry.get()),
-                    int(self.door_x_entry.get())
+                    ty,
+                    tx
                 )
             except:
                 pass
@@ -743,8 +769,9 @@ class Editor:
             self.draw()
 
     def save(self):
-        with open("project.json", "w") as f:
-            json.dump(self.serialize(), f)
+        path = os.path.join(PROJECT_ROOT, "data", "leveldata.json")
+        with open(path, "w") as f:
+            json.dump(self.serialize(), f, indent=2)
 
     def load(self):
         pass
@@ -850,19 +877,41 @@ class Editor:
     def serialize(self):
         out = {}
         for name, m in self.maps.items():
+            # Convert dictionaries with tuple keys to string keys for JSON compatibility
+            npcs_serialized = {}
+            for (y, x), value in m.npcs.items():
+                npcs_serialized[f"{y},{x}"] = value
+            
+            items_serialized = {}
+            for (y, x), value in m.items.items():
+                items_serialized[f"{y},{x}"] = value
+            
+            legendary_serialized = {}
+            for (y, x), value in m.legendary_mons.items():
+                legendary_serialized[f"{y},{x}"] = value
+            
+            doors_serialized = {}
+            for (y, x), value in m.doors.items():
+                doors_serialized[f"{y},{x}"] = value
+            
+            hill_tiles_serialized = {}
+            for (y, x), value in m.hill_tiles.items():
+                hill_tiles_serialized[f"{y},{x}"] = value
+            
+            # Explicitly convert tile sets to lists of [y, x] arrays for clarity
             out[name] = {
                 "width": m.width,
                 "height": m.height,
-                "spawn": m.spawn,
-                "npcs": m.npcs,
-                "grass_tiles": list(m.grass_tiles),
-                "water_tiles": list(m.water_tiles),
-                "hill_tiles": m.hill_tiles,
-                "items": m.items,
-                "cut_trees": list(m.cut_trees),
-                "trees": list(m.tree_tiles),
-                "legendary_mons": m.legendary_mons,
-                "doors": m.doors
+                "spawn": list(m.spawn),
+                "npcs": npcs_serialized,
+                "grass_tiles": [[y, x] for y, x in m.grass_tiles],
+                "water_tiles": [[y, x] for y, x in m.water_tiles],
+                "hill_tiles": hill_tiles_serialized,
+                "items": items_serialized,
+                "cut_trees": [[y, x] for y, x in m.cut_trees],
+                "trees": [[y, x] for y, x in m.tree_tiles],
+                "legendary_mons": legendary_serialized,
+                "doors": doors_serialized
             }
         return out
 

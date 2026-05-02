@@ -171,7 +171,10 @@ except Exception:
 # Load leveldata.json -> MAP_ROOMS
 try:
     with open(_DATA_DIR / "leveldata.json", "r") as f:
-        _ldata = json.load(f).get("maps", {})
+        _ldata = json.load(f)
+        # If the JSON has a "maps" key, use that; otherwise assume root is the maps dict
+        if isinstance(_ldata, dict) and "maps" in _ldata:
+            _ldata = _ldata.get("maps", {})
     _map_rooms = {}
     for room_id, data in _ldata.items():
         room = {}
