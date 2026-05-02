@@ -79,7 +79,7 @@ def party_menu(stdscr, party, active_idx, enemy):
         stdscr.clear()
         draw_top_banner(stdscr)
         draw_main_menu(stdscr, 1, player, enemy)
-        stats.spearow.draw(stdscr, "front","normal")
+        stats.bulbasaur.draw(stdscr, "front","normal")
         stats.spearow.draw(stdscr, "back","normal")
         draw_party(stdscr, party, active_idx, highlight, forced=False)
         draw_header(stdscr, player, enemy)

@@ -2,6 +2,19 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import json
 import copy
+import os
+import sys
+from collections import defaultdict
+import importlib
+
+sys.path.append(os.path.dirname(__file__))
+
+try:
+    import stats
+    import importlib
+    stats = importlib.reload(stats)
+except:
+    stats = None
 
 TILE_SIZE = 24
 
@@ -63,13 +76,14 @@ class Editor:
     def __init__(self, root):
         self.root = root
 
-        self.maps = {"map1": MapData()}
-        self.current_map = "map1"
+        self.maps = self.load_maps()
+
+        self.current_map = next(iter(self.maps.keys()), "map1")
 
         self.mode = tk.StringVar(value="grass")
 
-        self.undo = []
-        self.redo = []
+        self.undo = defaultdict(list)
+        self.redo = defaultdict(list)
 
         self.door_buffer = None
         self.selected = None
@@ -77,7 +91,66 @@ class Editor:
 
         self.build_ui()
         self.build_canvas()
+
+        self.refresh_map_dropdown()
         self.draw()
+    def load_maps(self):
+        import os
+
+        json_path = os.path.join(os.path.dirname(__file__), "leveldata.json")
+
+        # Prefer JSON if exists
+        if os.path.exists(json_path):
+            with open(json_path, "r") as f:
+                data = json.load(f)
+        else:
+            if stats is None or not hasattr(stats, "MAP_ROOMS"):
+                return {"map1": MapData()}
+            data = stats.MAP_ROOMS
+
+        out = {}
+
+        for name, m in data.items():
+            new_map = MapData(m.get("width", 20), m.get("height", 10))
+            new_map.spawn = tuple(m.get("spawn", (0, 0)))
+
+            def to_set(v):
+                if isinstance(v, set):
+                    return set(tuple(x) for x in v)
+                if isinstance(v, list):
+                    return set(tuple(x) for x in v)
+                return set()
+
+            new_map.grass_tiles = to_set(m.get("grass_tiles", []))
+            new_map.water_tiles = to_set(m.get("water_tiles", []))
+            new_map.tree_tiles = to_set(m.get("trees", []))
+            new_map.cut_trees = to_set(m.get("cut_trees", []))
+
+            def to_dict(v):
+                if not v:
+                    return {}
+                return {tuple(map(int, k.split(","))): v2 for k, v2 in v.items()}
+
+            new_map.hill_tiles = to_dict(m.get("hill_tiles", {}))
+            new_map.npcs = to_dict(m.get("npcs", {}))
+            new_map.items = to_dict(m.get("items", {}))
+            new_map.legendary_mons = to_dict(m.get("legendary_mons", {}))
+            new_map.doors = to_dict(m.get("doors", {}))
+
+            out[name] = new_map
+
+        return out
+
+    def on_map_select(self, e):
+        self.current_map = self.map_select.get()
+        self.selected = None
+        self.draw()
+
+    def refresh_map_dropdown(self):
+        if hasattr(self, "map_select"):
+            self.map_select["values"] = list(self.maps.keys())
+            if self.current_map in self.maps:
+                self.map_select.set(self.current_map)
 
     def build_ui(self):
         top = tk.Frame(self.root)
@@ -119,10 +192,21 @@ class Editor:
 
         tk.Button(top, text="Load Text", command=self.load_from_text).pack(side=tk.LEFT)
         tk.Button(top, text="Export", command=self.export).pack(side=tk.LEFT)
-        tk.Button(top, text="New Map", command=self.new_map).pack(side=tk.LEFT)
 
         self.inspector = tk.Frame(self.root, width=240, bg="#222")
         self.inspector.pack(side=tk.RIGHT, fill=tk.Y)
+        # Bottom map selector
+        self.bottom = tk.Frame(self.root)
+        self.bottom.pack(side=tk.BOTTOM, fill=tk.X)
+
+        tk.Label(self.bottom, text="Maps:").pack(side=tk.LEFT)
+
+        self.map_select = ttk.Combobox(self.bottom, state="readonly", width=15)
+        self.map_select.pack(side=tk.LEFT)
+        self.map_select.bind("<<ComboboxSelected>>", self.on_map_select)
+
+        tk.Button(self.bottom, text="New Map", command=self.new_map).pack(side=tk.LEFT, padx=5)
+        tk.Button(self.bottom, text="Delete Map", command=self.delete_map).pack(side=tk.LEFT, padx=5)
 
         self.info = tk.Label(self.inspector, text="No selection", fg="white", bg="#222")
         self.info.pack(pady=10)
@@ -245,9 +329,27 @@ class Editor:
 
     def new_map(self):
         name = f"map{len(self.maps)+1}"
+
         self.maps[name] = MapData()
-        self.map_label.config(text=name)
         self.current_map = name
+
+        self.refresh_map_dropdown()
+        self.save_stats_file()
+        self.draw()
+
+    def delete_map(self):
+        if self.current_map not in self.maps:
+            return
+
+        if len(self.maps) == 1:
+            print("Can't delete last map")
+            return
+
+        del self.maps[self.current_map]
+
+        self.current_map = list(self.maps.keys())[0]
+        self.refresh_map_dropdown()
+        self.save_stats_file()
         self.draw()
 
     def pos(self, e):
@@ -327,6 +429,7 @@ class Editor:
 
         self.update_inspector()
         self.draw()
+        self.save_stats_file()
 
     def update_inspector(self):
         if not self.selected:
@@ -504,6 +607,7 @@ class Editor:
                     m.doors[k] = (new_name, ty, tx)
 
         self.current_map = new_name
+        self.refresh_map_dropdown()
         self.draw()
 
     def resize_map(self):
@@ -542,6 +646,10 @@ class Editor:
 
     def draw(self):
         self.canvas.delete("all")
+
+        if self.current_map not in self.maps:
+            return
+
         m = self.cur()
 
         for y in range(m.height):
@@ -604,19 +712,26 @@ class Editor:
         self.update_inspector()
 
     def push_undo(self):
-        self.undo.append(copy.deepcopy(self.maps))
-        self.redo.clear()
+        m = self.cur()
+        self.undo[self.current_map].append(copy.deepcopy(m))
+        self.redo[self.current_map].clear()
 
     def undo_action(self):
-        if self.undo:
-            self.redo.append(copy.deepcopy(self.maps))
-            self.maps = self.undo.pop()
+        m = self.cur()
+
+        if self.undo[self.current_map]:
+            self.redo[self.current_map].append(copy.deepcopy(m))
+            prev = self.undo[self.current_map].pop()
+            self.maps[self.current_map] = prev
+            self.selected = None
             self.draw()
 
     def redo_action(self):
-        if self.redo:
-            self.undo.append(copy.deepcopy(self.maps))
-            self.maps = self.redo.pop()
+        if self.redo[self.current_map]:
+            self.undo[self.current_map].append(copy.deepcopy(self.cur()))
+            nxt = self.redo[self.current_map].pop()
+            self.maps[self.current_map] = nxt
+            self.selected = None
             self.draw()
 
     def save(self):
@@ -628,32 +743,102 @@ class Editor:
 
     def load_from_text(self):
         try:
-            data = json.loads(self.load_text.get("1.0", tk.END))
+            code = self.load_text.get("1.0", tk.END)
+
+            # Safe-ish exec environment for MAP_ROOMS format
+            safe_globals = {
+                "__builtins__": {},
+                "range": range,
+                "set": set,
+                "tuple": tuple,
+                "list": list,
+            }
+
+            ns = {}
+            exec(code, safe_globals, ns)
+
+            data = ns.get("MAP_ROOMS", None)
+            if data is None:
+                print("No MAP_ROOMS found in input")
+                return
+
             self.maps = {}
 
             for name, m in data.items():
-                new_map = MapData(m["width"], m["height"])
-                new_map.spawn = tuple(m["spawn"])
+                new_map = MapData(m.get("width", 20), m.get("height", 10))
+                new_map.spawn = tuple(m.get("spawn", (0, 0)))
 
-                new_map.grass_tiles = set(tuple(t) for t in m.get("grass_tiles", []))
-                new_map.water_tiles = set(tuple(t) for t in m.get("water_tiles", []))
-                new_map.tree_tiles = set(tuple(t) for t in m.get("trees", []))
-                new_map.cut_trees = set(tuple(t) for t in m.get("cut_trees", []))
+                def to_set(v):
+                    if v is None:
+                        return set()
+                    if isinstance(v, set):
+                        return set(v)
+                    return set(tuple(x) for x in v)
 
-                new_map.hill_tiles = {tuple(k): v for k, v in m.get("hill_tiles", {}).items()}
-                new_map.npcs = {tuple(k): v for k, v in m.get("npcs", {}).items()}
-                new_map.items = {tuple(k): v for k, v in m.get("items", {}).items()}
-                new_map.legendary_mons = {tuple(k): v for k, v in m.get("legendary_mons", {}).items()}
-                new_map.doors = {tuple(k): tuple(v) for k, v in m.get("doors", {}).items()}
+                new_map.grass_tiles = to_set(m.get("grass_tiles", []))
+                new_map.water_tiles = to_set(m.get("water_tiles", []))
+                new_map.tree_tiles = to_set(m.get("trees", []))
+                new_map.cut_trees = to_set(m.get("cut_trees", []))
+                new_map.fog = to_set(m.get("fog", []))
+
+                def to_dict(v):
+                    if not v:
+                        return {}
+                    return {tuple(k): v2 for k, v2 in v.items()}
+
+                new_map.hill_tiles = to_dict(m.get("hill_tiles", {}))
+                new_map.items = to_dict(m.get("items", {}))
+                new_map.npcs = to_dict(m.get("npcs", {}))
+                new_map.legendary_mons = to_dict(m.get("legendary_mons", {}))
+
+                new_map.doors = {}
+                for k, v in m.get("doors", {}).items():
+                    new_map.doors[tuple(k)] = tuple(v)
 
                 self.maps[name] = new_map
 
             self.current_map = list(self.maps.keys())[0]
+            self.refresh_map_dropdown()
             self.draw()
 
         except Exception as e:
-            print("Invalid JSON:", e)
-    
+            print("Invalid MAP_ROOMS format:", e)
+
+    def save_stats_file(self):
+        import os, json
+
+        path = os.path.join(os.path.dirname(__file__), "leveldata.json")
+
+        def encode(obj):
+            if isinstance(obj, set):
+                return [list(x) for x in obj]
+            if isinstance(obj, tuple):
+                return list(obj)
+            return obj
+
+        data = {}
+
+        for name, m in self.maps.items():
+            data[name] = {
+                "width": m.width,
+                "height": m.height,
+                "spawn": list(m.spawn),
+
+                "grass_tiles": [list(x) for x in m.grass_tiles],
+                "water_tiles": [list(x) for x in m.water_tiles],
+                "trees": [list(x) for x in m.tree_tiles],
+                "cut_trees": [list(x) for x in m.cut_trees],
+
+                "hill_tiles": {f"{k[0]},{k[1]}": v for k, v in m.hill_tiles.items()},
+                "npcs": {f"{k[0]},{k[1]}": v for k, v in m.npcs.items()},
+                "items": {f"{k[0]},{k[1]}": v for k, v in m.items.items()},
+                "legendary_mons": {f"{k[0]},{k[1]}": v for k, v in m.legendary_mons.items()},
+                "doors": {f"{k[0]},{k[1]}": list(v) for k, v in m.doors.items()},
+            }
+
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2)
+            
     def serialize(self):
         out = {}
         for name, m in self.maps.items():

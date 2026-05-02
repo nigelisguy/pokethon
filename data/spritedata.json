@@ -1,0 +1,6078 @@
+{
+  "pokemon": {
+    "1": {
+      "id": 1,
+      "name": "bulbasaur",
+      "sprite_var": "bulbasaur",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "           ##    ##      ",
+          "    %%    ###########    ",
+          "  &&&%%%%%%%########]    ",
+          "%&&&%&&&&&%%%%######][   ",
+          " %%&%%%%%&&%%%&###=###   ",
+          " %%%&%%%%%&&%%&####]]=   ",
+          " %%%%&%%%%%&&&###====    ",
+          "  %%%%&&&&&&#######      ",
+          "   &&&&&&&####===####    ",
+          "   ##&&&#####=#===###    ",
+          "                         "
+        ],
+        "back_grid": [
+          "       #    %%% &&       ",
+          " ##   #=# %%%&&&%%&&&    ",
+          " ##===#==#&&&&%%%%%%%&&& ",
+          "####=##===#%%&&&%%%%%%%& ",
+          "##[]##[]###%%%&&&&%%%%%& ",
+          "##[]##[]###%%%%%&&%%%%%& ",
+          "###########%%%%%%%&&&&&# ",
+          " ##]]###==&&%%%%%&&&&==# ",
+          "    =======&&&&&&##====# ",
+          "  ####=====###=====######",
+          " ######=#####     ==#####"
+        ],
+        "palettes": {
+          "normal": {
+            "#": 35,
+            ".": 22,
+            "%": 22,
+            "=": 6,
+            "]": 8,
+            "[": 9,
+            "&": 4
+          },
+          "shiny": {
+            "%": 4,
+            "&": 22,
+            "#": 36,
+            "[": 9,
+            "]": 8,
+            "=": 22
+          }
+        }
+      }
+    },
+    "2": {
+      "id": 2,
+      "name": "ivysaur",
+      "sprite_var": "ivysaur",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "3": {
+      "id": 3,
+      "name": "venusaur",
+      "sprite_var": "venusaur",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "4": {
+      "id": 4,
+      "name": "charmander",
+      "sprite_var": "charmander",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "5": {
+      "id": 5,
+      "name": "charmeleon",
+      "sprite_var": "charmeleon",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "6": {
+      "id": 6,
+      "name": "charizard",
+      "sprite_var": "charizard",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "7": {
+      "id": 7,
+      "name": "squirtle",
+      "sprite_var": "squirtle",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "8": {
+      "id": 8,
+      "name": "wartortle",
+      "sprite_var": "wartortle",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "9": {
+      "id": 9,
+      "name": "blastoise",
+      "sprite_var": "blastoise",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "10": {
+      "id": 10,
+      "name": "caterpie",
+      "sprite_var": "caterpie",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "11": {
+      "id": 11,
+      "name": "metapod",
+      "sprite_var": "metapod",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "12": {
+      "id": 12,
+      "name": "butterfree",
+      "sprite_var": "butterfree",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "13": {
+      "id": 13,
+      "name": "weedle",
+      "sprite_var": "weedle",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "14": {
+      "id": 14,
+      "name": "kakuna",
+      "sprite_var": "kakuna",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "15": {
+      "id": 15,
+      "name": "beedrill",
+      "sprite_var": "beedrill",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "16": {
+      "id": 16,
+      "name": "pidgey",
+      "sprite_var": "pidgey",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "17": {
+      "id": 17,
+      "name": "pidgeotto",
+      "sprite_var": "pidgeotto",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "18": {
+      "id": 18,
+      "name": "pidgeot",
+      "sprite_var": "pidgeot",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "19": {
+      "id": 19,
+      "name": "rattata",
+      "sprite_var": "rattata",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "20": {
+      "id": 20,
+      "name": "raticate",
+      "sprite_var": "raticate",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "21": {
+      "id": 21,
+      "name": "spearow",
+      "sprite_var": "spearow",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "         #   #           ",
+          "        ##  ###  #       ",
+          "         ###||#####      ",
+          "       ####|||##'|#++--  ",
+          "      ▒▒▒▒|||######++--  ",
+          "    ▒▒▒▒||||||#█████████ ",
+          "▒  ▒||||▒||||██████████  ",
+          "▒▒|▒▒||▒▒▒||██████████   ",
+          "▒▒|▒▒||▒▒▒||█████████    ",
+          "▒▒|▒▒▒▒▒▓▓▓▓▓▓████       ",
+          " ▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓        "
+        ],
+        "back_grid": [
+          "     #   #    #          ",
+          "    ##  #  ##            ",
+          "   ## #######|           ",
+          "  ####|'######||| █████  ",
+          "---+###########||███████ ",
+          "---+|##########██████████",
+          " ###########████████████▒",
+          "   ###▓▓##▓▓████████▓▓▒▒▒",
+          "    #▓▓▓▓▓▓▓▓▓▓███▓▓▓▓   ",
+          "     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓     ",
+          "      ▓▓▓      ▓▓▓       "
+        ],
+        "palettes": {
+          "normal": {
+            "█": 7,
+            "#": 16,
+            "▓": 17,
+            "▒": 19,
+            "+": 19,
+            "-": 19,
+            "|": 20,
+            "]": 18,
+            "'": 21
+          },
+          "shiny": {
+            "█": 11,
+            "#": 3,
+            "▓": 10,
+            "▒": 14,
+            "+": 14,
+            "-": 14,
+            "|": 12,
+            "'": 13
+          }
+        }
+      }
+    },
+    "22": {
+      "id": 22,
+      "name": "fearow",
+      "sprite_var": "fearow",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "23": {
+      "id": 23,
+      "name": "ekans",
+      "sprite_var": "ekans",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "24": {
+      "id": 24,
+      "name": "arbok",
+      "sprite_var": "arbok",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "25": {
+      "id": 25,
+      "name": "pikachu",
+      "sprite_var": "pikachu",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "26": {
+      "id": 26,
+      "name": "raichu",
+      "sprite_var": "raichu",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "27": {
+      "id": 27,
+      "name": "sandshrew",
+      "sprite_var": "sandshrew",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "28": {
+      "id": 28,
+      "name": "sandslash",
+      "sprite_var": "sandslash",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "29": {
+      "id": 29,
+      "name": "nidoran-f",
+      "sprite_var": "nidoran_f",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "30": {
+      "id": 30,
+      "name": "nidorina",
+      "sprite_var": "nidorina",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "31": {
+      "id": 31,
+      "name": "nidoqueen",
+      "sprite_var": "nidoqueen",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "32": {
+      "id": 32,
+      "name": "nidoran-m",
+      "sprite_var": "nidoran_m",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "33": {
+      "id": 33,
+      "name": "nidorino",
+      "sprite_var": "nidorino",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "34": {
+      "id": 34,
+      "name": "nidoking",
+      "sprite_var": "nidoking",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "35": {
+      "id": 35,
+      "name": "clefairy",
+      "sprite_var": "clefairy",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "36": {
+      "id": 36,
+      "name": "clefable",
+      "sprite_var": "clefable",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "37": {
+      "id": 37,
+      "name": "vulpix",
+      "sprite_var": "vulpix",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "38": {
+      "id": 38,
+      "name": "ninetales",
+      "sprite_var": "ninetales",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "39": {
+      "id": 39,
+      "name": "jigglypuff",
+      "sprite_var": "jigglypuff",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "40": {
+      "id": 40,
+      "name": "wigglytuff",
+      "sprite_var": "wigglytuff",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "41": {
+      "id": 41,
+      "name": "zubat",
+      "sprite_var": "zubat",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "42": {
+      "id": 42,
+      "name": "golbat",
+      "sprite_var": "golbat",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "43": {
+      "id": 43,
+      "name": "oddish",
+      "sprite_var": "oddish",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "44": {
+      "id": 44,
+      "name": "gloom",
+      "sprite_var": "gloom",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "45": {
+      "id": 45,
+      "name": "vileplume",
+      "sprite_var": "vileplume",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "46": {
+      "id": 46,
+      "name": "paras",
+      "sprite_var": "paras",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "47": {
+      "id": 47,
+      "name": "parasect",
+      "sprite_var": "parasect",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "48": {
+      "id": 48,
+      "name": "venonat",
+      "sprite_var": "venonat",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "49": {
+      "id": 49,
+      "name": "venomoth",
+      "sprite_var": "venomoth",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "50": {
+      "id": 50,
+      "name": "diglett",
+      "sprite_var": "diglett",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "51": {
+      "id": 51,
+      "name": "dugtrio",
+      "sprite_var": "dugtrio",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "52": {
+      "id": 52,
+      "name": "meowth",
+      "sprite_var": "meowth",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "53": {
+      "id": 53,
+      "name": "persian",
+      "sprite_var": "persian",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "54": {
+      "id": 54,
+      "name": "psyduck",
+      "sprite_var": "psyduck",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "55": {
+      "id": 55,
+      "name": "golduck",
+      "sprite_var": "golduck",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "56": {
+      "id": 56,
+      "name": "mankey",
+      "sprite_var": "mankey",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "57": {
+      "id": 57,
+      "name": "primeape",
+      "sprite_var": "primeape",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "58": {
+      "id": 58,
+      "name": "growlithe",
+      "sprite_var": "growlithe",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "59": {
+      "id": 59,
+      "name": "arcanine",
+      "sprite_var": "arcanine",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "60": {
+      "id": 60,
+      "name": "poliwag",
+      "sprite_var": "poliwag",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "61": {
+      "id": 61,
+      "name": "poliwhirl",
+      "sprite_var": "poliwhirl",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "62": {
+      "id": 62,
+      "name": "poliwrath",
+      "sprite_var": "poliwrath",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "63": {
+      "id": 63,
+      "name": "abra",
+      "sprite_var": "abra",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "64": {
+      "id": 64,
+      "name": "kadabra",
+      "sprite_var": "kadabra",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "65": {
+      "id": 65,
+      "name": "alakazam",
+      "sprite_var": "alakazam",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "66": {
+      "id": 66,
+      "name": "machop",
+      "sprite_var": "machop",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "67": {
+      "id": 67,
+      "name": "machoke",
+      "sprite_var": "machoke",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "68": {
+      "id": 68,
+      "name": "machamp",
+      "sprite_var": "machamp",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "69": {
+      "id": 69,
+      "name": "bellsprout",
+      "sprite_var": "bellsprout",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "70": {
+      "id": 70,
+      "name": "weepinbell",
+      "sprite_var": "weepinbell",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "71": {
+      "id": 71,
+      "name": "victreebel",
+      "sprite_var": "victreebel",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "72": {
+      "id": 72,
+      "name": "tentacool",
+      "sprite_var": "tentacool",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "73": {
+      "id": 73,
+      "name": "tentacruel",
+      "sprite_var": "tentacruel",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "74": {
+      "id": 74,
+      "name": "geodude",
+      "sprite_var": "geodude",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "75": {
+      "id": 75,
+      "name": "graveler",
+      "sprite_var": "graveler",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "76": {
+      "id": 76,
+      "name": "golem",
+      "sprite_var": "golem",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "77": {
+      "id": 77,
+      "name": "ponyta",
+      "sprite_var": "ponyta",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "78": {
+      "id": 78,
+      "name": "rapidash",
+      "sprite_var": "rapidash",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "79": {
+      "id": 79,
+      "name": "slowpoke",
+      "sprite_var": "slowpoke",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "80": {
+      "id": 80,
+      "name": "slowbro",
+      "sprite_var": "slowbro",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "81": {
+      "id": 81,
+      "name": "magnemite",
+      "sprite_var": "magnemite",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "82": {
+      "id": 82,
+      "name": "magneton",
+      "sprite_var": "magneton",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "83": {
+      "id": 83,
+      "name": "farfetchd",
+      "sprite_var": "farfetchd",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "84": {
+      "id": 84,
+      "name": "doduo",
+      "sprite_var": "doduo",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "85": {
+      "id": 85,
+      "name": "dodrio",
+      "sprite_var": "dodrio",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "86": {
+      "id": 86,
+      "name": "seel",
+      "sprite_var": "seel",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "87": {
+      "id": 87,
+      "name": "dewgong",
+      "sprite_var": "dewgong",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "88": {
+      "id": 88,
+      "name": "grimer",
+      "sprite_var": "grimer",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "89": {
+      "id": 89,
+      "name": "muk",
+      "sprite_var": "muk",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "90": {
+      "id": 90,
+      "name": "shellder",
+      "sprite_var": "shellder",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "91": {
+      "id": 91,
+      "name": "cloyster",
+      "sprite_var": "cloyster",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "92": {
+      "id": 92,
+      "name": "gastly",
+      "sprite_var": "gastly",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "93": {
+      "id": 93,
+      "name": "haunter",
+      "sprite_var": "haunter",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "94": {
+      "id": 94,
+      "name": "gengar",
+      "sprite_var": "gengar",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "95": {
+      "id": 95,
+      "name": "onix",
+      "sprite_var": "onix",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "96": {
+      "id": 96,
+      "name": "drowzee",
+      "sprite_var": "drowzee",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "97": {
+      "id": 97,
+      "name": "hypno",
+      "sprite_var": "hypno",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "98": {
+      "id": 98,
+      "name": "krabby",
+      "sprite_var": "krabby",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "99": {
+      "id": 99,
+      "name": "kingler",
+      "sprite_var": "kingler",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "100": {
+      "id": 100,
+      "name": "voltorb",
+      "sprite_var": "voltorb",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "101": {
+      "id": 101,
+      "name": "electrode",
+      "sprite_var": "electrode",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "102": {
+      "id": 102,
+      "name": "exeggcute",
+      "sprite_var": "exeggcute",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "103": {
+      "id": 103,
+      "name": "exeggutor",
+      "sprite_var": "exeggutor",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "104": {
+      "id": 104,
+      "name": "cubone",
+      "sprite_var": "cubone",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "105": {
+      "id": 105,
+      "name": "marowak",
+      "sprite_var": "marowak",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "106": {
+      "id": 106,
+      "name": "hitmonlee",
+      "sprite_var": "hitmonlee",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "107": {
+      "id": 107,
+      "name": "hitmonchan",
+      "sprite_var": "hitmonchan",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "108": {
+      "id": 108,
+      "name": "lickitung",
+      "sprite_var": "lickitung",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "109": {
+      "id": 109,
+      "name": "koffing",
+      "sprite_var": "koffing",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "110": {
+      "id": 110,
+      "name": "weezing",
+      "sprite_var": "weezing",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "111": {
+      "id": 111,
+      "name": "rhyhorn",
+      "sprite_var": "rhyhorn",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "112": {
+      "id": 112,
+      "name": "rhydon",
+      "sprite_var": "rhydon",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "113": {
+      "id": 113,
+      "name": "chansey",
+      "sprite_var": "chansey",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "114": {
+      "id": 114,
+      "name": "tangela",
+      "sprite_var": "tangela",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "115": {
+      "id": 115,
+      "name": "kangaskhan",
+      "sprite_var": "kangaskhan",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "116": {
+      "id": 116,
+      "name": "horsea",
+      "sprite_var": "horsea",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "117": {
+      "id": 117,
+      "name": "seadra",
+      "sprite_var": "seadra",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "118": {
+      "id": 118,
+      "name": "goldeen",
+      "sprite_var": "goldeen",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "119": {
+      "id": 119,
+      "name": "seaking",
+      "sprite_var": "seaking",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "120": {
+      "id": 120,
+      "name": "staryu",
+      "sprite_var": "staryu",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "121": {
+      "id": 121,
+      "name": "starmie",
+      "sprite_var": "starmie",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "122": {
+      "id": 122,
+      "name": "mr-mime",
+      "sprite_var": "mr_mime",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "123": {
+      "id": 123,
+      "name": "scyther",
+      "sprite_var": "scyther",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "124": {
+      "id": 124,
+      "name": "jynx",
+      "sprite_var": "jynx",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "125": {
+      "id": 125,
+      "name": "electabuzz",
+      "sprite_var": "electabuzz",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "126": {
+      "id": 126,
+      "name": "magmar",
+      "sprite_var": "magmar",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "127": {
+      "id": 127,
+      "name": "pinsir",
+      "sprite_var": "pinsir",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "128": {
+      "id": 128,
+      "name": "tauros",
+      "sprite_var": "tauros",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "129": {
+      "id": 129,
+      "name": "magikarp",
+      "sprite_var": "magikarp",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "130": {
+      "id": 130,
+      "name": "gyarados",
+      "sprite_var": "gyarados",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "131": {
+      "id": 131,
+      "name": "lapras",
+      "sprite_var": "lapras",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "132": {
+      "id": 132,
+      "name": "ditto",
+      "sprite_var": "ditto",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "133": {
+      "id": 133,
+      "name": "eevee",
+      "sprite_var": "eevee",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "134": {
+      "id": 134,
+      "name": "vaporeon",
+      "sprite_var": "vaporeon",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "135": {
+      "id": 135,
+      "name": "jolteon",
+      "sprite_var": "jolteon",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "136": {
+      "id": 136,
+      "name": "flareon",
+      "sprite_var": "flareon",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "137": {
+      "id": 137,
+      "name": "porygon",
+      "sprite_var": "porygon",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "138": {
+      "id": 138,
+      "name": "omanyte",
+      "sprite_var": "omanyte",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "139": {
+      "id": 139,
+      "name": "omastar",
+      "sprite_var": "omastar",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "140": {
+      "id": 140,
+      "name": "kabuto",
+      "sprite_var": "kabuto",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "141": {
+      "id": 141,
+      "name": "kabutops",
+      "sprite_var": "kabutops",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "142": {
+      "id": 142,
+      "name": "aerodactyl",
+      "sprite_var": "aerodactyl",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "143": {
+      "id": 143,
+      "name": "snorlax",
+      "sprite_var": "snorlax",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "144": {
+      "id": 144,
+      "name": "articuno",
+      "sprite_var": "articuno",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "145": {
+      "id": 145,
+      "name": "zapdos",
+      "sprite_var": "zapdos",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "146": {
+      "id": 146,
+      "name": "moltres",
+      "sprite_var": "moltres",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "147": {
+      "id": 147,
+      "name": "dratini",
+      "sprite_var": "dratini",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "148": {
+      "id": 148,
+      "name": "dragonair",
+      "sprite_var": "dragonair",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "149": {
+      "id": 149,
+      "name": "dragonite",
+      "sprite_var": "dragonite",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "150": {
+      "id": 150,
+      "name": "mewtwo",
+      "sprite_var": "mewtwo",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    },
+    "151": {
+      "id": 151,
+      "name": "mew",
+      "sprite_var": "mew",
+      "sprite": {
+        "width": 25,
+        "height": 11,
+        "default_color": 1,
+        "front_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "back_grid": [
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         ",
+          "                         "
+        ],
+        "palettes": {
+          "normal": {},
+          "shiny": {}
+        }
+      }
+    }
+  }
+}

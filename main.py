@@ -7,36 +7,80 @@ import mysterygift
 import cutscene
 import subprocess
 import sys
-
 #colors
-curses.initscr()
-curses.start_color()
-curses.use_default_colors()
-curses.init_pair(1, curses.COLOR_WHITE, -1)
-curses.init_pair(2, curses.COLOR_YELLOW, -1)
-curses.init_pair(3, curses.COLOR_CYAN, -1)
-curses.init_pair(4, curses.COLOR_GREEN, -1)
-curses.init_pair(5, curses.COLOR_MAGENTA, -1)
-curses.init_pair(6, curses.COLOR_BLUE, -1)
-curses.init_pair(7, curses.COLOR_RED, -1)
-curses.init_pair(8, curses.COLOR_BLACK, curses.COLOR_WHITE)
-curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_RED)
-curses.init_pair(10, curses.COLOR_BLACK, curses.COLOR_YELLOW)
-curses.init_pair(11, curses.COLOR_BLACK, curses.COLOR_GREEN)
-curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_BLUE)
-curses.init_pair(13, curses.COLOR_GREEN, curses.COLOR_WHITE)
-curses.init_pair(14, curses.COLOR_YELLOW, curses.COLOR_WHITE)
-curses.init_pair(15, curses.COLOR_RED, curses.COLOR_WHITE)
-curses.init_color(10, 1000, 500, 0)  
-curses.init_pair(16, 10, -1)# orange (filled)
-curses.init_color(11, 900, 850, 700)  
-curses.init_pair(17, 11, -1) #beige(?)
-curses.init_pair(18, curses.COLOR_BLACK, -1)
-curses.init_color(12, 600, 300, 0)
-curses.init_pair(19, 12, -1) #brown
-curses.init_pair(20, curses.COLOR_BLACK, curses.COLOR_BLACK)
-curses.init_pair(21, curses.COLOR_WHITE, curses.COLOR_WHITE)
-
+# Initialize colors safely; some environments support only 8 colors and calling
+# init_color with higher color numbers raises ValueError. Wrap in try/except
+# so imports don't fail in limited terminals or CI.
+try:
+    curses.initscr()
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_WHITE, -1)
+    curses.init_pair(2, curses.COLOR_YELLOW, -1)
+    curses.init_pair(3, curses.COLOR_CYAN, -1)
+    curses.init_pair(4, curses.COLOR_GREEN, -1)
+    curses.init_pair(5, curses.COLOR_MAGENTA, -1)
+    curses.init_pair(6, curses.COLOR_BLUE, -1)
+    curses.init_pair(7, curses.COLOR_RED, -1)
+    curses.init_pair(8, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_RED)
+    curses.init_pair(10, curses.COLOR_BLACK, curses.COLOR_YELLOW)
+    curses.init_pair(11, curses.COLOR_BLACK, curses.COLOR_GREEN)
+    curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_BLUE)
+    curses.init_pair(13, curses.COLOR_GREEN, curses.COLOR_WHITE)
+    curses.init_pair(14, curses.COLOR_YELLOW, curses.COLOR_WHITE)
+    curses.init_pair(15, curses.COLOR_RED, curses.COLOR_WHITE)
+    # Extended color definitions (may not be supported everywhere)
+    try:
+        curses.init_color(10, 1000, 500, 0)
+        curses.init_pair(16, 10, -1) # orange (filled)
+        curses.init_color(11, 900, 850, 700)
+        curses.init_pair(17, 11, -1) #beige(?)
+        curses.init_pair(18, curses.COLOR_BLACK, -1)
+        curses.init_color(12, 600, 300, 0)
+        curses.init_pair(19, 12, -1) #brown
+        curses.init_pair(20, curses.COLOR_BLACK, curses.COLOR_BLACK)
+        curses.init_pair(21, curses.COLOR_WHITE, curses.COLOR_WHITE)
+        curses.init_color(13, 400, 800, 400)
+        curses.init_pair(22, 13, -1)
+        curses.init_color(14, 0, 500, 0)
+        curses.init_pair(23, 14, -1)
+        curses.init_color(15, 500, 700, 1000)
+        curses.init_pair(24, 15, -1)
+        curses.init_color(16, 0, 200, 700)
+        curses.init_pair(25, 16, -1)
+        curses.init_color(17, 1000, 600, 700)
+        curses.init_pair(26, 17, -1)
+        curses.init_color(18, 600, 0, 800)
+        curses.init_pair(27, 18, -1)
+        curses.init_color(19, 800, 600, 1000)
+        curses.init_pair(28, 19, -1)
+        curses.init_color(20, 500, 500, 500)
+        curses.init_pair(29, 20, -1)
+        curses.init_color(21, 250, 250, 250)
+        curses.init_pair(30, 21, -1)
+        curses.init_color(22, 1000, 800, 600)
+        curses.init_pair(31, 22, -1)
+        curses.init_color(23, 800, 600, 400)
+        curses.init_pair(32, 23, -1)
+        curses.init_color(24, 1000, 850, 0)
+        curses.init_pair(33, 24, -1)
+        curses.init_color(25, 700, 0, 0)
+        curses.init_pair(34, 25, -1)
+        curses.init_color(26, 0, 700, 700)
+        curses.init_pair(35, 26, -1)
+        curses.init_color(27, 600, 1000, 800)
+        curses.init_pair(36, 27, -1)
+        curses.init_color(28, 400, 200, 0)
+        curses.init_pair(37, 28, -1)
+        curses.init_color(29, 1000, 1000, 600)
+        curses.init_pair(38, 29, -1)
+    except Exception:
+        # extended colors not available; continue without them
+        pass
+except Exception:
+    # Terminal doesn't support colors or curses initialization; skip color setup
+    pass
 
 #variables
 textspeed = 0.01
