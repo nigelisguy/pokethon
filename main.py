@@ -1,3 +1,38 @@
+import os
+import sys
+
+# Add project root to path for imports
+def find_project_root(start_path=None):
+    # Get absolute path to this script
+    if start_path is None:
+        script_path = os.path.abspath(__file__)
+    else:
+        script_path = os.path.abspath(start_path)
+    
+    # Start from the script's directory
+    current = os.path.dirname(script_path)
+    
+    # Walk up directory tree looking for pokethon project markers
+    max_depth = 10
+    depth = 0
+    while current != os.path.dirname(current) and depth < max_depth:
+        stats_exists = os.path.exists(os.path.join(current, "stats.py"))
+        main_exists = os.path.exists(os.path.join(current, "main.py"))
+        data_exists = os.path.exists(os.path.join(current, "data", "pokedata.json"))
+        
+        if stats_exists and main_exists and data_exists:
+            return current
+        current = os.path.dirname(current)
+        depth += 1
+    
+    # Fallback: return script directory
+    return os.path.dirname(script_path)
+
+PROJECT_ROOT = find_project_root()
+# Ensure the path is added
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import stats
 import curses
 import time
@@ -6,11 +41,7 @@ import overworld
 import mysterygift
 import cutscene
 import subprocess
-import sys
-#colors
-# Initialize colors safely; some environments support only 8 colors and calling
-# init_color with higher color numbers raises ValueError. Wrap in try/except
-# so imports don't fail in limited terminals or CI.
+
 try:
     curses.initscr()
     curses.start_color()
@@ -102,7 +133,12 @@ def printdelay(text):
 
 def launch_tool(script_path):
     curses.endwin()
-    subprocess.run([sys.executable, script_path])
+    # Resolve relative paths using PROJECT_ROOT
+    if not os.path.isabs(script_path):
+        full_path = os.path.join(PROJECT_ROOT, script_path)
+    else:
+        full_path = script_path
+    subprocess.run([sys.executable, full_path])
 
 def confirm_menu(stdscr, title, detail, warning="ALL DATA WILL BE ERASED."):
     y = 1
@@ -507,8 +543,8 @@ def mainm(stdscr):
         "Settings",
         "Mystery Gift",
         "Save Debug",
-        "GUI Map Editor",
-        "GUI Sprite Editor",
+        "GUI Map Editor (will close this game)",
+        "GUI Sprite Editor (will close this game)",
         "Update Log(placeholder, coming soon)"
     ]
 

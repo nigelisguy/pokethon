@@ -9,6 +9,14 @@ import importlib
 
 sys.path.append(os.path.dirname(__file__))
 
+# Find project root (parent of devtools directory)
+def find_project_root():
+    devtools_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(devtools_dir)
+    return project_root
+
+PROJECT_ROOT = find_project_root()
+
 try:
     import stats
     import importlib
@@ -97,7 +105,7 @@ class Editor:
     def load_maps(self):
         import os
 
-        json_path = os.path.join(os.path.dirname(__file__), "leveldata.json")
+        json_path = os.path.join(PROJECT_ROOT, "data", "leveldata.json")
 
         # Prefer JSON if exists
         if os.path.exists(json_path):
@@ -807,7 +815,7 @@ class Editor:
     def save_stats_file(self):
         import os, json
 
-        path = os.path.join(os.path.dirname(__file__), "leveldata.json")
+        path = os.path.join(PROJECT_ROOT, "data", "leveldata.json")
 
         def encode(obj):
             if isinstance(obj, set):
