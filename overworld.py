@@ -100,6 +100,8 @@ WATER = "~"
 ITEM = "●"
 CUT_TREE = "▲"
 REAL_TREE = "⬜"
+ICE = "❄"
+BLOCK = "◼"
 HILL_CHARS = {
     "up": "↑",
     "down": "↓",
@@ -120,6 +122,30 @@ battled_trainers = set()
 picked_items = set()
 cut_trees = set()
 money = 3000
+
+
+# NPC Preset Dialogue
+NPC_PRESETS = {
+    "pokemon_centre_lady": (
+        "♥",
+        [
+            "Welcome to the Pokémon Center!",
+            "We'll heal your Pokémon back to full health.",
+            "HEAL_PLAYER",
+            "Your Pokémon are all healed!",
+        ],
+    ),
+    "shop_keeper": (
+        "☺",
+        ["Welcome to the Poké Mart!"],
+        "SHOP",
+    ),
+    "trainer": (
+        "☺",
+        ["Let's battle!"],
+        0,  # trainer_id will be set when placing
+    ),
+}
 
 
 class MonOver:
@@ -459,7 +485,7 @@ sync_party_slots()
 
 
 class Room:
-    def __init__(self, width, height, npcs=None, grass_tiles=None, water_tiles=None, hill_tiles=None, doors=None, items=None, cut_trees=None, trees=None, fog=None, room=None, legendary_mons=None, room_id="room"):
+    def __init__(self, width, height, npcs=None, grass_tiles=None, water_tiles=None, hill_tiles=None, doors=None, items=None, cut_trees=None, trees=None, fog=None, room=None, legendary_mons=None, ice_tiles=None, block_tiles=None, room_id="room"):
         self.width = width
         self.height = height
         self.npcs = npcs or {}
@@ -473,6 +499,8 @@ class Room:
         self.fog = fog or set()
         self.room = room or {}
         self.legendary_mons = legendary_mons or {}
+        self.ice_tiles = ice_tiles or set()
+        self.block_tiles = block_tiles or {}
         self.room_id = room_id
 
 
@@ -590,7 +618,52 @@ def is_blocked(room, pos):
         or pos in room.hill_tiles
         or pos in room.trees
         or (pos in room.cut_trees and map_object_id(room, pos) not in cut_trees)
+        or pos in room.block_tiles
     )
+
+def try_push_block(room, py, px, block_pos, dy, dx):
+    """Try to push a block. Returns True if successful, False otherwise."""
+    new_block_pos = (block_pos[0] + dy, block_pos[1] + dx)
+    ny, nx = new_block_pos
+    
+    # Check if new position is valid and not blocked
+    if not (0 <= ny < room.height and 0 <= nx < room.width):
+        return False
+    if is_blocked(room, new_block_pos) and new_block_pos not in room.block_tiles:
+        return False
+    
+    # If another block is in the way, try to push it first
+    if new_block_pos in room.block_tiles:
+        if not try_push_block(room, block_pos[0], block_pos[1], new_block_pos, dy, dx):
+            return False
+    
+    # Move the block
+    room.block_tiles[new_block_pos] = room.block_tiles.pop(block_pos)
+    return True
+
+def apply_ice_physics(room, py, px, dy, dx):
+    ny, nx = py + dy, px + dx
+    
+    if (ny, nx) not in room.ice_tiles or not (0 <= ny < room.height and 0 <= nx < room.width):
+        return (ny, nx)
+    
+    if is_blocked(room, (ny, nx)):
+        return (py, px)
+    
+    while True:
+        next_ny, next_nx = ny + dy, nx + dx
+        if not (0 <= next_ny < room.height and 0 <= next_nx < room.width):
+            return (ny, nx)
+    
+        if (next_ny, next_nx) not in room.ice_tiles:
+            if is_blocked(room, (next_ny, next_nx)):
+                return (ny, nx)
+            return (next_ny, next_nx)
+        
+        if is_blocked(room, (next_ny, next_nx)):
+            return (ny, nx)
+        
+        ny, nx = next_ny, next_nx
 
 def movement_direction(dy, dx):
     if dy == -1 and dx == 0:
@@ -721,6 +794,10 @@ def draw(stdscr, room, py, px):
                 char = WATER
                 color = curses.color_pair(6)
 
+            if (y, x) in room.ice_tiles:
+                char = ICE
+                color = curses.color_pair(3)
+
             if (y, x) in room.hill_tiles:
                 char = HILL_CHARS.get(room.hill_tiles[(y, x)], "_")
                 color = curses.color_pair(HILL_COLOR_PAIR)
@@ -746,6 +823,10 @@ def draw(stdscr, room, py, px):
             if (y, x) in room.fog:
                 char = REAL_TREE
                 color = curses.color_pair(4)
+
+            if (y, x) in room.block_tiles:
+                char = BLOCK
+                color = curses.color_pair(1)
 
             if (y, x) in room.legendary_mons and object_id not in picked_items:
                 char = LEGENDARY
@@ -841,18 +922,42 @@ def create_room_registry():
             for pos, npc in copy.deepcopy(data.get("npcs", {})).items()
         }
 
+        def to_set(v):
+            """Convert various formats to a set of tuples."""
+            if isinstance(v, set):
+                return set(tuple(x) if isinstance(x, (list, tuple)) else x for x in v)
+            if isinstance(v, list):
+                return set(tuple(x) if isinstance(x, (list, tuple)) else (x,) for x in v if x)
+            return set()
+
+        def to_dict(v):
+            """Convert various formats to a dict with tuple keys."""
+            if not v:
+                return {}
+            if isinstance(v, dict):
+                result = {}
+                for k, v2 in v.items():
+                    if isinstance(k, str) and "," in k:
+                        result[tuple(map(int, k.split(",")))] = v2
+                    elif isinstance(k, (list, tuple)):
+                        result[tuple(k)] = v2
+                return result
+            return {}
+
         rooms[room_id] = Room(
             data["width"],
             data["height"],
             npcs=npcs,
-            grass_tiles=set(data.get("grass_tiles", set())),
-            water_tiles=set(data.get("water_tiles", set())),
-            hill_tiles=copy.deepcopy(data.get("hill_tiles", {})),
-            items=copy.deepcopy(data.get("items", {})),
-            cut_trees=set(data.get("cut_trees", set())),
-            trees=set(data.get("trees", set())),
-            fog=set(data.get("fog", set())),
-            legendary_mons=copy.deepcopy(data.get("legendary_mons", {})),
+            grass_tiles=to_set(data.get("grass_tiles", [])),
+            water_tiles=to_set(data.get("water_tiles", [])),
+            hill_tiles=to_dict(data.get("hill_tiles", {})),
+            items=to_dict(data.get("items", {})),
+            cut_trees=to_set(data.get("cut_trees", [])),
+            trees=to_set(data.get("trees", [])),
+            fog=to_set(data.get("fog", [])),
+            legendary_mons=to_dict(data.get("legendary_mons", {})),
+            ice_tiles=to_set(data.get("ice_tiles", [])),
+            block_tiles=to_dict(data.get("block_tiles", {})),
             room_id=room_id
         )
 
@@ -1077,12 +1182,27 @@ def overworld(stdscr):
             break
 
         if 0 <= ny < current_room.height and 0 <= nx < current_room.width:
-            hill_jump = try_hill_jump(current_room, py, px, ny, nx)
-            if hill_jump is not None:
-                py, px = hill_jump
-                pickup_item(stdscr, current_room, (py, px))
+            # Handle block pushing
+            if (ny, nx) in current_room.block_tiles:
+                dy, dx = ny - py, nx - px
+                if try_push_block(current_room, py, px, (ny, nx), dy, dx):
+                    # Block was pushed, now move player onto the block's old position
+                    py, px = ny, nx
+                    pickup_item(stdscr, current_room, (py, px))
+            # Handle hill jumps
+            elif (ny, nx) in current_room.hill_tiles:
+                hill_jump = try_hill_jump(current_room, py, px, ny, nx)
+                if hill_jump is not None:
+                    py, px = hill_jump
+                    pickup_item(stdscr, current_room, (py, px))
+            # Handle normal movement and ice physics
             elif not is_blocked(current_room, (ny, nx)):
-                py, px = ny, nx
+                # Check if moving onto ice
+                if (ny, nx) in current_room.ice_tiles:
+                    dy, dx = ny - py, nx - px
+                    py, px = apply_ice_physics(current_room, py, px, dy, dx)
+                else:
+                    py, px = ny, nx
                 pickup_item(stdscr, current_room, (py, px))
 
         if (py, px) in current_room.doors:

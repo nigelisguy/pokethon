@@ -29,8 +29,15 @@ TILE_SIZE = 24
 TILES = [
     "empty", "grass", "water", "hill",
     "tree", "cut_tree", "npc", "item",
-    "legendary", "spawn", "door"
+    "legendary", "spawn", "door", "ice", "block"
 ]
+
+# NPC Presets for quick placement
+NPC_PRESETS = {
+    "pokemon_centre_lady": ("♥", ["Welcome to the Pokémon Center!", "We'll heal your Pokémon."]),
+    "shop_keeper": ("☺", ["Welcome to the Poké Mart!"]),
+    "trainer_default": ("☺", ["Let's battle!"]),
+}
 
 BASE_COLORS = {
     "empty": "#ffffff",   
@@ -44,6 +51,8 @@ BASE_COLORS = {
     "legendary": "#e74c3c",
     "spawn": "#ffd700",
     "door": "#95a5a6",
+    "ice": "#87ceeb",
+    "block": "#654321",
 }
 
 DISPLAY = {
@@ -58,6 +67,8 @@ DISPLAY = {
     "legendary": "M",
     "spawn": "@",
     "door": "D",
+    "ice": "❄",
+    "block": "■",
 }
 
 
@@ -78,6 +89,8 @@ class MapData:
         self.items = {}
         self.legendary_mons = {}
         self.doors = {}
+        self.ice_tiles = set()
+        self.block_tiles = {}
 
 
 class Editor:
@@ -157,6 +170,8 @@ class Editor:
             new_map.items = to_dict(m.get("items", {}))
             new_map.legendary_mons = to_dict(m.get("legendary_mons", {}))
             new_map.doors = to_dict(m.get("doors", {}))
+            new_map.ice_tiles = to_set(m.get("ice_tiles", []))
+            new_map.block_tiles = to_dict(m.get("block_tiles", {}))
 
             out[name] = new_map
 
@@ -401,12 +416,13 @@ class Editor:
 
         # Only remove properties if not in door mode (door mode handles removal specially)
         if mode != "door":
-            for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees]:
+            for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees, m.ice_tiles]:
                 s.discard((y, x))
             m.npcs.pop((y, x), None)
             m.items.pop((y, x), None)
             m.legendary_mons.pop((y, x), None)
             m.doors.pop((y, x), None)
+            m.block_tiles.pop((y, x), None)
 
         if mode == "spawn":
             m.spawn = (y, x)
@@ -422,6 +438,12 @@ class Editor:
 
         elif mode == "cut_tree":
             m.cut_trees.add((y, x))
+
+        elif mode == "ice":
+            m.ice_tiles.add((y, x))
+
+        elif mode == "block":
+            m.block_tiles[(y, x)] = {"id": 0}
 
         elif mode == "hill":
             dirs = ["up", "right", "down", "left"]
@@ -452,11 +474,12 @@ class Editor:
                 return
 
             # Remove existing tile data at this position
-            for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees]:
+            for s in [m.grass_tiles, m.water_tiles, m.tree_tiles, m.cut_trees, m.ice_tiles]:
                 s.discard((y, x))
             m.npcs.pop((y, x), None)
             m.items.pop((y, x), None)
             m.legendary_mons.pop((y, x), None)
+            m.block_tiles.pop((y, x), None)
             m.doors.pop((y, x), None)
 
             # Place door with explicit destination
@@ -476,12 +499,14 @@ class Editor:
         tile = "empty"
         if (y, x) in m.grass_tiles: tile = "grass"
         elif (y, x) in m.water_tiles: tile = "water"
+        elif (y, x) in m.ice_tiles: tile = "ice"
         elif (y, x) in m.tree_tiles: tile = "tree"
         elif (y, x) in m.cut_trees: tile = "cut_tree"
         elif (y, x) in m.npcs: tile = "npc"
         elif (y, x) in m.items: tile = "item"
         elif (y, x) in m.legendary_mons: tile = "legendary"
         elif (y, x) in m.hill_tiles: tile = "hill"
+        elif (y, x) in m.block_tiles: tile = "block"
         elif (y, x) in m.doors: tile = "door"
         elif m.spawn == (y, x): tile = "spawn"
 
@@ -584,6 +609,7 @@ class Editor:
                 "level": int(self.legend_level.get()),
                 "moves": old.get("moves", [340, 340, 340, 340])
             }
+            self.save_stats_file()
 
         self.draw()
 
@@ -666,11 +692,13 @@ class Editor:
             m.water_tiles = clamp_set(m.water_tiles)
             m.tree_tiles = clamp_set(m.tree_tiles)
             m.cut_trees = clamp_set(m.cut_trees)
+            m.ice_tiles = clamp_set(m.ice_tiles)
 
             m.npcs = {k: v for k, v in m.npcs.items() if k[0] < h and k[1] < w}
             m.items = {k: v for k, v in m.items.items() if k[0] < h and k[1] < w}
             m.legendary_mons = {k: v for k, v in m.legendary_mons.items() if k[0] < h and k[1] < w}
             m.hill_tiles = {k: v for k, v in m.hill_tiles.items() if k[0] < h and k[1] < w}
+            m.block_tiles = {k: v for k, v in m.block_tiles.items() if k[0] < h and k[1] < w}
             m.doors = {k: v for k, v in m.doors.items() if k[0] < h and k[1] < w}
 
             self.draw()
@@ -693,12 +721,14 @@ class Editor:
 
                 if (y, x) in m.grass_tiles: t = "grass"
                 elif (y, x) in m.water_tiles: t = "water"
+                elif (y, x) in m.ice_tiles: t = "ice"
                 elif (y, x) in m.tree_tiles: t = "tree"
                 elif (y, x) in m.cut_trees: t = "cut_tree"
                 elif (y, x) in m.npcs: t = "npc"
                 elif (y, x) in m.items: t = "item"
                 elif (y, x) in m.legendary_mons: t = "legendary"
                 elif (y, x) in m.hill_tiles: t = "hill"
+                elif (y, x) in m.block_tiles: t = "block"
                 elif (y, x) in m.doors: t = "door"
                 elif m.spawn == (y, x): t = "spawn"
 
@@ -814,6 +844,7 @@ class Editor:
                 new_map.water_tiles = to_set(m.get("water_tiles", []))
                 new_map.tree_tiles = to_set(m.get("trees", []))
                 new_map.cut_trees = to_set(m.get("cut_trees", []))
+                new_map.ice_tiles = to_set(m.get("ice_tiles", []))
                 new_map.fog = to_set(m.get("fog", []))
 
                 def to_dict(v):
@@ -825,6 +856,7 @@ class Editor:
                 new_map.items = to_dict(m.get("items", {}))
                 new_map.npcs = to_dict(m.get("npcs", {}))
                 new_map.legendary_mons = to_dict(m.get("legendary_mons", {}))
+                new_map.block_tiles = to_dict(m.get("block_tiles", {}))
 
                 new_map.doors = {}
                 for k, v in m.get("doors", {}).items():
@@ -863,11 +895,13 @@ class Editor:
                 "water_tiles": [list(x) for x in m.water_tiles],
                 "trees": [list(x) for x in m.tree_tiles],
                 "cut_trees": [list(x) for x in m.cut_trees],
+                "ice_tiles": [list(x) for x in m.ice_tiles],
 
                 "hill_tiles": {f"{k[0]},{k[1]}": v for k, v in m.hill_tiles.items()},
                 "npcs": {f"{k[0]},{k[1]}": v for k, v in m.npcs.items()},
                 "items": {f"{k[0]},{k[1]}": v for k, v in m.items.items()},
                 "legendary_mons": {f"{k[0]},{k[1]}": v for k, v in m.legendary_mons.items()},
+                "block_tiles": {f"{k[0]},{k[1]}": v for k, v in m.block_tiles.items()},
                 "doors": {f"{k[0]},{k[1]}": list(v) for k, v in m.doors.items()},
             }
 
@@ -898,6 +932,10 @@ class Editor:
             for (y, x), value in m.hill_tiles.items():
                 hill_tiles_serialized[f"{y},{x}"] = value
             
+            block_tiles_serialized = {}
+            for (y, x), value in m.block_tiles.items():
+                block_tiles_serialized[f"{y},{x}"] = value
+            
             # Explicitly convert tile sets to lists of [y, x] arrays for clarity
             out[name] = {
                 "width": m.width,
@@ -906,11 +944,13 @@ class Editor:
                 "npcs": npcs_serialized,
                 "grass_tiles": [[y, x] for y, x in m.grass_tiles],
                 "water_tiles": [[y, x] for y, x in m.water_tiles],
+                "ice_tiles": [[y, x] for y, x in m.ice_tiles],
                 "hill_tiles": hill_tiles_serialized,
                 "items": items_serialized,
                 "cut_trees": [[y, x] for y, x in m.cut_trees],
                 "trees": [[y, x] for y, x in m.tree_tiles],
                 "legendary_mons": legendary_serialized,
+                "block_tiles": block_tiles_serialized,
                 "doors": doors_serialized
             }
         return out

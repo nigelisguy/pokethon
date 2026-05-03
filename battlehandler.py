@@ -31,7 +31,6 @@ def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
 
     mon = fightui.BattleMon(stat_block, level, move_list, hp)
 
-    # Preserve source data so overworld/save code can reconstruct this mon later.
     mon.mon_id = mon_id
     mon.move_ids = list(move_ids)
     mon.enemytype = enemytype
