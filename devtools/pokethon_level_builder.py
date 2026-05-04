@@ -34,8 +34,8 @@ TILES = [
 
 # NPC Presets for quick placement
 NPC_PRESETS = {
-    "pokemon_centre_lady": ("♥", ["Welcome to the Pokémon Center!", "We'll heal your Pokémon."]),
-    "shop_keeper": ("☺", ["Welcome to the Poké Mart!"]),
+    "pokemon_centre_lady": ("♥", ["Welcome to the Pokémon Center!", "We'll heal your Pokémon back to full health.", "HEAL_PLAYER", "Your Pokémon are all healed!"]),
+    "shop_keeper": ("☺", ["Welcome to the Poké Mart!"], "SHOP"),
     "trainer_default": ("☺", ["Let's battle!"]),
 }
 
@@ -220,6 +220,7 @@ class Editor:
 
         tk.Button(top, text="Resize Map", command=self.resize_map).pack(side=tk.LEFT)
         ttk.Combobox(top, textvariable=self.mode, values=TILES, state="readonly").pack(side=tk.LEFT)
+        
         tk.Button(top, text="Undo", command=self.undo_action).pack(side=tk.LEFT)
         tk.Button(top, text="Redo", command=self.redo_action).pack(side=tk.LEFT)
         tk.Button(top, text="Save", command=self.save).pack(side=tk.LEFT)
@@ -282,13 +283,28 @@ class Editor:
         self.dialog_entry = tk.Text(self.npc_frame, height=6, width=25)
         self.dialog_entry.pack(pady=5)
 
+        self.action_label = tk.Label(self.npc_frame, text="NPC Action (optional)", fg="white", bg="#222")
+        self.action_label.pack(pady=5)
+
+        self.action_entry = tk.Entry(self.npc_frame, width=25)
+        self.action_entry.pack(pady=5)
+
         self.save_dialog_btn = tk.Button(
             self.npc_frame,
-            text="Save NPC Dialogue",
+            text="Save NPC",
             command=self.save_npc_dialogue
         )
         self.save_dialog_btn.pack(pady=5)
+
+        self.preset_frame = tk.Frame(self.npc_frame, bg="#222")
+        tk.Label(self.preset_frame, text="NPC Presets:", fg="white", bg="#222").pack(side=tk.LEFT, padx=(0, 5))
+        tk.Button(self.preset_frame, text="PokéCenter", command=lambda: self.place_preset("pokemon_centre_lady")).pack(side=tk.LEFT, padx=2)
+        tk.Button(self.preset_frame, text="Shop", command=lambda: self.place_preset("shop_keeper")).pack(side=tk.LEFT, padx=2)
+        tk.Button(self.preset_frame, text="Trainer", command=lambda: self.place_preset("trainer_default")).pack(side=tk.LEFT, padx=2)
+        self.preset_frame.pack(pady=(5, 10))
+
         self.dialog_entry.bind("<Return>", lambda e: (self.save_npc_dialogue(), "break"))
+        self.action_entry.bind("<Return>", lambda e: (self.save_npc_dialogue(), "break"))
         self.hill_dir_var = tk.StringVar(value="up")
         self.hill_menu = ttk.Combobox(
             self.hill_frame,
@@ -489,6 +505,37 @@ class Editor:
         self.draw()
         self.save_stats_file()
 
+    def place_preset(self, preset_name):
+        """Place an NPC preset at the selected position."""
+        if not self.selected:
+            return
+        
+        m = self.cur()
+        y, x = self.selected
+        
+        if preset_name in NPC_PRESETS:
+            preset_data = NPC_PRESETS[preset_name]
+            m.npcs[(y, x)] = preset_data
+            
+            # If it's a trainer, assign a unique trainer ID
+            if preset_name == "trainer_default":
+                # Find the next available trainer ID
+                existing_trainer_ids = set()
+                for room in self.maps.values():
+                    for npc_data in room.npcs.values():
+                        if len(npc_data) >= 3 and isinstance(npc_data[2], int):
+                            existing_trainer_ids.add(npc_data[2])
+                
+                next_id = 1
+                while next_id in existing_trainer_ids:
+                    next_id += 1
+                
+                m.npcs[(y, x)] = (preset_data[0], preset_data[1], next_id)
+        
+        self.update_inspector()
+        self.draw()
+        self.save_stats_file()
+
     def update_inspector(self):
         if not self.selected:
             return
@@ -502,7 +549,7 @@ class Editor:
         elif (y, x) in m.ice_tiles: tile = "ice"
         elif (y, x) in m.tree_tiles: tile = "tree"
         elif (y, x) in m.cut_trees: tile = "cut_tree"
-        elif (y, x) in m.npcs: tile = "npc"
+        elif (y, x) in m.npcs: tile = "npc"  
         elif (y, x) in m.items: tile = "item"
         elif (y, x) in m.legendary_mons: tile = "legendary"
         elif (y, x) in m.hill_tiles: tile = "hill"
@@ -512,6 +559,18 @@ class Editor:
 
         # No buffer system anymore for doors
         status = ""
+        if tile == "npc" and (y, x) in m.npcs:
+            npc_data = m.npcs[(y, x)]
+            symbol = npc_data[0]
+            status = f" ({symbol})"
+            if len(npc_data) > 2:
+                action = npc_data[2]
+                if isinstance(action, int):
+                    status += f" [TRAINER_{action}]"
+                elif action == "SHOP":
+                    status += " [SHOP]"
+                else:
+                    status += f" [{action}]"
 
         self.info.config(text=f"Tile: {tile}{status}\nPos: ({y},{x})")
 
@@ -521,6 +580,11 @@ class Editor:
             fill=BASE_COLORS[tile],
             outline="white"
         )
+        
+        # Add NPC symbol text if it's an NPC
+        if tile == "npc" and (y, x) in m.npcs:
+            symbol = m.npcs[(y, x)][0]
+            self.preview.create_text(50, 50, text=symbol, font=("Arial", 24), fill="white")
 
         for f in [self.npc_frame, self.hill_frame, self.legend_frame, self.item_frame, self.door_frame]:
             try:
@@ -533,6 +597,19 @@ class Editor:
             self.dialog_entry.delete("1.0", tk.END)
             dialogue = m.npcs[(y, x)][1]
             self.dialog_entry.insert(tk.END, "\n".join(dialogue))
+            
+            # Show action if it exists
+            action = ""
+            if len(m.npcs[(y, x)]) >= 3:
+                action_value = m.npcs[(y, x)][2]
+                if action_value == "SHOP":
+                    action = "SHOP"
+                elif isinstance(action_value, int):
+                    action = f"TRAINER_{action_value}"
+                else:
+                    action = str(action_value)
+            self.action_entry.delete(0, tk.END)
+            self.action_entry.insert(0, action)
 
         elif (y, x) in m.hill_tiles:
             self.hill_frame.pack(pady=5)
@@ -579,9 +656,28 @@ class Editor:
             text = self.dialog_entry.get("1.0", tk.END).strip().split("\n")
             text = [line for line in text if line != ""]
             sprite = m.npcs[(y, x)][0]
-            m.npcs[(y, x)] = (sprite, text)
+            
+            # Handle action
+            action_str = self.action_entry.get().strip()
+            if action_str == "SHOP":
+                npc_data = (sprite, text, "SHOP")
+            elif action_str.startswith("TRAINER_"):
+                try:
+                    trainer_id = int(action_str[8:])  # Remove "TRAINER_" prefix
+                    npc_data = (sprite, text, trainer_id)
+                except ValueError:
+                    npc_data = (sprite, text)
+            elif action_str:
+                # Custom action
+                npc_data = (sprite, text, action_str)
+            else:
+                # No action
+                npc_data = (sprite, text)
+            
+            m.npcs[(y, x)] = npc_data
 
         self.draw()
+        self.save_stats_file()
 
 
     def save_hill_direction(self):

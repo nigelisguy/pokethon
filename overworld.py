@@ -629,13 +629,12 @@ def try_push_block(room, py, px, block_pos, dy, dx):
     # Check if new position is valid and not blocked
     if not (0 <= ny < room.height and 0 <= nx < room.width):
         return False
-    if is_blocked(room, new_block_pos) and new_block_pos not in room.block_tiles:
+    if is_blocked(room, new_block_pos):
         return False
     
-    # If another block is in the way, try to push it first
+    # Don't allow pushing if another block is in the way
     if new_block_pos in room.block_tiles:
-        if not try_push_block(room, block_pos[0], block_pos[1], new_block_pos, dy, dx):
-            return False
+        return False
     
     # Move the block
     room.block_tiles[new_block_pos] = room.block_tiles.pop(block_pos)
@@ -644,9 +643,17 @@ def try_push_block(room, py, px, block_pos, dy, dx):
 def apply_ice_physics(room, py, px, dy, dx):
     ny, nx = py + dy, px + dx
     
-    if (ny, nx) not in room.ice_tiles or not (0 <= ny < room.height and 0 <= nx < room.width):
+    # Check if first step is out of bounds
+    if not (0 <= ny < room.height and 0 <= nx < room.width):
+        return (py, px)
+    
+    # If first step is not on ice, check if it's blocked before returning
+    if (ny, nx) not in room.ice_tiles:
+        if is_blocked(room, (ny, nx)):
+            return (py, px)
         return (ny, nx)
     
+    # First step is on ice and not blocked, now check if we need to slide
     if is_blocked(room, (ny, nx)):
         return (py, px)
     
@@ -914,13 +921,27 @@ def materialize_dialogue(lines):
     return dialogue
 
 def create_room_registry():
+    import os
+    
+    # Try to load from JSON first, fall back to stats
+    json_path = os.path.join(os.path.dirname(__file__), "data", "leveldata.json")
+    if os.path.exists(json_path):
+        with open(json_path, "r") as f:
+            data = json.load(f)
+    else:
+        data = stats.MAP_ROOMS
+
     rooms = {}
 
-    for room_id, data in stats.MAP_ROOMS.items():
-        npcs = {
-            pos: (npc[0], materialize_dialogue(npc[1]), *npc[2:])
-            for pos, npc in copy.deepcopy(data.get("npcs", {})).items()
-        }
+    for room_id, room_data in data.items():
+        npcs = {}
+        for pos, npc in copy.deepcopy(room_data.get("npcs", {})).items():
+            # Convert string keys like "3,36" to tuple keys like (3, 36)
+            if isinstance(pos, str) and "," in pos:
+                tuple_pos = tuple(map(int, pos.split(",")))
+            else:
+                tuple_pos = pos
+            npcs[tuple_pos] = (npc[0], materialize_dialogue(npc[1]), *npc[2:])
 
         def to_set(v):
             """Convert various formats to a set of tuples."""
@@ -945,25 +966,31 @@ def create_room_registry():
             return {}
 
         rooms[room_id] = Room(
-            data["width"],
-            data["height"],
+            room_data["width"],
+            room_data["height"],
             npcs=npcs,
-            grass_tiles=to_set(data.get("grass_tiles", [])),
-            water_tiles=to_set(data.get("water_tiles", [])),
-            hill_tiles=to_dict(data.get("hill_tiles", {})),
-            items=to_dict(data.get("items", {})),
-            cut_trees=to_set(data.get("cut_trees", [])),
-            trees=to_set(data.get("trees", [])),
-            fog=to_set(data.get("fog", [])),
-            legendary_mons=to_dict(data.get("legendary_mons", {})),
-            ice_tiles=to_set(data.get("ice_tiles", [])),
-            block_tiles=to_dict(data.get("block_tiles", {})),
+            grass_tiles=to_set(room_data.get("grass_tiles", [])),
+            water_tiles=to_set(room_data.get("water_tiles", [])),
+            hill_tiles=to_dict(room_data.get("hill_tiles", {})),
+            items=to_dict(room_data.get("items", {})),
+            cut_trees=to_set(room_data.get("cut_trees", [])),
+            trees=to_set(room_data.get("trees", [])),
+            fog=to_set(room_data.get("fog", [])),
+            legendary_mons=to_dict(room_data.get("legendary_mons", {})),
+            ice_tiles=to_set(room_data.get("ice_tiles", [])),
+            block_tiles=to_dict(room_data.get("block_tiles", {})),
             room_id=room_id
         )
 
-    for room_id, data in stats.MAP_ROOMS.items():
-        for pos, (target_id, target_y, target_x) in data.get("doors", {}).items():
-            rooms[room_id].doors[pos] = (rooms[target_id], target_y, target_x)
+    # Handle doors - need to convert string keys to tuples
+    for room_id, room_data in data.items():
+        for pos_str, door_data in room_data.get("doors", {}).items():
+            if isinstance(pos_str, str) and "," in pos_str:
+                pos = tuple(map(int, pos_str.split(",")))
+            else:
+                pos = pos_str
+            target_map, target_y, target_x = door_data
+            rooms[room_id].doors[pos] = (rooms[target_map], target_y, target_x)
 
     return rooms
 

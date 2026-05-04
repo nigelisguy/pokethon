@@ -17,6 +17,21 @@ TRAINERS = {
     },
 }
 
+def get_trainer_def(trainer_id):
+    trainer = TRAINERS.get(trainer_id)
+    if trainer is None:
+        trainer = TRAINERS.get(str(trainer_id))
+
+    if trainer is None:
+        default_trainer = TRAINERS.get("room2_guard")
+        if default_trainer is None:
+            raise KeyError(f"Trainer data not found for id {trainer_id}")
+        trainer = {
+            "name": f"Trainer {trainer_id}",
+            "party": default_trainer["party"],
+        }
+    return trainer
+
 def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
     stat_block = getattr(stats, f"mon{mon_id}")
     move_list = []
@@ -47,7 +62,7 @@ def make_enemy(mon_id, *moves, lvl=1, enemytype="wild"):
     )
 
 def make_trainer_party(trainer_id):
-    trainer = TRAINERS[trainer_id]
+    trainer = get_trainer_def(trainer_id)
     party_data = trainer["party"][:6]
     return [
         create_mon(
@@ -137,6 +152,7 @@ def run_battle(stdscr, room):
 def run_trainer_battle(stdscr, trainer_id):
     global last_enemy, last_defeated_enemies
     player_party = to_battle_party()
+    trainer = get_trainer_def(trainer_id)
     enemy_party = make_trainer_party(trainer_id)
     last_defeated_enemies = []
 
@@ -147,8 +163,7 @@ def run_trainer_battle(stdscr, trainer_id):
             return "lose"
 
         if i > 0:
-            trainer_name = TRAINERS[trainer_id]["name"]
-            fightui.textbox(stdscr, f"{trainer_name} sent out {enemy.base.name.capitalize()}!")
+            fightui.textbox(stdscr, f"{trainer['name']} sent out {enemy.base.name.capitalize()}!")
 
         result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx, can_run=False)
         sync_player_hp(player_party)
