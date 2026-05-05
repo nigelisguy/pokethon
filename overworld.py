@@ -1062,7 +1062,48 @@ def wrap_text(text, width):
     return lines or [""]
 
 
-def bag_menu(stdscr):
+def show_map(stdscr, current_room_id=None):
+    """Display a visual map of the game world."""
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 0, "REGION MAP")
+        safe_addstr(stdscr, 1, 0, "=" * 40)
+        map_layout = [
+            "┌─────────────┐",
+            "│   Humble    │",
+            "│    Town     │",
+            "└─────┬┬──────┘",
+            "      ││       ",
+            "┌─────┴┴──────┐     ┌─────────────┐",
+            "│   ROUTE 1   │=====│CAVITAR CAVE │",
+            "└─────┬┬──────┘     └─────────────┘",
+            "      ││       ",
+            "┌─────┴┴──────┐     ┌─────────────┐",
+            "│   ROUTE 2   │=====│ CENDAR CITY │",
+            "└─────────────┘     └─────────────┘",
+        ]
+        
+        for i, line in enumerate(map_layout):
+            safe_addstr(stdscr, 3 + i, 5, line)
+        
+        # Mark current location
+        if current_room_id == "map1":
+            safe_addstr(stdscr, 6, 7, "YOU")
+        elif current_room_id == "map2":
+            safe_addstr(stdscr, 14, 7, "YOU")
+        
+        # Legend
+        safe_addstr(stdscr, 21, 2, "???????????")
+        
+        safe_addstr(stdscr, 23, 0, "[X] Close Map")
+        stdscr.refresh()
+        
+        key = stdscr.getch()
+        if key == ord("x"):
+            return
+
+
+def bag_menu(stdscr, current_room_id=None):
     section = 0
     selected = 0
     top = 0
@@ -1105,7 +1146,7 @@ def bag_menu(stdscr):
             for i, line in enumerate(wrap_text(item_description(name), max(10, w - 4))[:3]):
                 safe_addstr(stdscr, desc_y + 2 + i, 2, line)
 
-        safe_addstr(stdscr, h - 1, 0, "[LEFT/RIGHT] Section  [UP/DOWN] Move  [X] Back")
+        safe_addstr(stdscr, h - 1, 0, "[LEFT/RIGHT] Section  [UP/DOWN] Move  [Z] Use  [X] Back")
         stdscr.refresh()
 
         key = stdscr.getch()
@@ -1122,6 +1163,11 @@ def bag_menu(stdscr):
             selected -= 1
         elif key == curses.KEY_DOWN and selected < len(entries) - 1:
             selected += 1
+        elif key == ord("z") and entries:
+            item_name, quantity = entries[selected]
+            if item_name == "map":
+                show_map(stdscr, current_room_id)
+            # Add other usable items here
         elif key == ord("x"):
             return
 
@@ -1167,6 +1213,8 @@ def party_menu(stdscr):
         draw(stdscr, create_rooms(), -100, -100)
         draw_party_panel(stdscr, selected_index=selected, moving_index=moving)
         safe_addstr(stdscr, 22, 0, "IN PARTY MENU")
+        for y in range(0,10):
+            stdscr.addstr(y, 0, "-" * 80)
         stdscr.refresh()
 
         key = stdscr.getch()
@@ -1293,7 +1341,7 @@ def overworld(stdscr):
                     break
 
         if key == ord("c"):
-            spawn_room_id = save_menu(stdscr)
+            spawn_room_id = save_menu(stdscr, current_room.room_id)
             if spawn_room_id in rooms:
                 current_room = rooms[spawn_room_id]
                 py, px = stats.MAP_ROOMS[spawn_room_id].get("spawn", (0, 0))
@@ -1336,7 +1384,7 @@ def debug_spawn_menu(stdscr):
             return None
 
 
-def save_menu(stdscr):
+def save_menu(stdscr, current_room_id=None):
     curses.curs_set(0)
 
     options = ["Save Game", "Pokémon", "Bag", "PC", "Options", "Pokédex", "M.Gift"]
@@ -1386,7 +1434,7 @@ def save_menu(stdscr):
                 party_menu(stdscr)
                 return None
             elif y == 2:
-                bag_menu(stdscr)
+                bag_menu(stdscr, current_room_id)
             elif y == 3:
                 pc_menu(stdscr)
             else:
