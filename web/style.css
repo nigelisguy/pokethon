@@ -45,19 +45,55 @@ nav button:hover {
   color: black;
 }
 
-/* CENTER BOX */
-.container {
+/* WIKI LAYOUT */
+.wiki-container {
   display: flex;
-  justify-content: center;
   margin-top: 40px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sidebar {
+  width: 25%;
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 20px 0 0 20px;
+  margin-right: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.sidebar h2, .sidebar h3, .sidebar h4, .sidebar h5 {
+  color: #39ff14;
+  font-family: "Press Start 2P", cursive;
+  font-size: 0.8rem;
+}
+
+.sidebar p, .sidebar ul, .sidebar li {
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+.sidebar a {
+  color: #22c55e;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+.content {
+  width: 75%;
+  padding: 20px;
 }
 
 .card {
   background: #1e293b;
   padding: 25px;
   border-radius: 20px;
-  width: 90%;
-  max-width: 600px;
+  width: 100%;
 }
 
 /* FOOTER */

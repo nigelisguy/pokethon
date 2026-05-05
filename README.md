@@ -41,8 +41,8 @@ This project was originally just Pokémon Red/Green on the Terminal, plain and s
 ## Credits 
 @nigelisguy (aka skdish or skdsh) [lead and only developer]
 
-@gnnadia [playtester]
-tszmariop (does not have a account) [playtester]
-@rgfsdg (branch) [playtester]
+- @gnnadia [playtester]
+- tszmariop (does not have a account) [playtester]
+- @rgfsdg (branch) [playtester]
 
 You [for playing this game!]
