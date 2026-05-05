@@ -267,13 +267,15 @@ ITEM_DESCRIPTIONS = {
     "pokeball": "A ball used to catch wild Pokemon.",
     "fullheal": "Clears all status conditions from one Pokemon.",
     "hm_cut": "Lets any Pokemon with sharp claws cut down small trees in the overworld. Not be confused with TM CUT.",
-    "hm_swim": "Lets you swim across water in the overworld.",
+    "hm_swim": "Unlike HM Surf, this makes you walk on water. Don't ask.",
+    "map": "A map of the region. ",
+    "item": "an item. who would have thought.",
 }
 
 BAG_SECTIONS = [
     ("Pokeballs", {"pokeball"}),
     ("Recover", {"potion", "fullheal"}),
-    ("Key Items", {"hm_cut", "hm_swim"}),
+    ("Key Items", {"hm_cut", "hm_swim", "map"}),
     ("Other", set()),
 ]
 
@@ -598,13 +600,17 @@ def npc_dialogue(npc):
 def npc_trainer_id(npc):
     if len(npc) >= 3:
         action = npc[2]
-        if action != "SHOP":
+        if isinstance(action, str) and action not in ["SHOP", "GIVE_ITEM"]:
             return action
     return None
 
 def npc_action(npc):
     if len(npc) >= 3:
-        return npc[2]
+        action = npc[2]
+        if isinstance(action, str):
+            return action
+        elif isinstance(action, list) and len(action) >= 1:
+            return action
     return None
 
 def map_object_id(room, pos):
@@ -1255,6 +1261,14 @@ def overworld(stdscr):
                     if action == "SHOP":
                         show_dialogue(stdscr, npc_dialogue(npc))
                         shop_menu(stdscr)
+                        break
+
+                    elif isinstance(action, list) and len(action) >= 2 and action[0] == "GIVE_ITEM":
+                        show_dialogue(stdscr, npc_dialogue(npc))
+                        item_name = action[1]
+                        quantity = action[2] if len(action) >= 3 else 1
+                        add_item(item_name, quantity)
+                        show_dialogue(stdscr, [f"Received {item_label(item_name)} x{quantity}!"])
                         break
 
                     if trainer_id is not None and trainer_id in battled_trainers:

@@ -923,6 +923,18 @@
           "hello",
           "..."
         ]
+      ],
+      "1,10": [
+        "\u263a",
+        [
+          "Here, take this map!",
+          "It might help you find your way around."
+        ],
+        [
+          "GIVE_ITEM",
+          "map",
+          1
+        ]
       ]
     },
     "items": {
@@ -1068,6 +1080,10 @@
       ],
       "9,6": [
         "item",
+        1
+      ],
+      "0,5": [
+        "map",
         1
       ]
     },
