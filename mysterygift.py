@@ -3,6 +3,33 @@ import datetime
 import overworld
 from datetime import date
 
+def is_active(gift):
+    today = date.today()
+
+    start = date.fromisoformat(gift["start_date"])
+    end = date.fromisoformat(gift["end_date"])
+
+    return start <= today <= end
+import json
+
+class MysteryGiftSystem:
+    def __init__(self, path):
+        with open(path, "r") as f:
+            self.data = json.load(f)
+
+    def get_gift(self, code):
+        today = date.today()
+
+        for gift in self.data.get("mystery_gifts", []):
+            if gift["code"] == code:
+                start = date.fromisoformat(gift["start_date"])
+                end = date.fromisoformat(gift["end_date"])
+
+                if start <= today <= end:
+                    return gift
+
+        return None 
+
 def giftmon(stdscr,id,name,level,m1=0,m2=0,m3=0,m4=0,shiny=False):
     from overworld import MonOver, party_mons, add_to_party_or_pc, remove_id, picked_items
     new_mon = MonOver(
@@ -39,10 +66,26 @@ def gifted(stdscr):
         else:
             text += str(key)
             stdscr.addstr(str(key))
-    if date.today().weekday() == 1 and text == "superalpha":
-        giftedmon = giftmon(stdscr, 90, "Mewtwo", 100, m1=1, m2=2, m3=3, m4=4, shiny=True)
-        stdscr.addstr(2, 0, f"Redeemed Successfully! Check your game/savefile!")   
+    gift_system = MysteryGiftSystem("data.json")
+    gift = gift_system.get_gift(text)
+
+    if gift:
+        mon = gift["mon"]
+
+        giftmon(
+            stdscr,
+            mon["id"],
+            mon["name"],
+            mon["level"],
+            m1=mon["moves"][0],
+            m2=mon["moves"][1],
+            m3=mon["moves"][2],
+            m4=mon["moves"][3],
+            shiny=mon["shiny"]
+        )
+
+        stdscr.addstr(2, 0, "Redeemed Successfully! Check your game/savefile!")
     else:
-        stdscr.addstr(2, 0, f"ERROR: {text} IS INVALID OR THE DATE FOR REDEMPTION HAS EXPIRED!")    
+        stdscr.addstr(2, 0, f"ERROR: {text} IS INVALID OR THE DATE FOR REDEMPTION HAS EXPIRED!")
     stdscr.refresh()
     stdscr.getch()
