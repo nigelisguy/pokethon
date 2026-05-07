@@ -32,7 +32,7 @@ def get_trainer_def(trainer_id):
         }
     return trainer
 
-def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
+def create_mon(mon_id, level, move_ids, hp=None, enemytype=None, shiny=False):
     stat_block = getattr(stats, f"mon{mon_id}")
     move_list = []
     for move_id in move_ids:
@@ -44,7 +44,7 @@ def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
         if move_id > 0 and hasattr(stats, f"move{move_id}"):
             move_list.append(getattr(stats, f"move{move_id}"))
 
-    mon = fightui.BattleMon(stat_block, level, move_list, hp)
+    mon = fightui.BattleMon(stat_block, level, move_list, hp, shiny)
 
     mon.mon_id = mon_id
     mon.move_ids = list(move_ids)
@@ -52,13 +52,14 @@ def create_mon(mon_id, level, move_ids, hp=None, enemytype=None):
 
     return mon
 
-def make_enemy(mon_id, *moves, lvl=1, enemytype="wild"):
+def make_enemy(mon_id, *moves, lvl=1, enemytype="wild", shiny=False):
     return create_mon(
         mon_id=mon_id,
         level=lvl,
         move_ids=list(moves),
         hp=-1,
-        enemytype=enemytype
+        enemytype=enemytype,
+        shiny=shiny
     )
 
 def make_trainer_party(trainer_id):

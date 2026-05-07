@@ -51,7 +51,8 @@ def draw_party(stdscr, party, active_idx, highlight, forced=False):
             tags.append("FNT")
 
         status_text = " ".join(tags)
-        text = f"[ {i+1}. {mon.base.name.capitalize()} HP {mon.hp}/{mon.max_hp} {status_text} ]"
+        shiny_marker = "★ " if getattr(mon, "shiny", False) else ""
+        text = f"[ {i+1}. {shiny_marker}{mon.base.name.capitalize()} HP {mon.hp}/{mon.max_hp} {status_text} ]"
 
         if i == highlight:
             stdscr.attron(curses.color_pair(1))
@@ -387,9 +388,10 @@ class BattleMove:
             self.category = "status"
 
 class BattleMon:
-    def __init__(self, base, level, moves, hp=-1):
+    def __init__(self, base, level, moves, hp=-1, shiny=False):
         self.base = base
         self.level = level
+        self.shiny = shiny
         self.statuses = []
         self.max_hp = int(((2*base.hp*level)/100) + level + 10)
         if hp is None or hp <= -1:
@@ -590,8 +592,10 @@ def apply_stage(stat, stage):
 def draw_header(stdscr, player, enemy):
     p_name = player.base.name.capitalize()
     e_name = enemy.base.name.capitalize()
-    left = f"{p_name} LVL{player.level} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
-    right = f"{e_name} LVL{enemy.level} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"
+    p_shiny = "★ " if getattr(player, "shiny", False) else ""
+    e_shiny = "★ " if getattr(enemy, "shiny", False) else ""
+    left = f"{p_shiny}{p_name} LVL{player.level} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
+    right = f"{e_shiny}{e_name} LVL{enemy.level} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"
     line = f"# {left:^35} ------ {right:^35} #"
     safe_addstr(stdscr, 0, 0, line, 14)
     draw_divider(stdscr, 1)

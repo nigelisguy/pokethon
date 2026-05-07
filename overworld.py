@@ -149,13 +149,14 @@ NPC_PRESETS = {
 
 
 class MonOver:
-    def __init__(self, rotation, id, name, moves, level, exp, maxexp=-1):
+    def __init__(self, rotation, id, name, moves, level, exp, maxexp=-1, shiny=False):
         self.ord = rotation
         self.id = id
         self.name = name
         self.moves = moves
         self.level = level
         self.exp = exp
+        self.shiny = shiny
         if maxexp == -1:
             self.maxexp = level*level*level
         else:
@@ -169,7 +170,8 @@ class MonOver:
             "moves": self.moves,
             "level": self.level,
             "exp": self.exp,
-            "maxexp": self.maxexp
+            "maxexp": self.maxexp,
+            "shiny": self.shiny
         }
 
     def menu(self, hp_value=-1, slot_number=None):
@@ -184,8 +186,9 @@ class MonOver:
         exp_filled = max(0, min(exp_filled, bar_length))
         exp_bar = "█" * exp_filled + "░" * (bar_length - exp_filled)
         prefix = f"{slot_number}. " if slot_number is not None else "" #idk might use in future
+        shiny_marker = "★ " if getattr(self, "shiny", False) else ""
         return (
-            f"{prefix}{self.name:<10} -- [HP {current_hp:>3}/{max_hp:<3}] "
+            f"{prefix}{shiny_marker}{self.name:<10} -- [HP {current_hp:>3}/{max_hp:<3}] "
             f"[{hp_bar}] -- [EXP {exp_bar}] LVL {self.level}"
         )
 
@@ -206,7 +209,8 @@ class MonOver:
             moves=list(self.moves),
             level=self.level,
             exp=self.exp,
-            maxexp=self.maxexp
+            maxexp=self.maxexp,
+            shiny=self.shiny
         )
 
 
@@ -731,7 +735,8 @@ def handle_wild_battle_result(stdscr, result, remove_id=None):
             name=enemy.base.name,
             moves=list(getattr(enemy, "move_ids", [])),
             level=enemy.level,
-            exp=0
+            exp=0,
+            shiny=getattr(enemy, "shiny", False)
         )
 
         add_to_party_or_pc(stdscr, new_mon)
@@ -768,7 +773,8 @@ def run_fixed_wild_battle(stdscr, room, pos):
         level=encounter["level"],
         move_ids=encounter["moves"],
         hp=-1,
-        enemytype="legendary"
+        enemytype="legendary",
+        shiny=encounter.get("shiny", False)
     )
     battlehandler.last_enemy = enemy
 
@@ -1454,7 +1460,8 @@ def load_pokemon(data):
             moves=mon_data["moves"],
             level=mon_data["level"],
             exp=mon_data["exp"],
-            maxexp=mon_data["maxexp"]
+            maxexp=mon_data["maxexp"],
+            shiny=mon_data.get("shiny", False)
         )
         mons.append(mon)
 
@@ -1502,7 +1509,8 @@ def reset_game_state(data=None):
                 moves=mon_data["moves"],
                 level=mon_data["level"],
                 exp=mon_data["exp"],
-                maxexp=mon_data["maxexp"]
+                maxexp=mon_data["maxexp"],
+                shiny=mon_data.get("shiny", False)
             )
             loaded_box.append(mon)
 
