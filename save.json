@@ -1,0 +1,34 @@
+{
+    "settings": {
+        "textspeed": 0.01
+    },
+    "player": {
+        "name": "placeholder!"
+    },
+    "pokedex": {
+        "seen": [],
+        "caught": []
+    },
+    "pokemon": [],
+    "pcmons": [
+        []
+    ],
+    "inventory": [
+        {
+            "potion": 5
+        },
+        {
+            "pokeball": 5
+        }
+    ],
+    "money": 3000,
+    "picked_items": [],
+    "cut_trees": [],
+    "battled_trainers": [],
+    "pp": [
+        -1,
+        -1,
+        -1,
+        -1
+    ]
+}

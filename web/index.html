@@ -51,7 +51,11 @@ source venv/bin/activate   # If Windows: venv\Scripts\activate
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 
         <pre><code class="code-block">
-python main.py
+python3 -m venv venv
+source venv/bin/activate   # If Windows: venv\Scripts\activate
+cd Downloads # or wherever you placed pokethon in
+cd pokethon 
+python main.py #or python3 main.py
         </code></pre>
       </div>
 

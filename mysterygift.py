@@ -2,25 +2,22 @@ import curses
 import datetime
 import overworld
 from datetime import date
-
-def is_active(gift):
-    today = date.today()
-
-    start = date.fromisoformat(gift["start_date"])
-    end = date.fromisoformat(gift["end_date"])
-
-    return start <= today <= end
-import json
+import requests
 
 class MysteryGiftSystem:
-    def __init__(self, path):
-        with open(path, "r") as f:
-            self.data = json.load(f)
+    def __init__(self, url):
+        self.url = url
+
+    def get_data(self):
+        response = requests.get(self.url, timeout=10)
+        response.raise_for_status()
+        return response.json()
 
     def get_gift(self, code):
         today = date.today()
+        data = self.get_data()
 
-        for gift in self.data.get("mystery_gifts", []):
+        for gift in data.get("mystery_gifts", []):
             if gift["code"] == code:
                 start = date.fromisoformat(gift["start_date"])
                 end = date.fromisoformat(gift["end_date"])
@@ -28,7 +25,7 @@ class MysteryGiftSystem:
                 if start <= today <= end:
                     return gift
 
-        return None 
+        return None
 
 def giftmon(stdscr,id,name,level,m1=0,m2=0,m3=0,m4=0,shiny=False):
     from overworld import MonOver, party_mons, add_to_party_or_pc, remove_id, picked_items
@@ -36,7 +33,7 @@ def giftmon(stdscr,id,name,level,m1=0,m2=0,m3=0,m4=0,shiny=False):
         rotation=len(party_mons) + 1,
         id=id,
         name=name,
-        moves=list(m1,m2,m3,m4),
+        moves=[m1, m2, m3, m4],
         level=level,
         exp=0,
         shiny=shiny
@@ -66,7 +63,7 @@ def gifted(stdscr):
         else:
             text += str(key)
             stdscr.addstr(str(key))
-    gift_system = MysteryGiftSystem("data.json")
+    gift_system = MysteryGiftSystem("https://pokethon-api.onrender.com/config")
     gift = gift_system.get_gift(text)
 
     if gift:
