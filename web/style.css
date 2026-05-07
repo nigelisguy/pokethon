@@ -1,104 +1,135 @@
-body {
-  background: linear-gradient(180deg, #020617, #0f172a);
-  color: #e2e8f0;
-}
-
-/* HEADER */
-header {
-  text-align: center;
-  padding: 30px 10px;
-}
-
-header h1 {
+html, body {
   margin: 0;
-  font-family: "Press Start 2P", cursive;
-  font-size: 2rem;
-  color: #39ff14;
-
-  text-shadow:
-    0 0 5px #39ff14,
-    0 0 10px #22c55e,
-    0 0 20px #16a34a;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #0b0b0b;
+  overflow: hidden;
+  color: #eaeaea;
+  font-family: monospace;
 }
 
-/* NAV */
-nav {
-  margin-top: 15px;
-}
-
-nav a {
-  text-decoration: none;
-  margin: 0 10px;
-}
-
-nav button {
-  background: transparent;
-  border: 1px solid #22c55e;
-  color: #22c55e;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-nav button:hover {
-  background: #22c55e;
-  color: black;
-}
-
-/* WIKI LAYOUT */
 .wiki-container {
   display: flex;
-  margin-top: 40px;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.sidebar {
-  width: 25%;
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 20px 0 0 20px;
-  margin-right: 10px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.sidebar h2, .sidebar h3, .sidebar h4, .sidebar h5 {
-  color: #39ff14;
-  font-family: "Press Start 2P", cursive;
-  font-size: 0.8rem;
-}
-
-.sidebar p, .sidebar ul, .sidebar li {
-  font-family: Arial, sans-serif;
-  font-size: 0.9rem;
-}
-
-.sidebar a {
-  color: #22c55e;
-  text-decoration: none;
-}
-
-.sidebar a:hover {
-  text-decoration: underline;
+  gap: 24px;
+  padding: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh; 
+  overflow: hidden;
+  align-items: stretch;
 }
 
 .content {
-  width: 75%;
-  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: #101010;
+  border: 2px solid #2ce617;
+  box-sizing: border-box;
 }
 
 .card {
-  background: #1e293b;
-  padding: 25px;
-  border-radius: 20px;
-  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: 2px solid #2ce617;
+  box-shadow: 0 0 0 2px #2a2a2a;
+  background: #101010;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  margin-top: 40px;
-  opacity: 0.6;
+.sidebar {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0px;
+  box-sizing: border-box;
+  height: 100%;
+  background: #101010;
+  border: 2px solid #2ce617;
+}
+
+.sidebar-inner {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #101010;
+  box-shadow: 0 0 0 2px #2a2a2a;
+}
+
+.sticky-sidebar {
+  position: sticky;
+  top: 0;
+}
+
+h2, h3 {
+  color: #7CFF6B;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 6px;
+}
+.download-button {
+  display: inline-block;
+  padding: 10px 12px;
+  background: #7CFF6B;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.download-button:hover {
+  background: #a6ff9a;
+  cursor: pointer;
+}
+.code-box {
+  background: #101010;
+  color: #eaeaea;
+  padding: 16px;
+  border: 2px solid #2ce617;
+  box-shadow: 0 0 0 2px #2a2a2a;
+  border-radius: 0px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  position: relative;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.code-box pre {
+  margin: 0;
+  white-space: pre;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #101010;
+  color: #ffffff;
+  border: 1px solid #2ce617;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.copy-btn:hover {
+  background: #1a1a1a;
 }
