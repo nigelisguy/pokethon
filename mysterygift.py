@@ -80,7 +80,6 @@ def gifted(stdscr):
             shiny=mon["shiny"]
         )
 
-        stdscr.addstr(2, 0, "Redeemed Successfully! Check your game/savefile!")
     else:
         stdscr.addstr(2, 0, f"ERROR: {text} IS INVALID OR THE DATE FOR REDEMPTION HAS EXPIRED!")
     stdscr.refresh()
