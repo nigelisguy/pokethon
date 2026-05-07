@@ -51,7 +51,7 @@ def draw_party(stdscr, party, active_idx, highlight, forced=False):
             tags.append("FNT")
 
         status_text = " ".join(tags)
-        shiny_marker = "★ " if getattr(mon, "shiny", False) else ""
+        shiny_marker = "✦ " if getattr(mon, "shiny", False) else ""
         text = f"[ {i+1}. {shiny_marker}{mon.base.name.capitalize()} HP {mon.hp}/{mon.max_hp} {status_text} ]"
 
         if i == highlight:
@@ -592,8 +592,8 @@ def apply_stage(stat, stage):
 def draw_header(stdscr, player, enemy):
     p_name = player.base.name.capitalize()
     e_name = enemy.base.name.capitalize()
-    p_shiny = "★ " if getattr(player, "shiny", False) else ""
-    e_shiny = "★ " if getattr(enemy, "shiny", False) else ""
+    p_shiny = "✦ " if getattr(player, "shiny", False) else ""
+    e_shiny = "✦ " if getattr(enemy, "shiny", False) else ""
     left = f"{p_shiny}{p_name} LVL{player.level} EFF{player.statuses} HP {player.hp}/{player.max_hp}"
     right = f"{e_shiny}{e_name} LVL{enemy.level} EFF{enemy.statuses} HP {enemy.hp}/{enemy.max_hp}"
     line = f"# {left:^35} ------ {right:^35} #"

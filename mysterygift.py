@@ -28,7 +28,7 @@ class MysteryGiftSystem:
         return None
 
 def giftmon(stdscr,id,name,level,m1=0,m2=0,m3=0,m4=0,shiny=False):
-    from overworld import MonOver, party_mons, add_to_party_or_pc, remove_id, picked_items
+    from overworld import MonOver, party_mons, add_to_party_or_pc, picked_items
     new_mon = MonOver(
         rotation=len(party_mons) + 1,
         id=id,
@@ -40,8 +40,7 @@ def giftmon(stdscr,id,name,level,m1=0,m2=0,m3=0,m4=0,shiny=False):
     )
 
     add_to_party_or_pc(stdscr, new_mon)
-    if remove_id is not None:
-        picked_items.add(remove_id)
+    picked_items.add(new_mon.id)
 
 def gifted(stdscr):
     stdscr.clear()

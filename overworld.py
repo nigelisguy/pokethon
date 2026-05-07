@@ -186,7 +186,7 @@ class MonOver:
         exp_filled = max(0, min(exp_filled, bar_length))
         exp_bar = "█" * exp_filled + "░" * (bar_length - exp_filled)
         prefix = f"{slot_number}. " if slot_number is not None else "" #idk might use in future
-        shiny_marker = "★ " if getattr(self, "shiny", False) else ""
+        shiny_marker = "✦ " if getattr(self, "shiny", False) else ""
         return (
             f"{prefix}{shiny_marker}{self.name:<10} -- [HP {current_hp:>3}/{max_hp:<3}] "
             f"[{hp_bar}] -- [EXP {exp_bar}] LVL {self.level}"
@@ -1443,6 +1443,9 @@ def save_menu(stdscr, current_room_id=None):
                 bag_menu(stdscr, current_room_id)
             elif y == 3:
                 pc_menu(stdscr)
+            elif y == 6:
+                import mysterygift
+                mysterygift.gifted(stdscr)
             else:
                 return None
         elif key == ord("x"):
