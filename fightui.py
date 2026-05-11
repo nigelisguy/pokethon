@@ -209,7 +209,9 @@ def battle_setup(stdscr):
     curses.start_color()
     player = BattleMon(p_mon, 50, p_moves)
     enemy = BattleMon(e_mon, 50, e_moves)
-    return afightui(stdscr, player, enemy, mode)
+
+    party = [player]
+    return afightui(stdscr, party, enemy, mode)
 
 def status_effect_manager(stdscr, mon): 
     if "poison" in mon.statuses: 
