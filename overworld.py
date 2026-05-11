@@ -341,6 +341,44 @@ def lose_blackout_money():
     money -= lost
     return lost
 
+def battle_spiral_animation(stdscr, room=None, py=None, px=None):
+    height, width = stdscr.getmaxyx()
+    if room is not None and py is not None and px is not None:
+        draw(stdscr, room, py, px)
+        menu(stdscr)
+        stdscr.refresh()
+
+    top, bottom = 0, height - 1
+    left, right = 0, width - 1
+    color = curses.color_pair(20) if curses.has_colors() else 0
+
+    while top <= bottom and left <= right:
+        for x in range(left, right + 1):
+            safe_addstr(stdscr, top, x, " ", color)
+            stdscr.refresh()
+            time.sleep(0.0005)
+        top += 1
+
+        for y in range(top, bottom + 1):
+            safe_addstr(stdscr, y, right, " ", color)
+            stdscr.refresh()
+            time.sleep(0.0005)
+        right -= 1
+
+        if top <= bottom:
+            for x in range(right, left - 1, -1):
+                safe_addstr(stdscr, bottom, x, " ", color)
+                stdscr.refresh()
+                time.sleep(0.0005)
+            bottom -= 1
+
+        if left <= right:
+            for y in range(bottom, top - 1, -1):
+                safe_addstr(stdscr, y, left, " ", color)
+                stdscr.refresh()
+                time.sleep(0.0005)
+            left += 1
+
 def pc_menu(stdscr):
     global current_box
 
@@ -729,6 +767,12 @@ def handle_wild_battle_result(stdscr, result, remove_id=None):
     if isinstance(result, tuple) and result[0] == "caught":
         enemy = result[1]
 
+        active_mon = get_party_mon(last_battle_slot)
+        if active_mon is not None:
+            trainer_battle = enemy.enemytype == "legendary"
+            gained_exp = battlehandler.calculate_exp_gain(enemy, trainer_battle=trainer_battle)
+            active_mon.expgain(stdscr, gained_exp)
+
         new_mon = MonOver(
             rotation=len(party_mons) + 1,
             id=enemy.base.id,
@@ -747,7 +791,8 @@ def handle_wild_battle_result(stdscr, result, remove_id=None):
         active_mon = get_party_mon(last_battle_slot)
         enemy = battlehandler.last_enemy
         if active_mon is not None and enemy is not None:
-            gained_exp = battlehandler.calculate_exp_gain(enemy)
+            trainer_battle = enemy.enemytype == "legendary"
+            gained_exp = battlehandler.calculate_exp_gain(enemy, trainer_battle=trainer_battle)
             active_mon.expgain(stdscr, gained_exp)
         if remove_id is not None:
             picked_items.add(remove_id)
@@ -761,10 +806,11 @@ def run_fixed_wild_battle(stdscr, room, pos):
         return False
 
     encounter = room.legendary_mons[pos]
-    show_dialogue(stdscr, [f"{encounter['name']} appeared!"])
+    battle_spiral_animation(stdscr, room, pos[0], pos[1])
+    fightui.textbox(stdscr, f"A wild {encounter['name'].capitalize()} appeared!")
 
     player_party = battlehandler.to_battle_party()
-    active_idx = battlehandler.active_battle_index(player_party)
+    active_idx = 0 if player_party and player_party[0].hp > 0 else battlehandler.active_battle_index(player_party)
     if active_idx is None:
         return "lose"
 
@@ -778,7 +824,7 @@ def run_fixed_wild_battle(stdscr, room, pos):
     )
     battlehandler.last_enemy = enemy
 
-    result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx)
+    result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx, can_run=False)
     battlehandler.sync_player_hp(player_party)
     handle_wild_battle_result(stdscr, result, remove_id=encounter_id)
     return result
@@ -1332,6 +1378,7 @@ def overworld(stdscr):
                     show_dialogue(stdscr, npc_dialogue(npc))
 
                     if trainer_id is not None:
+                        battle_spiral_animation(stdscr, current_room, py, px)
                         result = battlehandler.run_trainer_battle(stdscr, trainer_id)
                         if result == "win":
                             battled_trainers.add(trainer_id)
@@ -1354,8 +1401,8 @@ def overworld(stdscr):
 
         if (py, px) in current_room.grass_tiles:
             if random.random() < 0.2:
-                show_dialogue(stdscr, ["A wild Pokémon appeared!"])
-                result = battlehandler.run_battle(stdscr, 1)
+                battle_spiral_animation(stdscr, current_room, py, px)
+                result = battlehandler.run_battle(stdscr, current_room.room_id)
                 handle_wild_battle_result(stdscr, result)
                 if result == "lose":
                     current_room, py, px = blackout_to_pokemon_center(stdscr, rooms)

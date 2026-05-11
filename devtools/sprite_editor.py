@@ -1,6 +1,8 @@
 import tkinter as tk
 import copy
 import ast
+import json
+import os
 
 WIDTH = 25
 HEIGHT = 11
@@ -101,6 +103,127 @@ class SpriteEditor:
             win.destroy()
 
         tk.Button(win, text="Import", command=do_import).pack()
+
+    def load_from_json(self, pokemon_id):
+        """Load sprite data from spritedata.json"""
+        try:
+            sprite_data_path = os.path.join(os.path.dirname(__file__), "..", "data", "spritedata.json")
+            with open(sprite_data_path, 'r') as f:
+                data = json.load(f)
+
+            if str(pokemon_id) not in data.get("pokemon", {}):
+                print(f"Pokemon ID {pokemon_id} not found in spritedata.json")
+                return
+
+            pokemon_data = data["pokemon"][str(pokemon_id)]
+
+            # Set name
+            self.name_entry.delete(0, tk.END)
+            self.name_entry.insert(0, pokemon_data.get("sprite_var", f"pokemon_{pokemon_id}"))
+
+            # Load grids
+            sprite = pokemon_data.get("sprite", {})
+            self.front = [list(row.ljust(WIDTH)[:WIDTH]) for row in sprite.get("front_grid", [""] * HEIGHT)]
+            self.back = [list(row.ljust(WIDTH)[:WIDTH]) for row in sprite.get("back_grid", [""] * HEIGHT)]
+
+            # Load palettes
+            self.palettes = sprite.get("palettes", {"normal": {}, "shiny": {}})
+
+            # Ensure palettes have both normal and shiny
+            if "normal" not in self.palettes:
+                self.palettes["normal"] = {}
+            if "shiny" not in self.palettes:
+                self.palettes["shiny"] = {}
+
+            self.draw_grid()
+            self.update_palette_display()
+            self.update_status_label()
+            print(f"Loaded sprite for Pokemon ID {pokemon_id}")
+
+        except Exception as e:
+            print(f"Failed to load from spritedata.json: {e}")
+
+    def save_to_json(self, pokemon_id):
+        """Save current sprite data to spritedata.json"""
+        try:
+            sprite_data_path = os.path.join(os.path.dirname(__file__), "..", "data", "spritedata.json")
+
+            # Load existing data
+            if os.path.exists(sprite_data_path):
+                with open(sprite_data_path, 'r') as f:
+                    data = json.load(f)
+            else:
+                data = {"pokemon": {}}
+
+            # Prepare sprite data
+            sprite_data = {
+                "width": WIDTH,
+                "height": HEIGHT,
+                "default_color": 1,
+                "front_grid": [''.join(row) for row in self.front],
+                "back_grid": [''.join(row) for row in self.back],
+                "palettes": self.palettes
+            }
+
+            # Update pokemon entry
+            pokemon_key = str(pokemon_id)
+            if pokemon_key not in data["pokemon"]:
+                data["pokemon"][pokemon_key] = {
+                    "id": pokemon_id,
+                    "name": self.name_entry.get().strip() or f"pokemon_{pokemon_id}",
+                    "sprite_var": self.name_entry.get().strip() or f"pokemon_{pokemon_id}",
+                    "sprite": sprite_data
+                }
+            else:
+                data["pokemon"][pokemon_key]["sprite"] = sprite_data
+                data["pokemon"][pokemon_key]["sprite_var"] = self.name_entry.get().strip() or f"pokemon_{pokemon_id}"
+
+            # Save back to file
+            with open(sprite_data_path, 'w') as f:
+                json.dump(data, f, indent=2)
+
+            print(f"Saved sprite for Pokemon ID {pokemon_id} to spritedata.json")
+
+        except Exception as e:
+            print(f"Failed to save to spritedata.json: {e}")
+
+    def open_load_window(self):
+        """Open window to load sprite by Pokemon ID"""
+        win = tk.Toplevel(self.root)
+        win.title("Load Sprite from JSON")
+
+        tk.Label(win, text="Pokemon ID:").pack()
+        id_entry = tk.Entry(win, width=10)
+        id_entry.pack()
+
+        def do_load():
+            try:
+                pokemon_id = int(id_entry.get().strip())
+                self.load_from_json(pokemon_id)
+                win.destroy()
+            except ValueError:
+                print("Invalid Pokemon ID")
+
+        tk.Button(win, text="Load", command=do_load).pack()
+
+    def open_save_window(self):
+        """Open window to save sprite by Pokemon ID"""
+        win = tk.Toplevel(self.root)
+        win.title("Save Sprite to JSON")
+
+        tk.Label(win, text="Pokemon ID:").pack()
+        id_entry = tk.Entry(win, width=10)
+        id_entry.pack()
+
+        def do_save():
+            try:
+                pokemon_id = int(id_entry.get().strip())
+                self.save_to_json(pokemon_id)
+                win.destroy()
+            except ValueError:
+                print("Invalid Pokemon ID")
+
+        tk.Button(win, text="Save", command=do_save).pack()
 
     def update_palette_display(self):
         # Clear old
@@ -243,6 +366,8 @@ class SpriteEditor:
         tk.Button(self.controls_bottom, text="Toggle Ref", command=self.toggle_reference).pack(side=tk.LEFT)
         tk.Button(self.controls_bottom, text="Export", command=self.export).pack(side=tk.LEFT)
         tk.Button(self.controls_bottom, text="Import", command=self.open_import_window).pack(side=tk.LEFT)
+        tk.Button(self.controls_bottom, text="Load JSON", command=self.open_load_window).pack(side=tk.LEFT)
+        tk.Button(self.controls_bottom, text="Save JSON", command=self.open_save_window).pack(side=tk.LEFT)
         tk.Button(self.controls_bottom, text="Clear", command=self.clear_grid).pack(side=tk.LEFT)
         tk.Button(self.controls_bottom, text="Paint", command=lambda: self.set_tool("paint")).pack(side=tk.LEFT)
         tk.Button(self.controls_bottom, text="Eraser", command=lambda: self.set_tool("eraser")).pack(side=tk.LEFT)

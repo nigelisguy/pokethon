@@ -93,10 +93,20 @@ def active_battle_index(player_party):
     return None
 
 def enemy_for_room(room):
-    if room == 1:
-        spawnlist=[19,16,21]
+    room_id = getattr(room, "room_id", room)
+    room_id = str(room_id)
+
+    if room_id == "map1":
+        spawnlist = [19, 16, 21]
+    elif room_id == "route_1_part1":
+        spawnlist = [129]
+    else:
+        spawnlist = list(range(1, 151))  # fallback, if you see a random mew something is wrong
+
+    if random.randint(1, 4096) == 1:
+        return make_enemy(random.choice(spawnlist), 340, 340, 340, 340, lvl=random.randint(2, 4), shiny=True)
+    else:
         return make_enemy(random.choice(spawnlist), 340, 340, 340, 340, lvl=random.randint(2, 4))
-    raise ValueError(f"Unsupported room id: {room}")
 
 def calculate_exp_gain(enemy, participants=1, trainer_battle=False):
     base_exp = getattr(enemy.base, "base_exp", 0)
@@ -129,7 +139,8 @@ def to_battle_party():
             level=mon.level,
             move_ids=mon.moves,
             hp=hp,
-            enemytype="player"
+            enemytype="player",
+            shiny=getattr(mon, "shiny", False)
         )
         battle_mon.party_index = i
         party.append(battle_mon)
@@ -139,12 +150,13 @@ def to_battle_party():
 def run_battle(stdscr, room):
     global last_enemy
     player_party = to_battle_party()
-    active_idx = active_battle_index(player_party)
+    active_idx = 0 if player_party and player_party[0].hp > 0 else active_battle_index(player_party)
     if active_idx is None:
         return "lose"
 
     enemy = enemy_for_room(room)
     last_enemy = enemy
+    fightui.textbox(stdscr, f"A wild {enemy.base.name.capitalize()} appeared!")
 
     result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx)
     sync_player_hp(player_party)
@@ -157,9 +169,11 @@ def run_trainer_battle(stdscr, trainer_id):
     enemy_party = make_trainer_party(trainer_id)
     last_defeated_enemies = []
 
+    fightui.textbox(stdscr, f"{trainer.get('name', 'Trainer')} wants to battle!")
+
     for i, enemy in enumerate(enemy_party):
         last_enemy = enemy
-        active_idx = active_battle_index(player_party)
+        active_idx = 0 if player_party and player_party[0].hp > 0 else active_battle_index(player_party)
         if active_idx is None:
             return "lose"
 
@@ -187,5 +201,6 @@ def to_battle_mon(mon):
         level=mon.level,
         move_ids=mon.moves,
         hp=overworld.hpstorage[0],
-        enemytype="player"
+        enemytype="player",
+        shiny=getattr(mon, "shiny", False)
     )

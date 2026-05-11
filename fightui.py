@@ -77,11 +77,14 @@ def party_menu(stdscr, party, active_idx, enemy):
     while True:
         player = party[active_idx]
 
+        player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
+        enemy_sprite = getattr(stats, enemy.base.name.lower(), stats.placeholder)
+
         stdscr.clear()
         draw_top_banner(stdscr)
         draw_main_menu(stdscr, 1, player, enemy)
-        stats.bulbasaur.draw(stdscr, "front","normal")
-        stats.spearow.draw(stdscr, "back","normal")
+        enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
+        player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
         draw_party(stdscr, party, active_idx, highlight, forced=False)
         draw_header(stdscr, player, enemy)
         stdscr.refresh()
@@ -114,11 +117,14 @@ def forced_party_menu(stdscr, party, active_idx, enemy):
     while True:
         player = party[active_idx] if party[active_idx].hp > 0 else party[highlight]
 
+        player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
+        enemy_sprite = getattr(stats, enemy.base.name.lower(), stats.placeholder)
+
         stdscr.clear()
         draw_top_banner(stdscr)
         draw_main_menu(stdscr, 1, player, enemy)
-        stats.spearow.draw(stdscr, "front","normal")
-        stats.spearow.draw(stdscr, "back","normal")
+        enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
+        player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
         draw_party(stdscr, party, active_idx, highlight, forced=True)
         draw_header(stdscr, player, enemy)
         stdscr.refresh()
@@ -334,13 +340,49 @@ def textbox(stdscr, text):
     while True:
         if stdscr.getch() == ord("z"):
             break
+
+def flash_mon(stdscr, player, enemy, is_enemy=False, flashes=4):
+    mon = enemy if is_enemy else player
+    sprite = getattr(stats, mon.base.name.lower(), stats.placeholder)
+    sprite_type = "back" if is_enemy else "front"
+    
+    for _ in range(flashes):
+        redraw_battle(stdscr, player, enemy)
+        stdscr.refresh()
+        curses.napms(100)
+        
+        # Draw blank space over the sprite
+        if is_enemy:
+            for y in range(11):
+                safe_addstr(stdscr, 2 + y, 53, " " * 25, 0)
+        else:
+            for y in range(11):
+                safe_addstr(stdscr, 2 + y, 2, " " * 25, 0)
+        stdscr.refresh()
+        curses.napms(100)
+
+def shiny_animation(stdscr, player, enemy, is_enemy=False, flashes=6):
+    """Animate a shiny pokemon appearing with flashing effect"""
+    mon = enemy if is_enemy else player
+    sprite = getattr(stats, mon.base.name.lower(), stats.placeholder)
+    sprite_type = "back" if is_enemy else "front"
+
+    for i in range(flashes):
+        variant = "shiny" if i % 2 == 0 else "normal"
+        redraw_battle(stdscr, player, enemy)
+        sprite.draw(stdscr, sprite_type, variant)
+        stdscr.refresh()
+        curses.napms(150)
+
         
 def redraw_battle(stdscr, player, enemy, menu_pos=0):
     stdscr.clear()
     draw_top_banner(stdscr)
     draw_main_menu(stdscr, menu_pos, player, enemy)
-    stats.spearow.draw(stdscr, "front","normal")
-    stats.spearow.draw(stdscr, "back","normal")
+    player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
+    enemy_sprite = getattr(stats, enemy.base.name.lower(), stats.placeholder)
+    enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
+    player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
     draw_header(stdscr, player, enemy)
     stdscr.refresh()
 
@@ -439,6 +481,11 @@ def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
     dmg = int(base * modifier)
 
     target_hp_final = max(0, defender.hp - dmg)
+
+    if dmg > 0 and player and enemy:
+        is_enemy_taking_damage = defender == enemy
+        flash_mon(stdscr, player, enemy, is_enemy=is_enemy_taking_damage, flashes=3)
+
     while defender.hp > target_hp_final:
         defender.hp -= 1
         if defender.hp < target_hp_final:
@@ -449,6 +496,7 @@ def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
             redraw_battle(stdscr, attacker, defender)
         delay = max(1, int(1000/dmg))
         curses.napms(delay)
+
 
     return dmg
 
@@ -728,13 +776,15 @@ def bag_menu(stdscr, player, enemy):
     highlight = 0
 
     items = overworld.inventory
+    player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
+    enemy_sprite = getattr(stats, enemy.base.name.lower(), stats.placeholder)
 
     while True:
         stdscr.clear()
         draw_top_banner(stdscr)
         draw_main_menu(stdscr, 0, player, enemy)
-        stats.spearow.draw(stdscr, "front","normal")
-        stats.spearow.draw(stdscr, "back","normal")
+        enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
+        player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
         draw_bag(stdscr, player, highlight)
         draw_header(stdscr, player, enemy)
 
@@ -761,12 +811,14 @@ def bag_menu(stdscr, player, enemy):
 def move_menu(stdscr, player, enemy):
     highlight = 0
     max_moves = len(player.moves)
+    player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
+    enemy_sprite = getattr(stats, enemy.base.name.lower(), stats.placeholder)
     while True:
         stdscr.clear()
         draw_top_banner(stdscr)
         draw_main_menu(stdscr, 0, player, enemy)  
-        stats.spearow.draw(stdscr, "front","normal")
-        stats.spearow.draw(stdscr, "back","normal")
+        enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
+        player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
         draw_moves(stdscr, player, highlight)
         if max_moves == 0:
             safe_addstr(stdscr, 1, 42, "[    No moves    ]")
@@ -805,13 +857,23 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
     }
 
     menu_pos = 0  
+    player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
+    enemy_sprite = getattr(stats, enemy.base.name.lower(), stats.placeholder)
+
+    # Show shiny animations for initial pokemon
+    redraw_battle(stdscr, player, enemy)
+    if player.shiny:
+        shiny_animation(stdscr, player, enemy, is_enemy=False, flashes=6)
+    if enemy.shiny:
+        shiny_animation(stdscr, player, enemy, is_enemy=True, flashes=6)
+    redraw_battle(stdscr, player, enemy)
 
     while True:
         turn=None
         stdscr.clear()
         draw_main_menu(stdscr, menu_pos, player, enemy)
-        stats.spearow.draw(stdscr, "front","normal")
-        stats.spearow.draw(stdscr, "back","normal")
+        enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
+        player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
         draw_header(stdscr, player, enemy)
         stdscr.refresh()
 
@@ -861,7 +923,12 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
                 textbox(stdscr, f"Go! {party[new_idx].base.name.capitalize()}!")
                 active_idx = new_idx
                 player = party[active_idx]
+                player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
                 overworld.last_battle_slot = getattr(player, "party_index", 0)
+                redraw_battle(stdscr, player, enemy)
+                if player.shiny:
+                    shiny_animation(stdscr, player, enemy, is_enemy=False, flashes=6)
+                redraw_battle(stdscr, player, enemy)
                 continue
 
         elif key==ord("z") and menu_pos==0:
@@ -966,8 +1033,12 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
 
                         active_idx = new_idx
                         player = party[active_idx]
+                        player_sprite = getattr(stats, player.base.name.lower(), stats.placeholder)
                         overworld.last_battle_slot = getattr(player, "party_index", 0)
                         textbox(stdscr, f"Go! {player.base.name.capitalize()}!")
+                        redraw_battle(stdscr, player, enemy)
+                        if player.shiny:
+                            shiny_animation(stdscr, player, enemy, is_enemy=False, flashes=6)
                         redraw_battle(stdscr, player, enemy)
                         continue
                         
@@ -986,7 +1057,7 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
                     textbox(stdscr, "All status(es) were cleared!")
 
                 elif item_name == "pokeball":
-                    if target == enemy and getattr(enemy, "enemytype", "wild") == "wild":
+                    if target == enemy and getattr(enemy, "enemytype", "wild") != "trainer":
                         catch_chance = random.randint(1, 100)
 
                         if catch_chance > 10:
