@@ -240,7 +240,6 @@ def debug_battle_setup(stdscr):
     return afightui(stdscr, player_party, enemy, mode)
 
 def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
-    """Select teams with support for up to 6 pokemon, levels, and shiny status"""
     
     # Initialize team data structures
     player_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False} for _ in range(6)]
@@ -271,30 +270,36 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
             shiny_mark = "✦ " if current_team[team_idx]['shiny'] else ""
             current_mon_name = f"{shiny_mark}{current_mon.call().capitalize()}" if current_mon else "Pokemon"
 
-            safe_addstr(stdscr, 0, 5, f"Select Move {move_slot+1}/4", 0)
-            safe_addstr(stdscr, 1, 5, f"for {current_mon_name[:24]}", 0)
-            safe_addstr(stdscr, 2, 5, "[Arrow Keys] Navigate | [Z] Select | [X] Back", 0)
+            # Fullscreen overwrite background
+            h, w = stdscr.getmaxyx()
+            for clear_y in range(h):
+                safe_addstr(stdscr, clear_y, 0, " " * (w - 1), 0)
+
+            safe_addstr(stdscr, 0, 0, f"Select Move {move_slot+1}/4", 0)
+            safe_addstr(stdscr, 1, 0, f"for {current_mon_name[:24]}", 0)
+            safe_addstr(stdscr, 2, 0, "[Arrow Keys] Navigate | [Z] Select | [X] Back", 0)
 
             visible_moves = moves_list[move_view:move_view+20]
 
             if move_view > 0:
-                safe_addstr(stdscr, 3, 5, "▲", 0)
+                safe_addstr(stdscr, 3, 0, "▲", 0)
 
             for i, m in enumerate(visible_moves):
                 idx = move_view + i
                 name = m.call().capitalize()
                 prefix = "> " if idx == move_cursor else "  "
-                safe_addstr(stdscr, 4 + i, 5, prefix + name[:40], 0)
+                safe_addstr(stdscr, 4 + i, 0, prefix + name[:40], 0)
 
             if move_view + 20 < len(moves_list):
-                safe_addstr(stdscr, 24, 5, "▼", 0)
+                safe_addstr(stdscr, 24, 0, "▼", 0)
 
-            safe_addstr(stdscr, 4, 45, "Current Moves:", 0)
+            # Updated moves display at top right
+            safe_addstr(stdscr, 0, 50, "Current Moves:", 0)
             mon_data = current_team[team_idx]
             for i in range(4):
                 move_name = mon_data['moves'][i].call().capitalize() if mon_data['moves'][i] else "[Empty]"
                 prefix = "> " if move_slot == i else "  "
-                safe_addstr(stdscr, 5 + i, 45, f"{prefix}{i+1}. {move_name[:24]}", 0)
+                safe_addstr(stdscr, 1 + i, 50, f"{prefix}{i+1}. {move_name[:24]}", 0)
         else:
             draw_debug_team_side(stdscr, 3, player_team, col == 0, team_idx, row)
             draw_debug_team_side(stdscr, 3, enemy_team, col == 1, team_idx, row, x_offset=35)
