@@ -205,19 +205,264 @@ EFFECT_HANDLERS = {
 
 
 def battle_setup(stdscr):
-    pool = mons.copy()
-    (p_mon, p_moves), (e_mon, e_moves), mode = select_teams_and_moves(
-    stdscr,
-    pool,
-    pool.copy(),
-    moves_list
-    )
-    curses.start_color()
-    player = BattleMon(p_mon, 50, p_moves)
-    enemy = BattleMon(e_mon, 50, e_moves)
+    return debug_battle_setup(stdscr)
 
-    party = [player]
-    return afightui(stdscr, party, enemy, mode)
+def debug_battle_setup(stdscr):
+    """Enhanced debug battle setup with up to 6 pokemon, levels, and shiny options"""
+    pool = mons.copy()
+    
+    mode = choose_mode(stdscr)
+    
+    player_team_data, enemy_team_data = select_debug_teams(
+        stdscr,
+        pool,
+        pool.copy(),
+        moves_list,
+        mode
+    )
+    
+    curses.start_color()
+    
+    # Create player party
+    player_party = []
+    for mon_data in player_team_data:
+        mon = BattleMon(mon_data['mon'], mon_data['level'], mon_data['moves'], shiny=mon_data['shiny'])
+        player_party.append(mon)
+    
+    # Create enemy mon (or first of enemy team)
+    enemy_data = enemy_team_data[0]
+    enemy = BattleMon(enemy_data['mon'], enemy_data['level'], enemy_data['moves'], shiny=enemy_data['shiny'])
+    
+    if not player_party:
+        textbox(stdscr, "No pokemon selected!")
+        return
+    
+    return afightui(stdscr, player_party, enemy, mode)
+
+def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
+    """Select teams with support for up to 6 pokemon, levels, and shiny status"""
+    
+    # Initialize team data structures
+    player_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False} for _ in range(6)]
+    enemy_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False} for _ in range(6)]
+    
+    col = 0  # 0 for player, 1 for enemy
+    team_idx = 0  # which pokemon in the team (0-5)
+    row = 0  # which row: 0=pokemon, 1=level, 2=moves, 3=shiny, 4=ok
+    
+    move_menu = False
+    move_cursor = 0
+    move_view = 0
+    move_slot = 0  # which move slot (0-3)
+    move_slot_menu = False  # are we selecting which move slot to edit?
+    
+    while True:
+        stdscr.clear()
+        
+        # Draw header
+        safe_addstr(stdscr, 0, 5, "DEBUG BATTLE SETUP", 0)
+        safe_addstr(stdscr, 1, 5, "← Player Team", 0)
+        safe_addstr(stdscr, 1, 35, "Enemy Team →", 0)
+        safe_addstr(stdscr, 2, 5, "[Arrow Keys] Navigate | [Z] Select | [C] Confirm | [X] Back", 0)
+        
+        if move_menu:
+            current_team = player_team if col == 0 else enemy_team
+            current_mon = current_team[team_idx]['mon']
+            shiny_mark = "✦ " if current_team[team_idx]['shiny'] else ""
+            current_mon_name = f"{shiny_mark}{current_mon.call().capitalize()}" if current_mon else "Pokemon"
+
+            safe_addstr(stdscr, 0, 5, f"Select Move {move_slot+1}/4", 0)
+            safe_addstr(stdscr, 1, 5, f"for {current_mon_name[:24]}", 0)
+            safe_addstr(stdscr, 2, 5, "[Arrow Keys] Navigate | [Z] Select | [X] Back", 0)
+
+            visible_moves = moves_list[move_view:move_view+20]
+
+            if move_view > 0:
+                safe_addstr(stdscr, 3, 5, "▲", 0)
+
+            for i, m in enumerate(visible_moves):
+                idx = move_view + i
+                name = m.call().capitalize()
+                prefix = "> " if idx == move_cursor else "  "
+                safe_addstr(stdscr, 4 + i, 5, prefix + name[:40], 0)
+
+            if move_view + 20 < len(moves_list):
+                safe_addstr(stdscr, 24, 5, "▼", 0)
+
+            safe_addstr(stdscr, 4, 45, "Current Moves:", 0)
+            mon_data = current_team[team_idx]
+            for i in range(4):
+                move_name = mon_data['moves'][i].call().capitalize() if mon_data['moves'][i] else "[Empty]"
+                prefix = "> " if move_slot == i else "  "
+                safe_addstr(stdscr, 5 + i, 45, f"{prefix}{i+1}. {move_name[:24]}", 0)
+        else:
+            draw_debug_team_side(stdscr, 3, player_team, col == 0, team_idx, row)
+            draw_debug_team_side(stdscr, 3, enemy_team, col == 1, team_idx, row, x_offset=35)
+            
+            if row == 2:
+                current_team = player_team if col == 0 else enemy_team
+                mon_data = current_team[team_idx]
+                safe_addstr(stdscr, 10, 5, "Moves for selected Pokemon:", 0)
+                for i in range(4):
+                    move_name = mon_data['moves'][i].call().capitalize() if mon_data['moves'][i] else "[Empty]"
+                    prefix = "> " if move_slot == i else "  "
+                    safe_addstr(stdscr, 11 + i, 5, f"{prefix}{i+1}. {move_name[:20]}", 0)
+        
+        stdscr.refresh()
+        key = stdscr.getch()
+        
+        if move_menu:
+            # Handle move selection
+            if key == curses.KEY_UP and move_cursor > 0:
+                move_cursor -= 1
+            elif key == curses.KEY_DOWN and move_cursor < len(moves_list) - 1:
+                move_cursor += 1
+            elif key == curses.KEY_LEFT and move_slot > 0:
+                move_slot -= 1
+            elif key == curses.KEY_RIGHT and move_slot < 3:
+                move_slot += 1
+
+            if move_cursor < move_view:
+                move_view = move_cursor
+            elif move_cursor >= move_view + 20:
+                move_view = move_cursor - 19
+
+            elif key == ord("z"):
+                current_team = player_team if col == 0 else enemy_team
+                current_team[team_idx]['moves'][move_slot] = moves_list[move_cursor]
+                move_menu = False
+            elif key == ord("x"):
+                move_menu = False
+            continue
+        
+        # Handle team selection navigation
+        if key == curses.KEY_LEFT and row > 0:
+            row -= 1
+            move_slot = 0  # Reset move slot when changing rows
+        elif key == curses.KEY_RIGHT and row < 3:
+            row += 1
+            move_slot = 0  # Reset move slot when changing rows
+        elif key == curses.KEY_UP:
+            if row == 2:  # If in moves row, navigate move slots
+                if move_slot > 0:
+                    move_slot -= 1
+            else:
+                if team_idx > 0:  # Navigate to previous pokemon slot
+                    team_idx -= 1
+                else:  # Switch to player team
+                    col = 0
+        elif key == curses.KEY_DOWN:
+            if row == 2:  # If in moves row, navigate move slots
+                if move_slot < 3:
+                    move_slot += 1
+            else:
+                if team_idx < 5:  # Navigate to next pokemon slot
+                    team_idx += 1
+                else:  # Switch to enemy team
+                    col = 1
+                    team_idx = 0
+        
+        elif key == ord("z"):
+            current_team = player_team if col == 0 else cpu_pool if col == 1 else player_team
+            current_team = player_team if col == 0 else enemy_team
+            
+            if row == 0:  # Select pokemon
+                pool = player_pool if col == 0 else cpu_pool
+                i = select_from_list_scroll(stdscr, pool, f"Select Pokemon for slot {team_idx+1}", show_type=True)
+                if i is not None:
+                    current_team[team_idx]['mon'] = pool.pop(i)
+            
+            elif row == 1:  # Select level
+                level = select_level(stdscr, current_team[team_idx]['level'])
+                if level is not None:
+                    current_team[team_idx]['level'] = level
+            
+            elif row == 2:  # Select moves
+                if current_team[team_idx]['mon'] is None:
+                    textbox(stdscr, "Please select a Pokemon first!")
+                else:
+                    move_menu = True
+                    move_cursor = 0
+                    move_view = 0
+            
+            elif row == 3:  # Toggle shiny
+                current_team[team_idx]['shiny'] = not current_team[team_idx]['shiny']
+        
+        elif key == ord("c"):  # Confirm and start battle
+            # Filter out empty slots
+            valid_player = [t for t in player_team if t['mon'] is not None]
+            valid_enemy = [t for t in enemy_team if t['mon'] is not None]
+            
+            if valid_player and valid_enemy:
+                return valid_player, valid_enemy
+            else:
+                textbox(stdscr, "Both teams need at least one pokemon!")
+
+def select_level(stdscr, current_level):
+    """Menu to select pokemon level"""
+    level = current_level
+    
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 5, f"Select Level (Current: {level})", 0)
+        safe_addstr(stdscr, 2, 5, "↑/↓ to adjust, [Z] to confirm, [X] to cancel", 0)
+        
+        level_display = f"Level: {level}"
+        stdscr.attron(curses.color_pair(1))
+        safe_addstr(stdscr, 5, 5, level_display, 0)
+        stdscr.attroff(curses.color_pair(1))
+        
+        stdscr.refresh()
+        key = stdscr.getch()
+        
+        if key == curses.KEY_UP and level < 100:
+            level += 1
+        elif key == curses.KEY_DOWN and level > 1:
+            level -= 1
+        elif key == ord("z"):
+            return level
+        elif key == ord("x"):
+            return None
+
+def draw_debug_team_side(stdscr, start_y, team, is_selected, team_idx, row, x_offset=5):
+    """Draw a team selection side (player or enemy)"""
+    
+    for i in range(6):
+        y = start_y + i
+        mon_data = team[i]
+        
+        # Highlight current selection
+        highlight = is_selected and team_idx == i
+        
+        if row == 0 and highlight:
+            stdscr.attron(curses.color_pair(1))
+        
+        # Pokemon slot with shiny indicator
+        if mon_data['mon']:
+            shiny_mark = "✦ " if mon_data['shiny'] else ""
+            mon_name = f"{shiny_mark}{mon_data['mon'].call().capitalize()}"
+        else:
+            mon_name = "[Empty]"
+        
+        safe_addstr(stdscr, y, x_offset, f"{i+1}. {mon_name[:15]:<15}", 0)
+        
+        if row == 0 and highlight:
+            stdscr.attroff(curses.color_pair(1))
+        
+        # Level display
+        if row == 1 and highlight:
+            stdscr.attron(curses.color_pair(1))
+        safe_addstr(stdscr, y, x_offset + 18, f"L{mon_data['level']:<2}", 0)
+        if row == 1 and highlight:
+            stdscr.attroff(curses.color_pair(1))
+        
+        # Shiny indicator
+        shiny_mark = "✦" if mon_data['shiny'] else " "
+        if row == 3 and highlight:
+            stdscr.attron(curses.color_pair(1))
+        safe_addstr(stdscr, y, x_offset + 24, shiny_mark, 0)
+        if row == 3 and highlight:
+            stdscr.attroff(curses.color_pair(1))
 
 def status_effect_manager(stdscr, mon): 
     if "poison" in mon.statuses: 
@@ -341,6 +586,62 @@ def textbox(stdscr, text):
         if stdscr.getch() == ord("z"):
             break
 
+def draw_pokeball_overlay(stdscr, start_y=2, start_x=49, shift=0, color=None):
+    art = [
+"          █████████         ",
+"       █████#####█████      ",
+"     ███#############███    ",
+"     ███####█████####███    ",
+"     ████████   ████████    ",
+"     ███    █████    ███    ",
+"      ███           ███     ",
+"        █████   █████       ",
+"          █████████         ",
+"                            ",
+"                            ",
+    ]
+    if color is None:
+        color = curses.color_pair(7)
+
+    for i, line in enumerate(art):
+        try:
+            stdscr.addstr(start_y + i, start_x + shift, line, color)
+        except curses.error:
+            pass
+
+
+def animate_pokeball(stdscr, player, enemy, shakes=3, success=True):
+    start_y, start_x = 2, 49
+    shifts = [0, 2]
+    color = curses.color_pair(7)
+
+    for index in range(shakes):
+        for shift in shifts:
+            redraw_battle(stdscr, player, enemy)
+            draw_pokeball_overlay(stdscr, start_y, start_x, shift, color)
+            stdscr.refresh()
+            curses.napms(120)
+
+        if index < shakes - 1:
+            curses.napms(2000)
+
+    if success:
+        redraw_battle(stdscr, player, enemy)
+        draw_pokeball_overlay(stdscr, start_y, start_x, shifts[-1], color)
+        stdscr.refresh()
+        curses.napms(180)
+    else:
+        redraw_battle(stdscr, player, enemy)
+        draw_pokeball_overlay(stdscr, start_y, start_x, shifts[-1], color)
+        try:
+            stdscr.addstr(start_y + 4, start_x + 10, "x", curses.color_pair(7))
+        except curses.error:
+            pass
+        stdscr.refresh()
+        curses.napms(180)
+        redraw_battle(stdscr, player, enemy)
+
+
 def flash_mon(stdscr, player, enemy, is_enemy=False, flashes=4):
     mon = enemy if is_enemy else player
     sprite = getattr(stats, mon.base.name.lower(), stats.placeholder)
@@ -447,7 +748,11 @@ class BattleMon:
         self.spa = int(((2*base.sp_at*level)/100) + 5)      
         self.spd_def = int(((2*base.sp_de*level)/100) + 5)  
         self.spd = int(((2*base.spd*level)/100) + 5)      
-        self.moves = [BattleMove(move_instance, order=i) for i, move_instance in enumerate(moves)]
+        self.moves = [
+            BattleMove(move_instance, order=i)
+            for i, move_instance in enumerate(moves)
+            if move_instance is not None
+        ]
 
         # Temporary battle stage stats
         self.stage_at = 0       
@@ -1059,12 +1364,15 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
                 elif item_name == "pokeball":
                     if target == enemy and getattr(enemy, "enemytype", "wild") != "trainer":
                         catch_chance = random.randint(1, 100)
-
-                        if catch_chance > 10:
+                        success = catch_chance > 10
+                        if success:
+                            animate_pokeball(stdscr, player, enemy, shakes=3, success=True)
                             textbox(stdscr, "Gotcha! The Pokémon was caught!")
                             return ("caught", target)
                         else:
-                            textbox(stdscr, "Oh no! The Pokémon broke free!")
+                            shake_count = random.randint(1, 3)
+                            animate_pokeball(stdscr, player, enemy, shakes=shake_count, success=False)
+                            textbox(stdscr, "The Pokémon broke free!")
                     else:
                         textbox(stdscr, "You can't catch a trainer's Pokémon!")
 

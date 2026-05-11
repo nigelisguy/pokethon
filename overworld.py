@@ -824,7 +824,7 @@ def run_fixed_wild_battle(stdscr, room, pos):
     )
     battlehandler.last_enemy = enemy
 
-    result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx, can_run=False)
+    result = fightui.afightui(stdscr, player_party, enemy, 1, active_idx=active_idx, can_run=True)
     battlehandler.sync_player_hp(player_party)
     handle_wild_battle_result(stdscr, result, remove_id=encounter_id)
     return result
