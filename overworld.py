@@ -10,6 +10,10 @@ import os
 import copy
 
 SAVE_FILE = "save.json"
+
+def mon_name(mon_id):
+    mon = getattr(stats, f"mon{mon_id}", None)
+    return mon.name.capitalize() if mon is not None else f"Mon {mon_id}"
 pc_boxes = [
     [] 
 ]
@@ -23,9 +27,16 @@ DEFAULT_SAVE = {
     "player": {
         "name": "placeholder!",
     },
+    "location": {
+        "room_id": "map1",
+        "y": 0,
+        "x": 0
+    },
     "pokedex": {
         "seen": [],
-        "caught": []
+        "caught": [],
+        "seen_shiny": [],
+        "caught_shiny": []
     },
     "pokemon": [],
     "pcmons": [[]],
@@ -122,6 +133,57 @@ battled_trainers = set()
 picked_items = set()
 cut_trees = set()
 money = 3000
+pokedex_seen = set()
+pokedex_caught = set()
+pokedex_seen_shiny = set()
+pokedex_caught_shiny = set()
+LEVEL_UP_DATA = {}
+
+
+def load_level_up_data():
+    path = os.path.join(os.path.dirname(__file__), "data", "levellingup.json")
+    if not os.path.exists(path):
+        return {}
+
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, IOError):
+        return {}
+
+    return data.get("pokemon", data) if isinstance(data, dict) else {}
+
+
+def level_up_entry(mon_id):
+    return LEVEL_UP_DATA.get(str(mon_id), {})
+
+
+def move_name(move_id):
+    move = getattr(stats, f"move{move_id}", None)
+    return move.name.capitalize() if move is not None else f"Move {move_id}"
+
+
+def normalize_move_slots(moves):
+    normalized = []
+    for move_id in moves:
+        try:
+            move_id = int(move_id)
+        except (TypeError, ValueError):
+            continue
+
+        if move_id > 0:
+            normalized.append(move_id)
+
+    return normalized[:4]
+
+
+def reset_pp_slot(slot):
+    while len(fightui.pplist) <= slot:
+        fightui.pplist.append(-1)
+    fightui.pplist[slot] = -1
+
+
+LEVEL_UP_DATA = load_level_up_data()
 
 
 # NPC Preset Dialogue
@@ -153,7 +215,7 @@ class MonOver:
         self.ord = rotation
         self.id = id
         self.name = name
-        self.moves = moves
+        self.moves = normalize_move_slots(moves)
         self.level = level
         self.exp = exp
         self.shiny = shiny
@@ -192,6 +254,62 @@ class MonOver:
             f"[{hp_bar}] -- [EXP {exp_bar}] LVL {self.level}"
         )
 
+    def learn_move(self, stdscr, move_id):
+        try:
+            move_id = int(move_id)
+        except (TypeError, ValueError):
+            return
+
+        if move_id <= 0 or not hasattr(stats, f"move{move_id}"):
+            return
+
+        self.moves = normalize_move_slots(self.moves)
+        if move_id in self.moves:
+            return
+
+        learned = move_name(move_id)
+        if len(self.moves) < 4:
+            self.moves.append(move_id)
+            reset_pp_slot(len(self.moves) - 1)
+            show_dialogue(stdscr, [f"{self.name} learned {learned}!"])
+            return
+
+        forgotten_id = self.moves.pop(0)
+        self.moves.append(move_id)
+        fightui.pplist = fightui.pplist[1:4] + [-1]
+        show_dialogue(stdscr, [
+            f"{self.name} learned {learned}!",
+            f"It forgot {move_name(forgotten_id)}.",
+        ])
+
+    def apply_level_up_moves(self, stdscr):
+        learnset = level_up_entry(self.id).get("learnset", {})
+        for move_id in learnset.get(str(self.level), []):
+            self.learn_move(stdscr, move_id)
+
+    def try_evolve(self, stdscr):
+        evolution = level_up_entry(self.id).get("evolution")
+        if not isinstance(evolution, dict):
+            return
+
+        try:
+            evolve_level = int(evolution.get("level", 0))
+            evolved_id = int(evolution.get("into", 0))
+        except (TypeError, ValueError):
+            return
+
+        if evolve_level <= 0 or evolved_id <= 0 or self.level < evolve_level:
+            return
+
+        evolved_stats = getattr(stats, f"mon{evolved_id}", None)
+        if evolved_stats is None:
+            return
+
+        old_name = self.name
+        self.id = evolved_id
+        self.name = evolved_stats.name.capitalize()
+        show_dialogue(stdscr, [f"What? {old_name} is evolving!", f"{old_name} evolved into {self.name}!"])
+
     def expgain(self, stdscr, gainedexp):
         show_dialogue(stdscr, [f"{self.name} gained {gainedexp} EXP!"])
         self.exp += gainedexp
@@ -200,6 +318,8 @@ class MonOver:
             self.level += 1
             self.maxexp = self.level*self.level*self.level
             show_dialogue(stdscr, [f"{self.name} leveled up to LVL {self.level}!"])
+            self.apply_level_up_moves(stdscr)
+            self.try_evolve(stdscr)
 
     def copy(self):
         return MonOver(
@@ -337,7 +457,7 @@ def add_money(amount):
 
 def lose_blackout_money():
     global money
-    lost = money // 2
+    lost = money // 10
     money -= lost
     return lost
 
@@ -590,8 +710,15 @@ def type_text(stdscr, text):
         time.sleep(TEXT_SPEED)
 
 
-def build_save():
+def build_save(current_room_id=None, py=None, px=None):
     party_data = [mon.to_dict() for mon in get_party() if mon is not None]
+    location = copy.deepcopy(save_data.get("location", DEFAULT_SAVE["location"])) if isinstance(save_data, dict) else copy.deepcopy(DEFAULT_SAVE["location"])
+    if current_room_id is not None:
+        location = {
+            "room_id": current_room_id,
+            "y": py if py is not None else location.get("y", 0),
+            "x": px if px is not None else location.get("x", 0),
+        }
 
     return {
         "settings": {
@@ -600,9 +727,12 @@ def build_save():
         "player": {
             "name": name
         },
+        "location": location,
         "pokedex": {
-            "seen": [],
-            "caught": []
+            "seen": sorted(pokedex_seen),
+            "caught": sorted(pokedex_caught),
+            "seen_shiny": sorted(pokedex_seen_shiny),
+            "caught_shiny": sorted(pokedex_caught_shiny)
         },
         "pokemon": party_data,
         "inventory": inventory,
@@ -766,6 +896,7 @@ def pickup_item(stdscr, room, pos):
 def handle_wild_battle_result(stdscr, result, remove_id=None):
     if isinstance(result, tuple) and result[0] == "caught":
         enemy = result[1]
+        register_pokedex_caught(enemy.base.id, shiny=getattr(enemy, "shiny", False))
 
         active_mon = get_party_mon(last_battle_slot)
         if active_mon is not None:
@@ -806,6 +937,7 @@ def run_fixed_wild_battle(stdscr, room, pos):
         return False
 
     encounter = room.legendary_mons[pos]
+    register_pokedex_seen(encounter["mon_id"])
     battle_spiral_animation(stdscr, room, pos[0], pos[1])
     fightui.textbox(stdscr, f"A wild {encounter['name'].capitalize()} appeared!")
 
@@ -908,7 +1040,7 @@ def draw(stdscr, room, py, px):
             try:
                 safe_addstr(stdscr, y, x * 2, char, color)
             except curses.error:
-                pass  # Skip if still out of bounds
+                pass 
 
     stdscr.refresh()
 
@@ -1061,6 +1193,24 @@ def create_rooms(start_room_id=None, return_registry=False):
         return start_room, rooms
 
     return start_room
+
+
+def saved_location(rooms):
+    location = save_data.get("location", {}) if isinstance(save_data, dict) else {}
+    room_id = location.get("room_id") or getattr(stats, "SELECTED_OVERWORLD", "map1")
+    room = rooms.get(room_id) or rooms.get(getattr(stats, "SELECTED_OVERWORLD", "map1")) or rooms["map1"]
+
+    spawn_y, spawn_x = stats.MAP_ROOMS.get(room.room_id, {}).get("spawn", (0, 0))
+    try:
+        y = int(location.get("y", spawn_y))
+        x = int(location.get("x", spawn_x))
+    except (TypeError, ValueError):
+        y, x = spawn_y, spawn_x
+
+    if not (0 <= y < room.height and 0 <= x < room.width):
+        y, x = spawn_y, spawn_x
+
+    return room, y, x
 
 
 def draw_party_panel(stdscr, selected_index=None, moving_index=None):
@@ -1292,8 +1442,8 @@ def overworld(stdscr):
     curses.start_color()
     init_overworld_colors()
 
-    current_room, rooms = create_rooms(return_registry=True)
-    py, px = 0, 0
+    _, rooms = create_rooms(return_registry=True)
+    current_room, py, px = saved_location(rooms)
 
     while True:
         draw(stdscr, current_room, py, px)
@@ -1394,7 +1544,7 @@ def overworld(stdscr):
                     break
 
         if key == ord("c"):
-            spawn_room_id = save_menu(stdscr, current_room.room_id)
+            spawn_room_id = save_menu(stdscr, current_room.room_id, py, px)
             if spawn_room_id in rooms:
                 current_room = rooms[spawn_room_id]
                 py, px = stats.MAP_ROOMS[spawn_room_id].get("spawn", (0, 0))
@@ -1437,7 +1587,7 @@ def debug_spawn_menu(stdscr):
             return None
 
 
-def save_menu(stdscr, current_room_id=None):
+def save_menu(stdscr, current_room_id=None, py=None, px=None):
     curses.curs_set(0)
 
     options = ["Save Game", "Pokémon", "Bag", "PC", "Options", "Pokédex", "M.Gift"]
@@ -1479,7 +1629,7 @@ def save_menu(stdscr, current_room_id=None):
                 return debug_spawn_menu(stdscr)
         elif key == ord("z"):
             if y == 0:
-                data = build_save()
+                data = build_save(current_room_id, py, px)
                 save_game(data)
                 show_dialogue(stdscr, ["Game Saved!"])
                 return None
@@ -1490,6 +1640,8 @@ def save_menu(stdscr, current_room_id=None):
                 bag_menu(stdscr, current_room_id)
             elif y == 3:
                 pc_menu(stdscr)
+            elif y == 5:
+                pokedex_menu(stdscr)
             elif y == 6:
                 import mysterygift
                 mysterygift.gifted(stdscr)
@@ -1497,6 +1649,91 @@ def save_menu(stdscr, current_room_id=None):
                 return None
         elif key == ord("x"):
             return None
+
+
+def register_pokedex_seen(mon_id, shiny=False):
+    global save_data
+    if mon_id not in pokedex_seen:
+        pokedex_seen.add(mon_id)
+        if isinstance(save_data, dict):
+            save_data.setdefault("pokedex", {}).setdefault("seen", [])
+            save_data["pokedex"]["seen"] = sorted(pokedex_seen)
+
+    if shiny and mon_id not in pokedex_seen_shiny:
+        pokedex_seen_shiny.add(mon_id)
+        if isinstance(save_data, dict):
+            save_data.setdefault("pokedex", {}).setdefault("seen_shiny", [])
+            save_data["pokedex"]["seen_shiny"] = sorted(pokedex_seen_shiny)
+
+
+def register_pokedex_caught(mon_id, shiny=False):
+    register_pokedex_seen(mon_id, shiny=shiny)
+    if mon_id not in pokedex_caught:
+        pokedex_caught.add(mon_id)
+        if isinstance(save_data, dict):
+            save_data.setdefault("pokedex", {}).setdefault("caught", [])
+            save_data["pokedex"]["caught"] = sorted(pokedex_caught)
+
+    if shiny and mon_id not in pokedex_caught_shiny:
+        pokedex_caught_shiny.add(mon_id)
+        if isinstance(save_data, dict):
+            save_data.setdefault("pokedex", {}).setdefault("caught_shiny", [])
+            save_data["pokedex"]["caught_shiny"] = sorted(pokedex_caught_shiny)
+
+
+def pokedex_menu(stdscr):
+    curses.curs_set(0)
+    stdscr.keypad(True)
+
+    total = 151
+    selected = 0
+
+    while True:
+        stdscr.clear()
+        h, w = stdscr.getmaxyx()
+        visible = max(8, min(18, h - 7))
+        top = max(0, min(selected - visible // 2, total - visible))
+
+        safe_addstr(stdscr, 0, 0, "POKÉDEX")
+        safe_addstr(stdscr, 1, 0, "Use arrow keys to scroll, Z to return.")
+
+        for row in range(visible):
+            index = top + row
+            if index >= total:
+                break
+
+            mon_id = index + 1
+            if mon_id in pokedex_seen:
+                shiny_mark = " ✦" if mon_id in pokedex_seen_shiny else ""
+                label = mon_name(mon_id) + shiny_mark
+            else:
+                label = "???"
+
+            marker = ">" if index == selected else " "
+            safe_addstr(stdscr, row + 3, 0, f"{marker} {mon_id:03d}. {label}")
+
+        current_id = selected + 1
+        detail_y = visible + 4
+        stdscr.hline(detail_y - 1, 0, "-", w)
+        if current_id in pokedex_seen:
+            shiny_mark = " ✦" if current_id in pokedex_seen_shiny else ""
+            status = "Caught" if current_id in pokedex_caught else "Seen"
+            if current_id in pokedex_caught_shiny:
+                status += " ✦"
+            safe_addstr(stdscr, detail_y, 0, f"{current_id:03d}. {mon_name(current_id)}{shiny_mark}")
+            safe_addstr(stdscr, detail_y + 1, 0, f"Status: {status}")
+        else:
+            safe_addstr(stdscr, detail_y, 0, f"{current_id:03d}. ???")
+            safe_addstr(stdscr, detail_y + 1, 0, "Status: Unknown")
+
+        key = stdscr.getch()
+        if key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected + 1 < total:
+            selected += 1
+        elif key == ord("x") or key == ord("z"):
+            break
+        stdscr.refresh()
 
 
 def load_pokemon(data):
@@ -1520,7 +1757,8 @@ def load_pokemon(data):
 
 def reset_game_state(data=None):
     global save_data, name, party_mons, inventory, picked_items, cut_trees, money
-    global pc_boxes, current_box, battled_trainers
+    global pc_boxes, current_box, battled_trainers, pokedex_seen, pokedex_caught
+    global pokedex_seen_shiny, pokedex_caught_shiny
 
     if data is None:
         data = load_save()
@@ -1540,6 +1778,10 @@ def reset_game_state(data=None):
     money = save_data.get("money", 3000)
     picked_items = set(save_data.get("picked_items", []))
     cut_trees = set(save_data.get("cut_trees", []))
+    pokedex_seen = set(save_data.get("pokedex", {}).get("seen", []))
+    pokedex_caught = set(save_data.get("pokedex", {}).get("caught", []))
+    pokedex_seen_shiny = set(save_data.get("pokedex", {}).get("seen_shiny", []))
+    pokedex_caught_shiny = set(save_data.get("pokedex", {}).get("caught_shiny", []))
 
     fightui.pplist = list(save_data.get("pp", [-1, -1, -1, -1]))
     ensure_hpstorage_size()

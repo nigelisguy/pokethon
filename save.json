@@ -3,15 +3,31 @@
         "textspeed": 0.01
     },
     "player": {
-        "name": "placeholder!"
+        "name": "Jeff"
     },
     "pokedex": {
-        "seen": [],
-        "caught": []
+        "seen": [
+            1,
+            152
+        ],
+        "caught": [],
+        "seen_shiny": [],
+        "caught_shiny": []
     },
-    "pokemon": [],
-    "pcmons": [
-        []
+    "pokemon": [
+        {
+            "rotation": 1,
+            "id": 1,
+            "name": "Bulbasaur",
+            "moves": [
+                340,
+                370
+            ],
+            "level": 12,
+            "exp": 1529,
+            "maxexp": 1728,
+            "shiny": false
+        }
     ],
     "inventory": [
         {
@@ -22,13 +38,18 @@
         }
     ],
     "money": 3000,
-    "picked_items": [],
+    "picked_items": [
+        "allmonsmap(bum):2:1"
+    ],
     "cut_trees": [],
     "battled_trainers": [],
     "pp": [
-        -1,
-        -1,
+        17,
+        9,
         -1,
         -1
+    ],
+    "pcmons": [
+        []
     ]
 }

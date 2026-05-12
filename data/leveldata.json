@@ -6071,6 +6071,15 @@
           340
         ],
         "shiny": true
+      },
+      "2,1": {
+        "name": "i dunno",
+        "mon_id": 152,
+        "level": 100,
+        "moves": [
+          0
+        ],
+        "shiny": false
       }
     },
     "block_tiles": {},

@@ -155,6 +155,7 @@ def run_battle(stdscr, room):
         return "lose"
 
     enemy = enemy_for_room(room)
+    overworld.register_pokedex_seen(enemy.mon_id)
     last_enemy = enemy
     fightui.textbox(stdscr, f"A wild {enemy.base.name.capitalize()} appeared!")
 
@@ -172,6 +173,7 @@ def run_trainer_battle(stdscr, trainer_id):
     fightui.textbox(stdscr, f"{trainer.get('name', 'Trainer')} wants to battle!")
 
     for i, enemy in enumerate(enemy_party):
+        overworld.register_pokedex_seen(enemy.mon_id)
         last_enemy = enemy
         active_idx = 0 if player_party and player_party[0].hp > 0 else active_battle_index(player_party)
         if active_idx is None:

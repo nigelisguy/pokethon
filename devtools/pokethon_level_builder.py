@@ -150,17 +150,14 @@ class Editor:
             new_map.cut_trees = to_set(m.get("cut_trees", []))
 
             def to_dict(v):
-                """Convert various formats to a dict with tuple keys."""
                 if not v:
                     return {}
                 if isinstance(v, dict):
                     result = {}
                     for k, v2 in v.items():
                         if isinstance(k, str) and "," in k:
-                            # String key format like "0,5"
                             result[tuple(map(int, k.split(",")))] = v2
                         elif isinstance(k, (list, tuple)):
-                            # Direct tuple/list key
                             result[tuple(k)] = v2
                     return result
                 return {}

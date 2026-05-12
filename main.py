@@ -177,7 +177,7 @@ def overworld_save_menu(stdscr):
 
     while True:
         has_save = overworld.save_exists()
-        options = ["Continue", "New Save", "Delete Save", "Back"] if has_save else ["New Save", "Back"]
+        options = ["Continue", "New Save","Back"] if has_save else ["New Save", "Back"]
 
         stdscr.clear()
         stdscr.addstr(0, 0, "MAIN MENU")
@@ -211,8 +211,8 @@ def overworld_save_menu(stdscr):
                 overworld.overworld(stdscr)
             elif choice == "New Save":
                 if not has_save or confirm_menu(stdscr, "CREATE NEW SAVE?", "Your current save will be deleted."):
-                    overworld.create_new_save()
-                    overworld.overworld(stdscr)
+                    if cutscene.new_save_intro(stdscr):
+                        overworld.overworld(stdscr)
             elif choice == "Delete Save":
                 if confirm_menu(stdscr, "DELETE SAVE?", "This will delete save.json."):
                     overworld.delete_save()
@@ -539,7 +539,7 @@ def mainm(stdscr):
         "-->POKETHON<--",
         "Start Game",
         "Debug Battle",
-        "Pokedex [PLACEHOLDER]",
+        "Pokedex",
         "Settings",
         "Mystery Gift",
         "Save Debug",
@@ -571,7 +571,7 @@ def mainm(stdscr):
             cutscene.show_readme(stdscr)
         elif key == ord("z"):
             if y == 3:
-                mon_menu(stdscr)
+                overworld.pokedex_menu(stdscr)
             elif y == 2:  
                 import fightui
                 fightui.battle_setup(stdscr)

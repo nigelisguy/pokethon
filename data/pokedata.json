@@ -1962,6 +1962,19 @@
       "sp_de": 100,
       "spd": 100,
       "base_exp": 270
+    },
+    {
+      "id": 152,
+      "name": "freexp",
+      "type": "normal",
+      "type2": "nil",
+      "hp": 1,
+      "at": 1,
+      "de": 0,
+      "sp_at": 999,
+      "sp_de": 0,
+      "spd": 1,
+      "base_exp": 270
     }
   ]
 }

@@ -1,5 +1,6 @@
 import curses
 import random
+import textwrap
 import stats
 import overworld
 player_result = []
@@ -572,6 +573,16 @@ def safe_addstr(stdscr, y, x, text,y_offset=EASY_OFFSET):
     except curses.error:
         pass 
 
+
+def safe_addstr_raw(stdscr, y, x, text, attr=0):
+    try:
+        h, w = stdscr.getmaxyx()
+        if y < h and x < w:
+            stdscr.addstr(y, x, str(text)[:w - x], attr)
+    except curses.error:
+        pass
+
+
 def draw_divider(stdscr, y):
     h, w = stdscr.getmaxyx()#pls delete
 
@@ -1068,6 +1079,107 @@ def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
         else:
             safe_addstr(stdscr, row_start + idx, col, text)
 
+
+def show_move_info(stdscr, move, attacker, defender):
+    def effectiveness_text(mult):
+        if mult == 0:
+            return "0x (Not Effective)"
+        if mult == 0.5:
+            return "0.5x (Not Very Effective)"
+        if mult == 1:
+            return "1x (Effective)"
+        if mult == 2:
+            return "2x (Super Effective!)"
+        return f"{mult:.1f}x"
+
+    est_damage = None
+    if move.power > 0 and move.category in ("physical", "special"):
+        if move.category == "physical":
+            atk = apply_stage(attacker.at, attacker.stage_at)
+            defense = apply_stage(defender.de, defender.stage_de)
+        else:
+            atk = apply_stage(attacker.spa, attacker.stage_spa)
+            defense = apply_stage(defender.spd_def, defender.stage_spd_def)
+
+        base = (((2 * attacker.level) / 5 + 2) * move.power * atk / defense) / 50 + 2
+        est = base * type_multiplier(move.type, defender) * 0.925
+        est_damage = max(0, int(est))
+
+    def effectiveness_attr(mult):
+        if mult == 0:
+            return curses.color_pair(5)
+        if mult == 0.5:
+            return curses.color_pair(7)
+        if mult == 1:
+            return curses.color_pair(1)
+        if mult == 2:
+            return curses.color_pair(4)
+        return curses.color_pair(6)
+
+    mult = type_multiplier(move.type, defender)
+    info_lines = [
+        f"{move.name}",
+        f"{'-' * 76}",
+        f"Type: {move.type.capitalize()} ({move.category})",
+        f"Base Power: {move.power}",
+        f"Accuracy: {'--' if move.acc == -1 else str(move.acc) + '%'}",
+        f"{'-' * 76}",
+        f"PP: {move.pp}/{move.pp_max}",
+        f"Damage Multiplier: {effectiveness_text(mult)}",
+        f"{'-' * 76}",
+    ]
+
+    damage_pct = None
+    if est_damage is not None and defender.max_hp > 0:
+        damage_pct = int(est_damage / defender.max_hp * 100)
+        info_lines.append(f"Damage: -{damage_pct}% Enemy")
+    if getattr(move, 'rhit', 0) and move.rhit > 1:
+        info_lines.append(f"Hits {move.rhit} times")
+    if getattr(move, 'crits', 0):
+        info_lines.append(f"Crit: {move.crits}%")
+    if getattr(move, 'enefc', None):
+        info_lines.append(f"Secondary: {move.enefc}")
+    h, w = stdscr.getmaxyx()
+    if getattr(move, 'desc', None):
+        info_lines.append('-' * 76)
+        info_lines.append("Description:")
+        wrap_width = max(10, w - 6)
+        for desc_line in textwrap.wrap(move.desc, wrap_width):
+            info_lines.append(desc_line)
+
+    top = 0
+    left = 0
+    bottom = h - 1
+    right = w - 1
+
+    while True:
+        stdscr.clear()
+
+        border_width = right - left + 1
+        safe_addstr_raw(stdscr, top, left, "#" * border_width)
+        safe_addstr_raw(stdscr, bottom, left, "#" * border_width)
+        for y in range(top + 1, bottom):
+            safe_addstr_raw(stdscr, y, left, "#")
+            safe_addstr_raw(stdscr, y, right, "#")
+            safe_addstr_raw(stdscr, y, left + 1, " " * max(0, border_width - 2))
+
+        content_x = left + 2
+        content_y = top + 1
+        for idx, line in enumerate(info_lines):
+            line_y = content_y + idx
+            if line_y < bottom:
+                if line.startswith("Effectiveness:"):
+                    safe_addstr_raw(stdscr, line_y, content_x, "Effectiveness: ")
+                    safe_addstr_raw(stdscr, line_y, content_x + len("Effectiveness: "), effectiveness_text(mult), effectiveness_attr(mult))
+                else:
+                    safe_addstr_raw(stdscr, line_y, content_x, line)
+
+        stdscr.refresh()
+
+        if stdscr.getch() == ord("c"):
+            return
+
+
 def draw_bag(stdscr, mon, highlight=-1):
     row_start = 1
 
@@ -1132,6 +1244,7 @@ def move_menu(stdscr, player, enemy):
         draw_moves(stdscr, player, highlight)
         if max_moves == 0:
             safe_addstr(stdscr, 1, 42, "[    No moves    ]")
+       
         draw_header(stdscr, player, enemy)
         key = stdscr.getch()
 
@@ -1146,6 +1259,7 @@ def move_menu(stdscr, player, enemy):
         elif key == curses.KEY_DOWN:
             if highlight < max_moves - 1:
                 highlight += 1
+        elif key == ord("c") and max_moves > 0:            show_move_info(stdscr, player.moves[highlight], player, enemy)
         elif key == ord("x"):
             return None
         elif key == ord("z"):

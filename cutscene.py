@@ -1,4 +1,5 @@
 import curses
+import random
 import time
 from pathlib import Path
 
@@ -100,7 +101,7 @@ def draw_title(stdscr, phase=0, show_prompt=True, visible_lines=None):
         safe_addstr(stdscr, top + i, center_x(stdscr, rendered_line), rendered_line, curses.color_pair(31))
 
     title = "POKéTERMINAL"
-    subtitle = "PreAlpha v0.6"
+    subtitle = "vA0.7.2"
     prompt = "Press Z"
 
     title_attr = curses.color_pair(32) | curses.A_BOLD
@@ -165,6 +166,146 @@ def title_screen(stdscr):
         blink_on = not blink_on
         phase += 1
         draw_title(stdscr, phase=phase, show_prompt=blink_on)
+
+
+def prompt_input(stdscr, prompt, default=""):
+    curses.curs_set(1)
+    stdscr.keypad(True)
+    entry = list(default)
+    cursor = len(entry)
+
+    while True:
+        stdscr.clear()
+        h, w = stdscr.getmaxyx()
+        safe_addstr(stdscr, 1, 2, prompt)
+        display = ''.join(entry) or '_'
+        safe_addstr(stdscr, 3, 2, display)
+        safe_addstr(stdscr, 5, 2, "Press Z to confirm, X to cancel")
+        stdscr.move(3, 2 + cursor)
+        stdscr.refresh()
+
+        key = stdscr.getch()
+        if key in (ord("z"), ord("\n"), curses.KEY_ENTER):
+            curses.curs_set(0)
+            return ''.join(entry).strip() or default
+        elif key == ord("x"):
+            curses.curs_set(0)
+            return default
+        elif key in (curses.KEY_BACKSPACE, 127, 8):
+            if cursor > 0:
+                cursor -= 1
+                entry.pop(cursor)
+        elif key == curses.KEY_LEFT and cursor > 0:
+            cursor -= 1
+        elif key == curses.KEY_RIGHT and cursor < len(entry):
+            cursor += 1
+        elif 32 <= key <= 126:
+            entry.insert(cursor, chr(key))
+            cursor += 1
+
+
+def prompt_menu(stdscr, title, options):
+    curses.curs_set(0)
+    stdscr.keypad(True)
+    selected = 0
+
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 1, 2, title)
+        for index, option in enumerate(options):
+            prefix = "> " if index == selected else "  "
+            safe_addstr(stdscr, 3 + index, 2, prefix + option)
+        safe_addstr(stdscr, 3 + len(options) + 1, 2, "Z = choose   X = back")
+        stdscr.refresh()
+
+        key = stdscr.getch()
+        if key == curses.KEY_UP and selected > 0:
+            selected -= 1
+        elif key == curses.KEY_DOWN and selected < len(options) - 1:
+            selected += 1
+        elif key == ord("z"):
+            return selected
+        elif key == ord("x"):
+            return None
+
+
+def new_save_intro(stdscr):
+    import overworld
+    curses.curs_set(0)
+    stdscr.keypad(True)
+
+    show_dialogue = overworld.show_dialogue if hasattr(overworld, 'show_dialogue') else None
+
+    if show_dialogue:
+        stdscr.clear()
+        stdscr.refresh()
+        show_dialogue(stdscr, [
+            "Hello there! Welcome to the world of Pokémon!",
+            "My name is Oak. People call me the Pokémon Professor.",
+            "This world is full of creatures called Pokémon,",
+            "and you, from what I heard, want to be a Pokémon Trainer! ",
+            "Very well, today is the day you start your Pokémon journey.",
+        ])
+
+    player_name = prompt_input(stdscr, "What is your name?", "Jeff")
+    rival_name = prompt_input(stdscr, "What is your rival's name?", "Malfoy")
+    if show_dialogue:
+        show_dialogue(stdscr, [
+            f"Right! So your name is {player_name}.",
+            f"Your rival will be called {rival_name}.",
+        ])
+
+    starter_options = ["Bulbasaur (A Grass/Poison Toad)", "Charmander (A Fire Lizard)", "Squirtle (A Water Turtle)"]
+    starter_idx = prompt_menu(stdscr, "Choose your starter Pokémon:", starter_options)
+    if starter_idx is None:
+        return False
+
+    starter_names = ["Bulbasaur", "Charmander", "Squirtle"]
+    starter_ids = [1, 4, 7]
+    starter_id = starter_ids[starter_idx]
+    starter_name = starter_names[starter_idx]
+    shinytag = True if random.randint(1,4096) == 1 else False
+
+    if show_dialogue:
+        show_dialogue(stdscr, [
+            f"Excellent choice! {starter_name} is a fine Pokémon.",
+            "Use Z to confirm selections, X to cancel, C for menu,",
+            "and Arrow keys to move around the world.",
+            "In battle, use Z to select a move and X to return.",
+            "Moves descriptions can be viewed by pressing C on the move.",
+        ])
+
+    player_name = player_name or "Jeff"
+    rival_name = rival_name or "Malfoy"
+    data = overworld.copy.deepcopy(overworld.DEFAULT_SAVE)
+    data["player"]["name"] = player_name
+    data["player"]["rival"] = rival_name
+    starter_mon = {
+        "rotation": 1,
+        "id": starter_id,
+        "name": starter_name,
+        "moves": [340],
+        "level": 5,
+        "exp": 0,
+        "maxexp": 125,
+        "shiny": shinytag,
+    }
+    data["pokemon"] = [starter_mon]
+    data["pokedex"]["seen"] = [starter_id]
+    data["pokedex"]["caught"] = []
+    data["pokedex"]["seen_shiny"] = []
+    data["pokedex"]["caught_shiny"] = []
+
+    overworld.save_game(data)
+    overworld.reset_game_state(data)
+
+    if show_dialogue:
+        show_dialogue(stdscr, [
+            f"All set, {player_name}! Your adventure begins now.",
+            "Good luck out there!",
+        ])
+
+    return True
 
 
 def show_readme(stdscr):
