@@ -1,4 +1,4 @@
-Version 0.6.5 Development
+Version 0.7.2 Development
 # PokéTerminal (Pokéthon)
 Pokémon In Your Terminal like its Nethack (or any other terminal rpg)!
 
@@ -21,3 +21,6 @@ If you want to update this game at this point, please delete your old files, don
 - @rgfsdg (branch) [playtester]
 
 You [for playing this game!]
+
+## Q&A
+- TBA

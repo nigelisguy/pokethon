@@ -2,15 +2,17 @@
 <html>
 <head>
   <title>POKéTerminal</title>
+  <link rel="icon" href="assets/icon.ico" type="image/png">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
-<body>
+<body style="background-image: url('assets/background.png'); background-size: cover; background-repeat: no-repeat; background-position: center;">
 
 <div class="wiki-container">
 
   <main class="content">
     <div class="card">
+      <h1>POKéTerminal (Formally PokéThon)</h1>
       <h2>About</h2>
       <p><strong>Version:</strong> A0.7.2(Beta) A0.7.1(Stable)</p>
       <p>POKéTerminal is an early-build terminal game based on Pokémon.</p>
@@ -25,9 +27,9 @@
         <li>C = Menu</li>
         <li>Arrow Keys = Move</li>
       </ul>
-      <img src="screenshot1.png" alt="Screenshot of the new map" style="width:100%; margin-top: 10px;">
-      <img src="screenshot2.png" alt="Screenshot of the new map" style="width:100%; margin-top: 10px;">
-      <img src="screenshot3.png" alt="Screenshot of the new map" style="width:100%; margin-top: 10px;">
+      <img src="assets/screenshot1.png" alt="Screenshot of the new map" style="width:100%; margin-top: 10px;">
+      <img src="assets/screenshot2.png" alt="Screenshot of the new map" style="width:100%; margin-top: 10px;">
+      <img src="assets/screenshot3.png" alt="Screenshot of the new map" style="width:100%; margin-top: 10px;">
       <h2>Download</h2>
       <hr>
       <h3>Manual Installation (Python Files) </h3>
@@ -44,8 +46,6 @@ cd pokethon
 python3 -m venv venv
 source venv/bin/activate   # If Windows: venv\Scripts\activate
 
-pip install requests #requires requests for api calls, or pip3 depending on your system
-
         </code></pre>
       </div>
 
@@ -54,6 +54,10 @@ pip install requests #requires requests for api calls, or pip3 depending on your
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 
         <pre><code class="code-block">
+
+pip install requests #requires requests for api calls
+#pip3 depending on your system (delete after first installation)
+
 python3 -m venv venv
 source venv/bin/activate   # If Windows: venv\Scripts\activate
 cd #yourpathnameto/pokethon
@@ -77,7 +81,7 @@ python main.py #or python3 main.py
         <li>Sprite editor is now wired with spritedata.json</li>
         <li>Hotfix: fixed api issues</li>
         <li>Added sprites (Ivysaur, Dratini, Magikarp) [5/151 done] </li>
-        <li>Skibidi</li>
+        <li>Fixed bug where game has mapdata spawning for pokemon hardcoded to 1</li>
       </ul>
       <hr>
       <h3>Version A0.7.0 (7/5/2026)</h3>
