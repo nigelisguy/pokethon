@@ -12,7 +12,7 @@
   <main class="content">
     <div class="card">
       <h2>About</h2>
-      <p><strong>Version:</strong> A0.6.5</p>
+      <p><strong>Version:</strong> A0.7.2(Beta) A0.7.1(Stable)</p>
       <p>POKéTerminal is an early-build terminal game based on Pokémon.</p>
 
       <h3>Note</h3>
@@ -31,30 +31,32 @@
       <h2>Download</h2>
       <hr>
       <h3>Manual Installation (Python Files) </h3>
-      <a class="download-button" href="https://github.com/nigelisguy/pokethon/releases/download/Pre-Release/pokethon.zip">Download Latest</a>
+      <a class="download-button" href="https://github.com/nigelisguy/pokethon/releases/download/AUnstableLatest/pokethon.zip">Download Latest</a>
+      <a class="download-button" href="https://github.com/nigelisguy/pokethon/releases/download/ALatest/pokethon.zip">Download Stable</a>
       <h3>Direct Installation</h3>
       <div class="code-box">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 
         <pre><code class="code-block">
 git clone https://github.com/nigelisguy/pokethon
-cd pokethon
+cd pokethon 
 
 python3 -m venv venv
 source venv/bin/activate   # If Windows: venv\Scripts\activate
 
+pip install requests #requires requests for api calls, or pip3 depending on your system
+
         </code></pre>
       </div>
 
-    <h3>After that do this</h3>
+    <h3>After that, to run:</h3>
 <div class="code-box">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 
         <pre><code class="code-block">
 python3 -m venv venv
 source venv/bin/activate   # If Windows: venv\Scripts\activate
-cd Downloads # or wherever you placed pokethon in
-cd pokethon 
+cd #yourpathnameto/pokethon
 python main.py #or python3 main.py
         </code></pre>
       </div>
@@ -66,6 +68,18 @@ python main.py #or python3 main.py
     <div class="sidebar-inner">
       
       <h2>Updates + News</h2>
+      <h3>Version A0.7.2 (7/5/2026)</h3>
+      <ul>
+        <li>New Debug Battle</li>
+        <li>Fixed bug where "trainer battle = overworld pokemon"</li>
+        <li>Added new entering battle animation"</li>
+        <li>Added Pokéball animation</li>
+        <li>Sprite editor is now wired with spritedata.json</li>
+        <li>Hotfix: fixed api issues</li>
+        <li>Added sprites (Ivysaur, Dratini, Magikarp) [5/151 done] </li>
+        <li>Skibidi</li>
+      </ul>
+      <hr>
       <h3>Version A0.7.0 (7/5/2026)</h3>
       <ul>
         <li>Added Ice and Blocks</li>
@@ -75,6 +89,7 @@ python main.py #or python3 main.py
         <li>Added Beta Map</li>
         <li>Data Redone (py -> json)</li>
         <li>Added more sprites</li>
+        <li>pip requests</li>
       </ul>
       <hr>
       <h3>Version A0.6.5 (14/4/2026)</h3>
