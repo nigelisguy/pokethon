@@ -14,13 +14,14 @@ If you want to update this game at this point, please delete your old files, don
 - A guide will be released soon
 
 ## Credits 
-@nigelisguy (aka skdish or skdsh) [lead and only developer]
-
+- @nigelisguy (aka skdish or skdsh) [lead and only developer]
 - @gnnadia [playtester]
-- tszmariop (does not have a account) [playtester]
-- @rgfsdg (branch) [playtester]
+- @TSZ-pH [playtester]
 
 You [for playing this game!]
+
+## About modding
+- Read the license, also would appreciate credit, this took me time to make, and it will make my day :)
 
 ## Q&A
 - TBA
