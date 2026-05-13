@@ -172,6 +172,40 @@ def confirm_menu(stdscr, title, detail, warning="ALL DATA WILL BE ERASED."):
             return False
 
 
+def debug_randomizer_menu(stdscr):
+    y = 0
+    options = [
+        ("normal", "Normal", "Standard Pokémon but no restrictions on moves"),
+        ("random", "Random", "Pokemon and moves are random; level is fixed at 50 ;)"),
+        ("crazy_random", "Crazy Random", "Pokemon, moves, and levels roll freely. Good luck..."),
+    ]
+
+    while True:
+        stdscr.clear()
+        stdscr.addstr(0, 0, "SELECT GAME MODE")
+
+        for i, (_, label, detail) in enumerate(options):
+            prefix = "> " if i == y else "  "
+            if i == y:
+                stdscr.attron(curses.color_pair(1))
+                stdscr.addstr(2 + i, 0, f"{prefix}{label}")
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                stdscr.addstr(2 + i, 0, f"{prefix}{label}")
+            stdscr.addstr(2 + i, 18, detail)
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and y > 0:
+            y -= 1
+        elif key == curses.KEY_DOWN and y < len(options) - 1:
+            y += 1
+        elif key == ord("x"):
+            return None
+        elif key == ord("z"):
+            return options[y][0]
+
+
 def overworld_save_menu(stdscr):
     y = 0
 
@@ -571,10 +605,12 @@ def mainm(stdscr):
             cutscene.show_readme(stdscr)
         elif key == ord("z"):
             if y == 3:
-                overworld.pokedex_menu(stdscr)
+                mon_menu(stdscr)
             elif y == 2:  
                 import fightui
-                fightui.battle_setup(stdscr)
+                randomizer_mode = debug_randomizer_menu(stdscr)
+                if randomizer_mode is not None:
+                    fightui.battle_setup(stdscr, randomizer_mode)
             elif y == 4:
                 setting(stdscr)
             elif y == 1:
@@ -634,55 +670,58 @@ def setting(stdscr):
             else:
                 printdelay("wip")
                 
-def draw_stats(stdscr, mon, start_x):
-    type_colors = {
-        "Fire": curses.COLOR_RED,
-        "Ground": curses.COLOR_YELLOW,
-        "Rock": curses.COLOR_YELLOW,
-        "Fighting": curses.COLOR_MAGENTA,
-        "Electric": curses.COLOR_YELLOW,
-        "Bug": curses.COLOR_GREEN,
-        "Grass": curses.COLOR_GREEN,
-        "Water": curses.COLOR_BLUE,
-        "Flying": curses.COLOR_CYAN,
-        "Ice": curses.COLOR_CYAN,
-        "Dragon": curses.COLOR_MAGENTA,
-        "Psychic": curses.COLOR_MAGENTA,
-        "Poison": curses.COLOR_MAGENTA,
-        "Ghost": curses.COLOR_MAGENTA,
-        "Dark": curses.COLOR_BLACK,
-        "Normal": curses.COLOR_WHITE,
-        "Steel": curses.COLOR_WHITE
+def draw_stats(stdscr, mon, start_x, sprite_side="front", variant="normal", form_label="Normal front"):
+    type_pairs = {
+        "Fire": 7,
+        "Ground": 2,
+        "Rock": 2,
+        "Fighting": 5,
+        "Electric": 2,
+        "Bug": 4,
+        "Grass": 4,
+        "Water": 6,
+        "Flying": 3,
+        "Ice": 3,
+        "Dragon": 5,
+        "Psychic": 5,
+        "Poison": 5,
+        "Ghost": 5,
+        "Dark": 18,
+        "Normal": 1,
+        "Steel": 1
     }
 
-    color_pairs = {}
-    pair_id = 20  # avoid conflict with other pairs
-    for t, color in type_colors.items():
-        curses.init_pair(pair_id, color, -1)
-        color_pairs[t] = curses.color_pair(pair_id)
-        pair_id += 1
-
-    # Title
     title = mon.call().capitalize()
-    stdscr.addstr(0, start_x, title)
+    safe_addstr(stdscr, 0, start_x, title)
 
     divider = "━" * 30
-    stdscr.addstr(1, start_x, divider)
+    safe_addstr(stdscr, 1, start_x, divider)
+
+    sprite = getattr(stats, mon.name.lower(), stats.placeholder)
+    sprite.draw(stdscr, sprite_side, variant, start_y=2, start_x=start_x)
 
     type1 = mon.type.capitalize()
-    type2 = (mon.type2 or "").capitalize()
+    type2 = "" if not mon.type2 or mon.type2 == "nil" else mon.type2.capitalize()
 
-    stdscr.addstr(2, start_x, f"{type1}", color_pairs.get(type1, curses.A_NORMAL))
-    stdscr.addstr(2, start_x + 12, f"{type2}", color_pairs.get(type2, curses.A_NORMAL))
+    stat_x = start_x + 28
+    safe_addstr(stdscr, 2, stat_x, f"Sprite: {form_label}")
+    try:
+        stdscr.addstr(4, stat_x, f"{type1}", curses.color_pair(type_pairs.get(type1, 1)))
+        stdscr.addstr(4, stat_x + 12, f"{type2}", curses.color_pair(type_pairs.get(type2, 1)))
+    except curses.error:
+        pass
 
-    stdscr.addstr(4, start_x, f"HP: {mon.hp}")
-    stdscr.addstr(5, start_x, f"ATK: {mon.at}")
-    stdscr.addstr(6, start_x, f"SP ATK: {mon.sp_at}")
-    stdscr.addstr(7, start_x, f"DEF: {mon.de}")
-    stdscr.addstr(8, start_x, f"SP DEF: {mon.sp_de}")
-    stdscr.addstr(9, start_x, f"SPD: {mon.spd}")
+    safe_addstr(stdscr, 6, stat_x, f"HP: {mon.hp}")
+    safe_addstr(stdscr, 7, stat_x, f"ATK: {mon.at}")
+    safe_addstr(stdscr, 8, stat_x, f"SP ATK: {mon.sp_at}")
+    safe_addstr(stdscr, 9, stat_x, f"DEF: {mon.de}")
+    safe_addstr(stdscr, 10, stat_x, f"SP DEF: {mon.sp_de}")
+    safe_addstr(stdscr, 11, stat_x, f"SPD: {mon.spd}")
 
-    stdscr.addstr(3, start_x, divider)
+    safe_addstr(stdscr, 14, start_x, "Description")
+    desc = getattr(mon, "description", getattr(mon, "desc", "No Pokédex description available."))
+    for i, line in enumerate(wrap_debug_text(desc, 48)[:5]):
+        safe_addstr(stdscr, 16 + i, start_x, line)
 
 def mon_menu(stdscr):
     curses.curs_set(0)
@@ -690,12 +729,18 @@ def mon_menu(stdscr):
 
     scrollno = 0
     cursor = 0
+    sprite_index = 0
 
     while True:
         stdscr.clear()
+        h, w = stdscr.getmaxyx()
+        list_width = 27
+        detail_x = list_width + 3
+        visible = max(1, min(TOTAL, h - 2))
+        cursor = min(cursor, visible - 1)
 
         # LEFT SIDE (list)
-        for i in range(VISIBLE):
+        for i in range(visible):
             idx = scrollno + i
             if idx >= TOTAL:
                 break
@@ -705,16 +750,22 @@ def mon_menu(stdscr):
             line = f"{dexno:03d} {name}"
 
             if i == cursor:
-                stdscr.addstr(i, 0, f"> {line}")
+                safe_addstr(stdscr, i, 0, f"> {line}"[:list_width - 1])
             else:
-                stdscr.addstr(i, 0, f"  {line}")
+                safe_addstr(stdscr, i, 0, f"  {line}"[:list_width - 1])
+
+        for y in range(0, h - 1):
+            safe_addstr(stdscr, y, list_width, "|")
 
         # RIGHT SIDE (stats)
         selected_idx = scrollno + cursor
         if selected_idx < TOTAL:
-            draw_stats(stdscr, mons[selected_idx], 30)  # 30 = right side offset
+            sprite_options = overworld.pokedex_sprite_options(selected_idx + 1, include_all_shiny=True)
+            sprite_index %= len(sprite_options)
+            sprite_side, variant, form_label = sprite_options[sprite_index]
+            draw_stats(stdscr, mons[selected_idx], detail_x, sprite_side, variant, form_label)
 
-        stdscr.addstr(VISIBLE + 1, 0, "X = back")
+        safe_addstr(stdscr, h - 1, 0, "Left/right = sprite, X = back")
 
         key = stdscr.getch()
 
@@ -725,10 +776,14 @@ def mon_menu(stdscr):
                 scrollno -= 1
 
         elif key == curses.KEY_DOWN:
-            if cursor < VISIBLE - 1 and scrollno + cursor + 1 < TOTAL:
+            if cursor < visible - 1 and scrollno + cursor + 1 < TOTAL:
                 cursor += 1
-            elif scrollno + VISIBLE < TOTAL:
+            elif scrollno + visible < TOTAL:
                 scrollno += 1
+        elif key == curses.KEY_LEFT:
+            sprite_index = (sprite_index - 1) % 4
+        elif key == curses.KEY_RIGHT:
+            sprite_index = (sprite_index + 1) % 4
 
         elif key == ord("x"):
             break

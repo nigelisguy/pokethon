@@ -5,7 +5,21 @@ from pathlib import Path
 
 # Basic Mon and Moves classes
 class Mon:
-    def __init__(self, name, type, type2, hp, at, de, sp_at, sp_de, spd, mon_id=None, base_exp=0):
+    def __init__(
+        self,
+        name,
+        type,
+        type2,
+        hp,
+        at,
+        de,
+        sp_at,
+        sp_de,
+        spd,
+        mon_id=None,
+        base_exp=0,
+        description="No Pokédex description available.",
+    ):
         self.id = mon_id
         self.base_exp = base_exp
         self.name = name
@@ -17,6 +31,8 @@ class Mon:
         self.sp_at = sp_at
         self.sp_de = sp_de
         self.spd = spd
+        self.description = description
+        self.desc = description
 
     def call(self):
         return f"{self.name}"
@@ -81,11 +97,12 @@ class RenderImage:
             grid.append(line)
         return grid
 
-    def draw(self, stdscr, sprite="front", variant="normal", char_map=None):
-        if sprite == "front":
-            start_y, start_x = 2, 2
-        else:
-            start_y, start_x = 2, 53
+    def draw(self, stdscr, sprite="front", variant="normal", char_map=None, start_y=None, start_x=None):
+        if start_y is None or start_x is None:
+            if sprite == "front":
+                start_y, start_x = 2, 2
+            else:
+                start_y, start_x = 2, 53
         color_map = self.palettes.get(variant, self.palettes.get("normal", {}))
         art = self.front if sprite == "front" else self.back
         for y, line in enumerate(art):
@@ -124,7 +141,8 @@ try:
             p.get("name", ""), p.get("type", "nil"), p.get("type2", "nil"),
             p.get("hp", 0), p.get("at", 0), p.get("de", 0),
             p.get("sp_at", 0), p.get("sp_de", 0), p.get("spd", 0),
-            mon_id=_id, base_exp=p.get("base_exp", 0)
+            mon_id=_id, base_exp=p.get("base_exp", 0),
+            description=p.get("description", p.get("desc", "No Pokédex description available."))
         )
 except Exception:
     pass

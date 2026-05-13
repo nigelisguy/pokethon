@@ -205,22 +205,23 @@ EFFECT_HANDLERS = {
 
 
 
-def battle_setup(stdscr):
-    return debug_battle_setup(stdscr)
+def battle_setup(stdscr, randomizer_mode="normal"):
+    return debug_battle_setup(stdscr, randomizer_mode)
 
-def debug_battle_setup(stdscr):
-    """Enhanced debug battle setup with up to 6 pokemon, levels, and shiny options"""
+def debug_battle_setup(stdscr, randomizer_mode="normal"):
     pool = mons.copy()
     
     mode = choose_mode(stdscr)
-    
-    player_team_data, enemy_team_data = select_debug_teams(
-        stdscr,
-        pool,
-        pool.copy(),
-        moves_list,
-        mode
-    )
+    if randomizer_mode == "normal":
+        player_team_data, enemy_team_data = select_debug_teams(
+            stdscr,
+            pool,
+            pool.copy(),
+            moves_list,
+            mode
+        )
+    else:
+        player_team_data, enemy_team_data = random_debug_teams(randomizer_mode)
     
     curses.start_color()
     
@@ -230,15 +231,58 @@ def debug_battle_setup(stdscr):
         mon = BattleMon(mon_data['mon'], mon_data['level'], mon_data['moves'], shiny=mon_data['shiny'])
         player_party.append(mon)
     
-    # Create enemy mon (or first of enemy team)
-    enemy_data = enemy_team_data[0]
-    enemy = BattleMon(enemy_data['mon'], enemy_data['level'], enemy_data['moves'], shiny=enemy_data['shiny'])
-    
     if not player_party:
         textbox(stdscr, "No pokemon selected!")
         return
-    
-    return afightui(stdscr, player_party, enemy, mode)
+
+    return debug_enemy_party_battle(stdscr, player_party, enemy_team_data, mode)
+
+
+def first_alive_party_index(party):
+    for i, mon in enumerate(party):
+        if mon.hp > 0:
+            return i
+    return None
+
+
+def debug_enemy_party_battle(stdscr, player_party, enemy_team_data, mode):
+    for i, enemy_data in enumerate(enemy_team_data):
+        active_idx = first_alive_party_index(player_party)
+        if active_idx is None:
+            return "lose"
+
+        enemy = BattleMon(
+            enemy_data['mon'],
+            enemy_data['level'],
+            enemy_data['moves'],
+            shiny=enemy_data['shiny']
+        )
+
+        if i > 0:
+            textbox(stdscr, f"Enemy sent out {enemy.base.name.capitalize()}!")
+
+        result = afightui(stdscr, player_party, enemy, mode, active_idx=active_idx)
+        if result != "win":
+            return result
+
+    return "win"
+
+
+def random_debug_mon(level):
+    return {
+        'mon': random.choice(mons),
+        'level': level() if callable(level) else level,
+        'moves': [random.choice(moves_list) for _ in range(4)],
+        'shiny': random.randint(1, 4096) == 1,
+    }
+
+
+def random_debug_teams(randomizer_mode):
+    level = 50 if randomizer_mode == "random" else lambda: random.randint(1, 100)
+    return (
+        [random_debug_mon(level) for _ in range(6)],
+        [random_debug_mon(level) for _ in range(6)]
+    )
 
 def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
     
@@ -405,7 +449,6 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
                 textbox(stdscr, "Both teams need at least one pokemon!")
 
 def select_level(stdscr, current_level):
-    """Menu to select pokemon level"""
     level = current_level
     
     while True:
@@ -822,16 +865,16 @@ def damage_calc(attacker, defender, move, stdscr, player=None, enemy=None):
     return dmg
 
 def choose_mode(stdscr):
-    options = ["Player vs Player [NEW!!!!!!!!!]", "Player vs Clanker","Online, if i ever learn to use api(s)..."]
+    options = ["Player vs Player", "Player vs Bot","Online, if i ever learn to use api(s)..."]
     cursor = 0
 
     while True:
         stdscr.clear()
-        safe_addstr(stdscr, 0, 5, "Choose Mode", 0)
+        safe_addstr(stdscr, 0, 0, "CHOOSE MODE", 0)
 
         for i, opt in enumerate(options):
             prefix = "> " if i == cursor else "  "
-            safe_addstr(stdscr, 1+i, 5, prefix + opt, 0)
+            safe_addstr(stdscr, 2+i, 0, prefix + opt, 0)
 
         key = stdscr.getch()
 

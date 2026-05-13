@@ -173,6 +173,7 @@ def prompt_input(stdscr, prompt, default=""):
     stdscr.keypad(True)
     entry = list(default)
     cursor = len(entry)
+    consecutive_z = 0
 
     while True:
         stdscr.clear()
@@ -180,26 +181,39 @@ def prompt_input(stdscr, prompt, default=""):
         safe_addstr(stdscr, 1, 2, prompt)
         display = ''.join(entry) or '_'
         safe_addstr(stdscr, 3, 2, display)
-        safe_addstr(stdscr, 5, 2, "Press Z to confirm, X to cancel")
+        safe_addstr(stdscr, 5, 2, "Press Z 3 times in a row to confirm, X to cancel")
+        safe_addstr(stdscr, 6, 2, f"Z confirms after 3 taps: {consecutive_z}/3")
         stdscr.move(3, 2 + cursor)
         stdscr.refresh()
 
         key = stdscr.getch()
-        if key in (ord("z"), ord("\n"), curses.KEY_ENTER):
+        if key == ord("z"):
+            consecutive_z += 1
+            entry.insert(cursor, "z")
+            cursor += 1
+            if consecutive_z >= 3:
+                del entry[cursor - 3:cursor]
+                curses.curs_set(0)
+                return ''.join(entry).strip() or default
+        elif key in (ord("\n"), curses.KEY_ENTER):
             curses.curs_set(0)
             return ''.join(entry).strip() or default
         elif key == ord("x"):
             curses.curs_set(0)
             return default
         elif key in (curses.KEY_BACKSPACE, 127, 8):
+            consecutive_z = 0
             if cursor > 0:
                 cursor -= 1
                 entry.pop(cursor)
         elif key == curses.KEY_LEFT and cursor > 0:
+            consecutive_z = 0
             cursor -= 1
         elif key == curses.KEY_RIGHT and cursor < len(entry):
+            consecutive_z = 0
             cursor += 1
         elif 32 <= key <= 126:
+            consecutive_z = 0
             entry.insert(cursor, chr(key))
             cursor += 1
 

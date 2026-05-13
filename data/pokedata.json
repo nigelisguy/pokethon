@@ -11,7 +11,8 @@
       "sp_at": 65,
       "sp_de": 65,
       "spd": 45,
-      "base_exp": 64
+      "base_exp": 64,
+      "description": "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun's rays, the seed grows progressively larger."
     },
     {
       "id": 2,
@@ -1974,7 +1975,8 @@
       "sp_at": 999,
       "sp_de": 0,
       "spd": 1,
-      "base_exp": 270
+      "base_exp": 270,
+      "description": "He doesn't exist. Imagine he was needed to finish the Pokédex :trollface:, also why are you even reading this?"
     }
   ]
 }

@@ -1681,21 +1681,137 @@ def register_pokedex_caught(mon_id, shiny=False):
             save_data["pokedex"]["caught_shiny"] = sorted(pokedex_caught_shiny)
 
 
+def pokemon_type_text(mon):
+    types = [mon.type.capitalize()]
+    if mon.type2 and mon.type2 != "nil":
+        types.append(mon.type2.capitalize())
+    return " / ".join(types)
+
+
+def pokemon_description(mon):
+    return getattr(mon, "description", getattr(mon, "desc", "No Pokédex description available."))
+
+
+def pokemon_type_pairs():
+    return {
+        "Fire": 7,
+        "Ground": 2,
+        "Rock": 2,
+        "Fighting": 5,
+        "Electric": 2,
+        "Bug": 4,
+        "Grass": 4,
+        "Water": 6,
+        "Flying": 3,
+        "Ice": 3,
+        "Dragon": 5,
+        "Psychic": 5,
+        "Poison": 5,
+        "Ghost": 5,
+        "Dark": 18,
+        "Normal": 1,
+        "Steel": 1,
+    }
+
+
+def draw_pokedex_sprite(stdscr, mon, sprite_side, variant, start_y, start_x):
+    sprite = getattr(stats, mon.name.lower(), stats.placeholder)
+    sprite.draw(stdscr, sprite_side, variant, start_y=start_y, start_x=start_x)
+
+
+def pokedex_sprite_options(mon_id, include_all_shiny=False):
+    options = [
+        ("front", "normal", "Normal front"),
+        ("back", "normal", "Normal back"),
+    ]
+    if include_all_shiny or mon_id in pokedex_seen_shiny:
+        options.extend([
+            ("front", "shiny", "Shiny front"),
+            ("back", "shiny", "Shiny back"),
+        ])
+    return options
+
+
+def draw_pokedex_detail(stdscr, mon_id, start_y, start_x, width, sprite_side="front", variant="normal", form_label="Normal front"):
+    current = getattr(stats, f"mon{mon_id}", None)
+    inner_width = max(12, width)
+    title = f"{mon_id:03d}. ???"
+
+    if mon_id in pokedex_seen and current is not None:
+        shiny_mark = " ✦" if mon_id in pokedex_seen_shiny else ""
+        status = "Caught" if mon_id in pokedex_caught else "Seen"
+        if mon_id in pokedex_caught_shiny:
+            status += " ✦"
+        title = f"{mon_id:03d}. {current.name.capitalize()}{shiny_mark}"
+        safe_addstr(stdscr, start_y, start_x, title[:inner_width])
+        safe_addstr(stdscr, start_y + 1, start_x, "━" * min(30, inner_width))
+
+        if width >= 48:
+            draw_pokedex_sprite(stdscr, current, sprite_side, variant, start_y + 2, start_x)
+            stat_x = start_x + 28
+            stat_width = max(12, width - 28)
+        else:
+            stat_x = start_x
+            stat_width = inner_width
+
+        type1 = current.type.capitalize()
+        type2 = "" if not current.type2 or current.type2 == "nil" else current.type2.capitalize()
+        type_pairs = pokemon_type_pairs()
+
+        safe_addstr(stdscr, start_y + 2, stat_x, f"Sprite: {form_label}"[:stat_width])
+        safe_addstr(stdscr, start_y + 3, stat_x, f"Status: {status}"[:stat_width])
+        try:
+            stdscr.addstr(start_y + 4, stat_x, type1[:11], curses.color_pair(type_pairs.get(type1, 1)))
+            if type2:
+                stdscr.addstr(start_y + 4, stat_x + 12, type2[:11], curses.color_pair(type_pairs.get(type2, 1)))
+        except curses.error:
+            safe_addstr(stdscr, start_y + 4, stat_x, f"Type: {pokemon_type_text(current)}"[:stat_width])
+
+        safe_addstr(stdscr, start_y + 6, stat_x, f"HP: {current.hp}"[:stat_width])
+        safe_addstr(stdscr, start_y + 7, stat_x, f"ATK: {current.at}"[:stat_width])
+        safe_addstr(stdscr, start_y + 8, stat_x, f"SP ATK: {current.sp_at}"[:stat_width])
+        safe_addstr(stdscr, start_y + 9, stat_x, f"DEF: {current.de}"[:stat_width])
+        safe_addstr(stdscr, start_y + 10, stat_x, f"SP DEF: {current.sp_de}"[:stat_width])
+        safe_addstr(stdscr, start_y + 11, stat_x, f"SPD: {current.spd}"[:stat_width])
+
+        safe_addstr(stdscr, start_y + 14, start_x, "Description"[:inner_width])
+        for i, line in enumerate(wrap_text(pokemon_description(current), min(48, inner_width))[:5]):
+            safe_addstr(stdscr, start_y + 16 + i, start_x, line[:inner_width])
+    else:
+        safe_addstr(stdscr, start_y, start_x, title[:inner_width])
+        safe_addstr(stdscr, start_y + 1, start_x, "━" * min(30, inner_width))
+        safe_addstr(stdscr, start_y + 2, start_x, "Status: Unknown"[:inner_width])
+        safe_addstr(stdscr, start_y + 4, start_x, "Type: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 6, start_x, "HP: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 7, start_x, "ATK: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 8, start_x, "SP ATK: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 9, start_x, "DEF: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 10, start_x, "SP DEF: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 11, start_x, "SPD: ???"[:inner_width])
+        safe_addstr(stdscr, start_y + 14, start_x, "Description"[:inner_width])
+        safe_addstr(stdscr, start_y + 16, start_x, "No data yet."[:inner_width])
+
+
 def pokedex_menu(stdscr):
     curses.curs_set(0)
     stdscr.keypad(True)
 
     total = 151
     selected = 0
+    sprite_index = 0
 
     while True:
         stdscr.clear()
         h, w = stdscr.getmaxyx()
-        visible = max(8, min(18, h - 7))
+        left_width = 27
+        detail_x = left_width + 3
+        detail_width = max(20, w - detail_x)
+        visible = max(1, min(total, h - 2))
         top = max(0, min(selected - visible // 2, total - visible))
-
-        safe_addstr(stdscr, 0, 0, "POKÉDEX")
-        safe_addstr(stdscr, 1, 0, "Use arrow keys to scroll, Z to return.")
+        current_id = selected + 1
+        sprite_options = pokedex_sprite_options(current_id)
+        sprite_index %= len(sprite_options)
+        sprite_side, variant, form_label = sprite_options[sprite_index]
 
         for row in range(visible):
             index = top + row
@@ -1710,27 +1826,28 @@ def pokedex_menu(stdscr):
                 label = "???"
 
             marker = ">" if index == selected else " "
-            safe_addstr(stdscr, row + 3, 0, f"{marker} {mon_id:03d}. {label}")
+            safe_addstr(stdscr, row, 0, f"{marker} {mon_id:03d} {label}"[:left_width - 1])
 
-        current_id = selected + 1
-        detail_y = visible + 4
-        stdscr.hline(detail_y - 1, 0, "-", w)
-        if current_id in pokedex_seen:
-            shiny_mark = " ✦" if current_id in pokedex_seen_shiny else ""
-            status = "Caught" if current_id in pokedex_caught else "Seen"
-            if current_id in pokedex_caught_shiny:
-                status += " ✦"
-            safe_addstr(stdscr, detail_y, 0, f"{current_id:03d}. {mon_name(current_id)}{shiny_mark}")
-            safe_addstr(stdscr, detail_y + 1, 0, f"Status: {status}")
+        if w >= 55:
+            for y in range(0, h - 1):
+                safe_addstr(stdscr, y, left_width, "|")
+            draw_pokedex_detail(stdscr, current_id, 0, detail_x, detail_width, sprite_side, variant, form_label)
         else:
-            safe_addstr(stdscr, detail_y, 0, f"{current_id:03d}. ???")
-            safe_addstr(stdscr, detail_y + 1, 0, "Status: Unknown")
+            detail_y = visible + 2
+            safe_addstr(stdscr, detail_y - 1, 0, "-" * max(0, w - 1))
+            draw_pokedex_detail(stdscr, current_id, detail_y, 0, max(20, w - 1), sprite_side, variant, form_label)
+
+        safe_addstr(stdscr, h - 1, 0, "Left/right = sprite, X = back")
 
         key = stdscr.getch()
         if key == curses.KEY_UP and selected > 0:
             selected -= 1
         elif key == curses.KEY_DOWN and selected + 1 < total:
             selected += 1
+        elif key == curses.KEY_LEFT:
+            sprite_index = (sprite_index - 1) % len(sprite_options)
+        elif key == curses.KEY_RIGHT:
+            sprite_index = (sprite_index + 1) % len(sprite_options)
         elif key == ord("x") or key == ord("z"):
             break
         stdscr.refresh()
