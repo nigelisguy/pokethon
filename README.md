@@ -14,9 +14,9 @@ If you want to update this game at this point, please delete your old files, don
 - A guide will be released soon
 
 ## Credits 
-@nigelisguy (aka skdish or skdsh) [lead and only developer]
-@gnnadia [playtester]
-@TSZ-pH [playtester]
+- @nigelisguy (aka skdish or skdsh) [lead and only developer]
+- @gnnadia [playtester]
+- @TSZ-pH [playtester]
 
 You [for playing this game!]
 
