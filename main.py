@@ -304,6 +304,50 @@ def prompt_int(stdscr, prompt, initial, min_value=None, max_value=None):
         number = min(max_value, number)
     return number
 
+def select_from_list(stdscr, items, title):
+    """
+    items: list of tuples (value_id, display_text)
+    Returns value_id or None if cancelled.
+    """
+    cursor = 0
+    view = 0
+    while True:
+        stdscr.clear()
+        safe_addstr(stdscr, 0, 0, title)
+        safe_addstr(stdscr, 1, 0, "#" * 40)
+        visible = 18
+
+        if view > 0:
+            safe_addstr(stdscr, 3, 0, "▲")
+
+        for i in range(visible):
+            idx = view + i
+            if idx >= len(items):
+                break
+            value_id, display = items[idx]
+            prefix = "> " if idx == cursor else "  "
+            safe_addstr(stdscr, 4 + i, 0, prefix + display[:78])
+
+        if view + visible < len(items):
+            safe_addstr(stdscr, 22, 0, "▼")
+
+        safe_addstr(stdscr, 23, 0, "Z = select   X = cancel")
+        stdscr.refresh()
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and cursor > 0:
+            cursor -= 1
+            if cursor < view:
+                view = cursor
+        elif key == curses.KEY_DOWN and cursor < len(items) - 1:
+            cursor += 1
+            if cursor >= view + visible:
+                view = cursor - visible + 1
+        elif key == ord("z"):
+            return items[cursor][0]
+        elif key == ord("x"):
+            return None
+
 def wrap_debug_text(text, width):
     words = str(text).split()
     lines = []
@@ -342,6 +386,10 @@ def move_label(move_id):
     return f"{move_id:03d} {name}"
 
 def default_debug_mon(mon_id=1, level=5):
+    stat_block = getattr(stats, f"mon{mon_id}", None)
+    abilities = getattr(stat_block, "abilities", []) if stat_block is not None else []
+    default_ability_id = abilities[0] if abilities else None
+
     return {
         "rotation": 1,
         "id": mon_id,
@@ -350,6 +398,8 @@ def default_debug_mon(mon_id=1, level=5):
         "level": level,
         "exp": 0,
         "maxexp": level * level * level,
+        "ability": default_ability_id,
+        "held_item": None,
     }
 
 def normalize_debug_party(data):
@@ -365,6 +415,15 @@ def normalize_debug_party(data):
         mon.setdefault("level", 5)
         mon.setdefault("exp", 0)
         mon.setdefault("maxexp", mon["level"] * mon["level"] * mon["level"])
+
+        # New fields for Ability + Held Item
+        if "ability" not in mon:
+            stat_block = getattr(stats, f"mon{mon.get('id', 1)}", None)
+            abilities = getattr(stat_block, "abilities", []) if stat_block is not None else []
+            mon["ability"] = abilities[0] if abilities else None
+
+        mon.setdefault("held_item", None)
+
         mon["rotation"] = i + 1
 
 def build_save_debug_rows(data):
@@ -379,6 +438,20 @@ def build_save_debug_rows(data):
             {"section": title, "label": "Level", "value": lambda mon=mon: mon.get("level", 1), "kind": "mon_level", "index": i},
             {"section": title, "label": "EXP", "value": lambda mon=mon: mon.get("exp", 0), "kind": "mon_exp", "index": i},
             {"section": title, "label": "Max EXP", "value": lambda mon=mon: mon.get("maxexp", 1), "kind": "mon_maxexp", "index": i},
+            {
+                "section": title,
+                "label": "Held Item",
+                "value": lambda mon=mon: (stats.ITEMS.get(mon.get("held_item"), {}).get("name", None) or (mon.get("held_item") or "None")),
+                "kind": "mon_held_item",
+                "index": i,
+            },
+            {
+                "section": title,
+                "label": "Ability",
+                "value": lambda mon=mon: (stats.ABILITIES.get(mon.get("ability"), {}).get("name", None) or (mon.get("ability") or "None")),
+                "kind": "mon_ability",
+                "index": i,
+            },
         ])
         for move_i in range(4):
             rows.append({
@@ -412,27 +485,77 @@ def edit_debug_row(stdscr, data, row):
 
     if kind == "name":
         data["player"]["name"] = prompt_text(stdscr, "Player name", data["player"].get("name", "Red"))
+
     elif kind == "mon_id":
         mon = data["pokemon"][row["index"]]
         mon["id"] = prompt_int(stdscr, "Pokemon species id 1-151", mon.get("id", 1), 1, 151)
         mon["name"] = mon_name(mon["id"]).lower()
+        # When species changes, keep ability/held_item as-is (user intent) but defaults will re-apply on normalize.
+
     elif kind == "mon_level":
         mon = data["pokemon"][row["index"]]
         mon["level"] = prompt_int(stdscr, "Pokemon level 1-100", mon.get("level", 1), 1, 100)
         mon["maxexp"] = max(mon.get("maxexp", 1), mon["level"] * mon["level"] * mon["level"])
+
     elif kind == "mon_exp":
         mon = data["pokemon"][row["index"]]
         mon["exp"] = prompt_int(stdscr, "Current EXP", mon.get("exp", 0), 0)
+
     elif kind == "mon_maxexp":
         mon = data["pokemon"][row["index"]]
         mon["maxexp"] = prompt_int(stdscr, "EXP needed for next level", mon.get("maxexp", 1), 1)
+
     elif kind == "mon_move":
         mon = data["pokemon"][row["index"]]
         while len(mon["moves"]) < 4:
             mon["moves"].append(0)
         mon["moves"][row["move_index"]] = prompt_int(stdscr, "Move id, 0 for no move", mon["moves"][row["move_index"]], 0)
+
+    elif kind == "mon_held_item":
+        mon = data["pokemon"][row["index"]]
+        current = mon.get("held_item")
+
+        held_items = []
+        for item_id, entry in getattr(stats, "ITEMS", {}).items():
+            if not isinstance(entry, dict):
+                continue
+            section = entry.get("section")
+            effect = entry.get("effect")
+            if section == "Held Items" or effect == "held":
+                display = entry.get("name") or item_id.replace("_", " ").title()
+                held_items.append((item_id, display))
+
+        held_items.sort(key=lambda x: x[1].lower())
+        items = [("NONE", "None")] + held_items
+
+        chosen = select_from_list(stdscr, items, "Select Held Item")
+        if chosen is None:
+            return
+        mon["held_item"] = None if chosen == "NONE" else chosen
+
+    elif kind == "mon_ability":
+        mon = data["pokemon"][row["index"]]
+        current = mon.get("ability")
+
+        abilities = []
+        abilities_dict = getattr(stats, "ABILITIES", {})
+        for ability_id, entry in abilities_dict.items():
+            if not isinstance(entry, dict):
+                continue
+            display = entry.get("name") or ability_id.replace("_", " ").title()
+            abilities.append((ability_id, display))
+
+        abilities.sort(key=lambda x: x[1].lower())
+        items = [("NONE", "None")] + abilities
+
+        chosen = select_from_list(stdscr, items, "Select Ability")
+        if chosen is None:
+            return
+        mon["ability"] = None if chosen == "NONE" else chosen
+
     elif kind == "item":
         row["bag"][row["item_name"]] = prompt_int(stdscr, "Item quantity", row["bag"].get(row["item_name"], 0), 0)
+
     elif kind == "clear_list":
         data[row["key"]] = []
         debug_message(stdscr, f"Cleared {row['label']}.")

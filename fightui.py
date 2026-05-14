@@ -228,13 +228,21 @@ def debug_battle_setup(stdscr, randomizer_mode="normal"):
     # Create player party
     player_party = []
     for mon_data in player_team_data:
-        mon = BattleMon(mon_data['mon'], mon_data['level'], mon_data['moves'], shiny=mon_data['shiny'])
+        mon = BattleMon(
+            mon_data['mon'],
+            mon_data['level'],
+            mon_data['moves'],
+            shiny=mon_data['shiny'],
+            ability=mon_data.get("ability"),
+            held_item=mon_data.get("held_item"),
+        )
         player_party.append(mon)
     
     if not player_party:
         textbox(stdscr, "No pokemon selected!")
         return
 
+    # Ensure enemy team also has ability/held_item passed through
     return debug_enemy_party_battle(stdscr, player_party, enemy_team_data, mode)
 
 
@@ -255,7 +263,9 @@ def debug_enemy_party_battle(stdscr, player_party, enemy_team_data, mode):
             enemy_data['mon'],
             enemy_data['level'],
             enemy_data['moves'],
-            shiny=enemy_data['shiny']
+            shiny=enemy_data['shiny'],
+            ability=enemy_data.get("ability"),
+            held_item=enemy_data.get("held_item"),
         )
 
         if i > 0:
@@ -269,11 +279,23 @@ def debug_enemy_party_battle(stdscr, player_party, enemy_team_data, mode):
 
 
 def random_debug_mon(level):
+    mon = random.choice(mons)
+    abilities = getattr(mon, "abilities", []) if hasattr(mon, "abilities") else []
+    held_items = getattr(mon, "held_items", []) if hasattr(mon, "held_items") else []
+    # held_items in pokedata is an array of {item, chance}; but mon.held_items in stats loads it as is.
+    # pick first held item if present for determinism in debug.
+    held_item = None
+    if isinstance(held_items, list) and held_items:
+        first = held_items[0]
+        if isinstance(first, dict) and "item" in first:
+            held_item = first.get("item")
     return {
-        'mon': random.choice(mons),
+        'mon': mon,
         'level': level() if callable(level) else level,
         'moves': [random.choice(moves_list) for _ in range(4)],
         'shiny': random.randint(1, 4096) == 1,
+        'ability': abilities[0] if abilities else None,
+        'held_item': held_item,
     }
 
 
@@ -287,8 +309,8 @@ def random_debug_teams(randomizer_mode):
 def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
     
     # Initialize team data structures
-    player_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False} for _ in range(6)]
-    enemy_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False} for _ in range(6)]
+    player_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False, 'ability': None, 'held_item': None} for _ in range(6)]
+    enemy_team = [{'mon': None, 'level': 50, 'moves': [None]*4, 'shiny': False, 'ability': None, 'held_item': None} for _ in range(6)]
     
     col = 0  # 0 for player, 1 for enemy
     team_idx = 0  # which pokemon in the team (0-5)
@@ -420,7 +442,18 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
                 pool = player_pool if col == 0 else cpu_pool
                 i = select_from_list_scroll(stdscr, pool, f"Select Pokemon for slot {team_idx+1}", show_type=True)
                 if i is not None:
-                    current_team[team_idx]['mon'] = pool.pop(i)
+                    chosen = pool.pop(i)
+                    current_team[team_idx]['mon'] = chosen
+                    # Default ability/held item from the chosen mon's stats definition
+                    abilities = getattr(chosen, "abilities", []) if hasattr(chosen, "abilities") else []
+                    held_items = getattr(chosen, "held_items", []) if hasattr(chosen, "held_items") else []
+                    held_item = None
+                    if isinstance(held_items, list) and held_items:
+                        first = held_items[0]
+                        if isinstance(first, dict) and "item" in first:
+                            held_item = first.get("item")
+                    current_team[team_idx]['ability'] = abilities[0] if abilities else None
+                    current_team[team_idx]['held_item'] = held_item
             
             elif row == 1:  # Select level
                 level = select_level(stdscr, current_team[team_idx]['level'])
@@ -744,6 +777,16 @@ def redraw_battle(stdscr, player, enemy, menu_pos=0):
     enemy_sprite.draw(stdscr, "back", "shiny" if enemy.shiny else "normal")
     player_sprite.draw(stdscr, "front", "shiny" if player.shiny else "normal")
     draw_header(stdscr, player, enemy)
+
+    # Ability boxes under each sprite
+    # Battle layout uses 80x24; sprites render around y=2..12 and x=2 / 53.
+    # We'll show ability starting at y=14 with small labels.
+    p_ability = ability_name(getattr(player, "ability", None))
+    e_ability = ability_name(getattr(enemy, "ability", None))
+
+    safe_addstr(stdscr, 14, 2, f"Ability: {p_ability}"[:38])
+    safe_addstr(stdscr, 14, 42, f"Ability: {e_ability}"[:38])
+
     stdscr.refresh()
 
 PHYSICAL_TYPES = ["normal", "fight", "poison", "ground", "flying", "bug", "rock", "ghost", "steel"]
@@ -1015,6 +1058,15 @@ def draw_header(stdscr, player, enemy):
     line = f"# {left:^35} ------ {right:^35} #"
     safe_addstr(stdscr, 0, 0, line, 14)
     draw_divider(stdscr, 1)
+
+def ability_name(ability_id):
+    if ability_id is None:
+        return "None"
+    # ability_id stored in mons is an id string like "blaze"
+    ability = getattr(stats, "ABILITIES", {}).get(ability_id, None) if hasattr(stats, "ABILITIES") else None
+    if isinstance(ability, dict) and ability.get("name"):
+        return ability["name"]
+    return str(ability_id)
 
 blocks = "▏▎▍▌▋▊▉█"
 def make_hp_bar(current, max_hp, length=10):
