@@ -1246,7 +1246,10 @@ def draw_party_panel(stdscr, selected_index=None, moving_index=None):
         if mon is None:
             display = f"{index+1}. --- EMPTY SLOT ---"
         else:
+            held_square = "■" if getattr(mon, "held_item", None) else " "
+            # put the marker near the start of the line
             display = mon.menu(hp_value, index + 1)
+            display = f"{held_square} {display}"
 
         marker = ">"
         if moving_index == index:
@@ -1392,15 +1395,215 @@ def bag_menu(stdscr, current_room_id=None):
             selected += 1
         elif key == ord("z") and entries:
             item_name, quantity = entries[selected]
+
+            # Use consumables (e.g. Potion) like normal "Use" items
+            item_data = getattr(stats, "ITEMS", {}).get(item_name)
+            if isinstance(item_data, dict) and item_data.get("effect") == "heal":
+                heal_amount = int(item_data.get("amount", 0) or 0)
+                if heal_amount <= 0:
+                    show_dialogue(stdscr, [f"{item_label(item_name)} can't be used."])
+                    continue
+
+                # pick which party mon to heal
+                target_selected = 0
+                while True:
+                    stdscr.clear()
+                    safe_addstr(stdscr, 0, 0, "SELECT POKÉMON (Use item)")
+                    safe_addstr(stdscr, 1, 0, "#" * min(w - 1, 50))
+
+                    party = get_party()
+                    for i, mon in enumerate(party):
+                        prefix = ">" if i == target_selected else " "
+                        if mon is None:
+                            text = f"{prefix} {i+1}. --- EMPTY ---"
+                        else:
+                            base_stats = getattr(stats, f"mon{mon.id}", None)
+                            # If we have hp storage info elsewhere, prefer it; otherwise heal is best-effort
+                            max_hp = int(((2 * base_stats.hp * mon.level) / 100) + mon.level + 10) if base_stats else 0
+                            text = f"{prefix} {i+1}. {mon.name}"
+                            if max_hp > 0:
+                                # best-effort: stored hp is not available here; keep it simple
+                                text += f" (heal +{heal_amount})"
+                        safe_addstr(stdscr, 3 + i, 0, text[:w - 1])
+
+                    safe_addstr(stdscr, 10, 0, "[UP/DOWN]  [Z] Confirm  [X] Back")
+                    stdscr.refresh()
+
+                    k = stdscr.getch()
+                    if k == curses.KEY_UP and target_selected > 0:
+                        target_selected -= 1
+                    elif k == curses.KEY_DOWN and target_selected < len(party) - 1:
+                        target_selected += 1
+                    elif k == ord("z"):
+                        mon = get_party()[target_selected]
+                        if mon is None:
+                            continue
+
+                        # heal best-effort: use hpstorage if present
+                        # overworld tracks hp in fightui.hpstorage via the active party view only
+                        try:
+                            idx = target_selected
+                            if 0 <= idx < len(hpstorage) and hpstorage[idx] != -1:
+                                base_stats = getattr(stats, f"mon{mon.id}", None)
+                                max_hp = int(((2 * base_stats.hp * mon.level) / 100) + mon.level + 10) if base_stats else 0
+                                hpstorage[idx] = min(max_hp, hpstorage[idx] + heal_amount) if max_hp > 0 else hpstorage[idx]
+                        except Exception:
+                            pass
+
+                        # consume item
+                        for bag_entry in inventory:
+                            if item_name in bag_entry:
+                                bag_entry[item_name] -= 1
+                                if bag_entry[item_name] <= 0:
+                                    del bag_entry[item_name]
+                                    if not bag_entry:
+                                        inventory.remove(bag_entry)
+                                break
+
+                        show_dialogue(stdscr, [f"{mon.name} healed {heal_amount} HP!"])
+                        break
+                    elif k == ord("x"):
+                        break
+
+                continue
+
+            # Sub-menu for held-item transfer
+            if item_name in getattr(stats, "ITEMS", {}):
+                while True:
+                    stdscr.clear()
+                    safe_addstr(stdscr, 0, 0, "BAG ITEM ACTION")
+                    safe_addstr(stdscr, 1, 0, "#" * min(w - 1, 50))
+                    safe_addstr(stdscr, 3, 0, f"Item: {item_label(item_name)} x{quantity}")
+                    safe_addstr(stdscr, 5, 0, "[Z] Give to Pokémon")
+                    safe_addstr(stdscr, 6, 0, "[X] Take from Pokémon")
+                    safe_addstr(stdscr, 7, 0, "[C] Cancel")
+
+                    stdscr.refresh()
+                    subkey = stdscr.getch()
+
+                    # Give from bag -> Pokémon
+                    if subkey == ord("z"):
+                        # Select Pokémon
+                        target_selected = 0
+                        while True:
+                            stdscr.clear()
+                            safe_addstr(stdscr, 0, 0, "SELECT POKÉMON (Give held item)")
+                            safe_addstr(stdscr, 1, 0, "#" * min(w - 1, 50))
+                            party = get_party()
+                            # display 6 slots
+                            for i, mon in enumerate(party):
+                                prefix = ">" if i == target_selected else " "
+                                if mon is None:
+                                    text = f"{prefix} {i+1}. --- EMPTY ---"
+                                else:
+                                    held = " ■" if getattr(mon, "held_item", None) else ""
+                                    text = f"{prefix} {i+1}. {mon.name}{held}"
+                                safe_addstr(stdscr, 3 + i, 0, text)
+                            safe_addstr(stdscr, 10, 0, "[UP/DOWN]  [Z] Confirm  [X] Back")
+                            stdscr.refresh()
+
+                            k = stdscr.getch()
+                            if k == curses.KEY_UP and target_selected > 0:
+                                target_selected -= 1
+                            elif k == curses.KEY_DOWN and target_selected < len(party) - 1:
+                                target_selected += 1
+                            elif k == ord("z"):
+                                mon = party[target_selected]
+                                if mon is None:
+                                    continue
+                                mon.held_item = item_name
+                                # spend from bag: remove one
+                                # decrement quantity in inventory
+                                for bag_entry in inventory:
+                                    if item_name in bag_entry:
+                                        bag_entry[item_name] -= 1
+                                        if bag_entry[item_name] <= 0:
+                                            del bag_entry[item_name]
+                                            # remove empty dicts
+                                            if not bag_entry:
+                                                inventory.remove(bag_entry)
+                                        break
+                                show_dialogue(stdscr, [f"{mon.name} is now holding {item_label(item_name)}!"])
+                                break
+                            elif k == ord("x"):
+                                break
+
+                        break  # exit sub-menu loop after give/take/cancel
+
+                    # Take from Pokémon -> bag
+                    elif subkey == ord("x"):
+                        target_selected = 0
+                        while True:
+                            stdscr.clear()
+                            safe_addstr(stdscr, 0, 0, "SELECT POKÉMON (Take held item)")
+                            safe_addstr(stdscr, 1, 0, "#" * min(w - 1, 50))
+                            party = get_party()
+                            for i, mon in enumerate(party):
+                                prefix = ">" if i == target_selected else " "
+                                if mon is None:
+                                    text = f"{prefix} {i+1}. --- EMPTY ---"
+                                else:
+                                    held = getattr(mon, "held_item", None)
+                                    held_txt = f" [{item_label(held)}]" if held else ""
+                                    text = f"{prefix} {i+1}. {mon.name}{held_txt}"
+                                safe_addstr(stdscr, 3 + i, 0, text)
+                            safe_addstr(stdscr, 10, 0, "[UP/DOWN]  [Z] Confirm  [X] Back")
+                            stdscr.refresh()
+
+                            k = stdscr.getch()
+                            if k == curses.KEY_UP and target_selected > 0:
+                                target_selected -= 1
+                            elif k == curses.KEY_DOWN and target_selected < len(party) - 1:
+                                target_selected += 1
+                            elif k == ord("z"):
+                                mon = party[target_selected]
+                                if mon is None:
+                                    continue
+                                held = getattr(mon, "held_item", None)
+                                if not held:
+                                    continue
+                                mon.held_item = None
+                                add_item(held, 1)
+                                show_dialogue(stdscr, [f"{mon.name} dropped {item_label(held)}!"])
+                                break
+                            elif k == ord("x"):
+                                break
+
+                        break  # exit sub-menu
+
+                    # Cancel
+                    elif subkey == ord("c"):
+                        break
+
+                    else:
+                        continue
+
+            # Keep existing special-case for map
             if item_name == "map":
                 show_map(stdscr, current_room_id)
-            # Add other usable items here
+
         elif key == ord("x"):
             return
 
 
-def shop_menu(stdscr):
-    items = list(stats.SHOP_ITEMS.items())
+def shop_menu(stdscr, sold_items=None):
+    """
+    sold_items: list[str] of item ids the shop sells.
+    If None, fall back to stats.SHOP_ITEMS.
+    """
+    if sold_items is None:
+        items = list(stats.SHOP_ITEMS.items())
+    else:
+        # Don't rely on stats.SHOP_ITEMS being pre-filtered.
+        # Use stats.ITEMS to fetch price for any item id the editor selected.
+        items = []
+        for item_id in sold_items:
+            price = 0
+            item = getattr(stats, "ITEMS", {}).get(item_id)
+            if isinstance(item, dict):
+                price = int(item.get("price", 0) or 0)
+            items.append((item_id, price))
+
     selected = 0
 
     while True:
@@ -1540,9 +1743,12 @@ def overworld(stdscr):
                     action = npc_action(npc)
                     trainer_id = npc_trainer_id(npc)
 
-                    if action == "SHOP":
+                    if action == "SHOP" or (isinstance(action, list) and len(action) >= 1 and action[0] == "SHOP"):
+                        sold_items = None
+                        if isinstance(action, list) and len(action) >= 2:
+                            sold_items = action[1]
                         show_dialogue(stdscr, npc_dialogue(npc))
-                        shop_menu(stdscr)
+                        shop_menu(stdscr, sold_items=sold_items)
                         break
 
                     elif isinstance(action, list) and len(action) >= 2 and action[0] == "GIVE_ITEM":

@@ -154,7 +154,6 @@ class Editor:
             new_map.spawn = tuple(m.get("spawn", (0, 0)))
 
             def to_set(v):
-                """Convert various formats to a set of tuples."""
                 if isinstance(v, set):
                     return set(tuple(x) if isinstance(x, (list, tuple)) else x for x in v)
                 if isinstance(v, list):
@@ -305,6 +304,27 @@ class Editor:
 
         self.action_entry = tk.Entry(self.npc_frame, width=25)
         self.action_entry.pack(pady=5)
+
+        # Shop editor (optional): only used when NPC action is "SHOP"
+        self.shop_items_frame = tk.Frame(self.npc_frame, bg="#222")
+        tk.Label(self.shop_items_frame, text="Shop Items (IDs)", fg="white", bg="#222").pack()
+
+        self.shop_items_listbox = tk.Listbox(
+            self.shop_items_frame,
+            selectmode=tk.MULTIPLE,
+            height=8,
+            exportselection=False,
+            bg="#111",
+            fg="white",
+            width=25
+        )
+        self.shop_items_listbox.pack(pady=5)
+
+        # Populate with item IDs once we have item_options loaded
+        for item_id in self.item_options:
+            self.shop_items_listbox.insert(tk.END, item_id)
+
+        self.shop_items_frame.pack_forget()
 
         self.save_dialog_btn = tk.Button(
             self.npc_frame,
@@ -730,16 +750,38 @@ class Editor:
             
             # Show action if it exists
             action = ""
+            shop_items = None
             if len(m.npcs[(y, x)]) >= 3:
                 action_value = m.npcs[(y, x)][2]
                 if action_value == "SHOP":
                     action = "SHOP"
+                elif isinstance(action_value, list) and len(action_value) >= 2 and action_value[0] == "SHOP":
+                    action = "SHOP"
+                    shop_items = action_value[1]
                 elif isinstance(action_value, int):
                     action = f"TRAINER_{action_value}"
                 else:
                     action = str(action_value)
+
             self.action_entry.delete(0, tk.END)
             self.action_entry.insert(0, action)
+
+            # Show/hide shop items listbox based on selected action
+            if action == "SHOP":
+                self.shop_items_frame.pack(pady=5)
+                # Clear listbox selection
+                self.shop_items_listbox.selection_clear(0, tk.END)
+
+                if shop_items is None:
+                    shop_items = []
+                shop_set = set(shop_items)
+
+                for idx in range(self.shop_items_listbox.size()):
+                    item_id = self.shop_items_listbox.get(idx)
+                    if item_id in shop_set:
+                        self.shop_items_listbox.selection_set(idx)
+            else:
+                self.shop_items_frame.pack_forget()
 
         elif (y, x) in m.hill_tiles:
             self.hill_frame.pack(pady=5)
@@ -794,7 +836,16 @@ class Editor:
             # Handle action
             action_str = self.action_entry.get().strip()
             if action_str == "SHOP":
-                npc_data = (sprite, text, "SHOP")
+                sold_items = []
+                # Grab multi-selected item ids from listbox
+                try:
+                    selected_indices = self.shop_items_listbox.curselection()
+                    for idx in selected_indices:
+                        sold_items.append(self.shop_items_listbox.get(idx))
+                except Exception:
+                    sold_items = []
+
+                npc_data = (sprite, text, ["SHOP", sold_items])
             elif action_str.startswith("TRAINER_"):
                 try:
                     trainer_id = int(action_str[8:])  # Remove "TRAINER_" prefix

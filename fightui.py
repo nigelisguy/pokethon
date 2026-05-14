@@ -660,7 +660,7 @@ def safe_addstr_raw(stdscr, y, x, text, attr=0):
 
 
 def draw_divider(stdscr, y):
-    h, w = stdscr.getmaxyx()#pls delete
+    h, w = stdscr.getmaxyx()
 
 def textbox(stdscr, text):
     h, w = stdscr.getmaxyx()
@@ -677,6 +677,67 @@ def textbox(stdscr, text):
     while True:
         if stdscr.getch() == ord("z"):
             break
+
+def item_name(item_id):
+    if item_id is None:
+        return "None"
+    items = getattr(stats, "ITEMS", {}) if hasattr(stats, "ITEMS") else {}
+    item = items.get(item_id)
+    if isinstance(item, dict) and item.get("name"):
+        return item["name"]
+    return str(item_id)
+
+def mons_effect_box(stdscr, mon, kind, message, specific_name=None):
+    h, w = stdscr.getmaxyx()
+    top = max(0, h - 12)  
+
+    mon_name = mon.base.name.capitalize()
+    header_label = specific_name if specific_name is not None else kind
+    title = f"{mon_name}'s {header_label}"
+    title = title[: w - 4] if w > 4 else title
+
+    safe_addstr(stdscr, top + 0, 0, "╔" + "═" * (w - 2) + "╗ ", 0)
+    safe_addstr(stdscr, top + 1, 0, "║" + " " * (w - 2) + "║", 0)
+    safe_addstr(stdscr, top + 2, 0, "╚" + "═" * (w - 2) + "╝", 0)
+
+    safe_addstr(stdscr, top + 1, 2, title, 0)
+    stdscr.refresh()
+    textbox(stdscr, message)
+
+def ability_trigger_message(mon):
+    ability_id = getattr(mon, "ability", None)
+    if ability_id == "mold_breaker":
+        return "breaks the mold!"
+    return None
+
+def item_trigger_message(mon):
+    item_id = getattr(mon, "held_item", None)
+    if item_id == "leftovers":
+        return "Recovered some HP with its LEFTOVERS!"
+    return None
+
+def apply_leftovers(stdscr, mon):
+    leftovers_id = getattr(mon, "held_item", None)
+    if leftovers_id != "leftovers":
+        return False
+
+    #heals 1/16 of max hp each turn, but does during enemy + player (buff)
+    heal = max(1, mon.max_hp // 16)
+    if mon.hp <= 0:
+        return False
+
+    if mon.hp >= mon.max_hp:
+        return False
+
+    mon.hp = min(mon.max_hp, mon.hp + heal)
+    mons_effect_box(
+        stdscr,
+        mon,
+        "Item",
+        "recovers some hp with its leftovers!",
+        specific_name=item_name(getattr(mon, "held_item", None))
+    )
+    return True
 
 def draw_pokeball_overlay(stdscr, start_y=2, start_x=49, shift=0, color=None):
     art = [
@@ -1493,6 +1554,16 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
 
                 textbox(stdscr, f"{user.base.name.capitalize()} used {move.name}!")
 
+                ability_msg = ability_trigger_message(user)
+                if ability_msg:
+                    mons_effect_box(
+                        stdscr,
+                        user,
+                        "Ability",
+                        ability_msg,
+                        specific_name=ability_name(getattr(user, "ability", None))
+                    )
+
                 if move.enefc in EFFECT_HANDLERS:
                     EFFECT_HANDLERS[move.enefc](stdscr, user, target)
 
@@ -1594,3 +1665,7 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
 
             status_effect_manager(stdscr, player)
             status_effect_manager(stdscr, enemy)
+
+            # Held item passive effects (Leftovers)
+            apply_leftovers(stdscr, player)
+            apply_leftovers(stdscr, enemy)
