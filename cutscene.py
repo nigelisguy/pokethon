@@ -303,6 +303,8 @@ def new_save_intro(stdscr):
         "exp": 0,
         "maxexp": 125,
         "shiny": shinytag,
+        "ability": overworld.default_mon_ability(starter_id),
+        "held_item": None,
     }
     data["pokemon"] = [starter_mon]
     data["pokedex"]["seen"] = [starter_id]

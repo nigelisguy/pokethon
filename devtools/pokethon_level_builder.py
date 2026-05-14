@@ -98,6 +98,7 @@ class Editor:
         self.root = root
 
         self.maps = self.load_maps()
+        self.item_options = self.load_item_options()
 
         self.current_map = next(iter(self.maps.keys()), "map1")
 
@@ -107,6 +108,7 @@ class Editor:
         self.redo = defaultdict(list)
 
         self.door_buffer = None
+        self.map_clipboard = None
         self.selected = None
         self.drag = False
 
@@ -115,6 +117,22 @@ class Editor:
 
         self.refresh_map_dropdown()
         self.draw()
+
+    def load_item_options(self):
+        json_path = os.path.join(PROJECT_ROOT, "data", "itemsdata.json")
+        fallback = ["potion", "pokeball", "fullheal", "hm_cut", "hm_swim", "map", "item"]
+
+        try:
+            with open(json_path, "r") as f:
+                items = json.load(f).get("items", {})
+        except (OSError, json.JSONDecodeError):
+            return fallback
+
+        if not isinstance(items, dict) or not items:
+            return fallback
+
+        return sorted(items.keys())
+
     def load_maps(self):
         import os
 
@@ -240,6 +258,8 @@ class Editor:
         self.map_select.bind("<<ComboboxSelected>>", self.on_map_select)
 
         tk.Button(self.bottom, text="New Map", command=self.new_map).pack(side=tk.LEFT, padx=5)
+        tk.Button(self.bottom, text="Copy Map", command=self.copy_map).pack(side=tk.LEFT, padx=5)
+        tk.Button(self.bottom, text="Paste Map", command=self.paste_map).pack(side=tk.LEFT, padx=5)
         tk.Button(self.bottom, text="Delete Map", command=self.delete_map).pack(side=tk.LEFT, padx=5)
 
         self.info = tk.Label(self.inspector, text="No selection", fg="white", bg="#222")
@@ -338,8 +358,13 @@ class Editor:
         self.legend_level.bind("<Return>", lambda e: self.save_legendary())
         tk.Label(self.item_frame, text="Item Editor", fg="white", bg="#222").pack(pady=5)
 
-        self.item_id = tk.Entry(self.item_frame)
-        self.item_id.insert(0, "potion")
+        self.item_var = tk.StringVar(value=self.item_options[0] if self.item_options else "item")
+        self.item_id = ttk.Combobox(
+            self.item_frame,
+            textvariable=self.item_var,
+            values=self.item_options,
+            width=22
+        )
         self.item_id.pack()
 
         self.item_qty = tk.Entry(self.item_frame)
@@ -352,6 +377,7 @@ class Editor:
             command=self.save_item
         )
         self.save_item_btn.pack(pady=5)
+        self.item_id.bind("<<ComboboxSelected>>", lambda e: self.save_item())
         self.item_id.bind("<Return>", lambda e: self.save_item())
         self.item_qty.bind("<Return>", lambda e: self.save_item())
     def build_canvas(self):
@@ -368,6 +394,10 @@ class Editor:
         self.canvas.bind("<Button-1>", self.click)
         self.canvas.bind("<B1-Motion>", self.drag_move)
         self.canvas.bind("<ButtonRelease-1>", self.release)
+        self.root.bind_all("<Control-c>", self.copy_map_event)
+        self.root.bind_all("<Control-v>", self.paste_map_event)
+        self.root.bind_all("<Command-c>", self.copy_map_event)
+        self.root.bind_all("<Command-v>", self.paste_map_event)
 
     def cur(self):
         return self.maps[self.current_map]
@@ -400,6 +430,108 @@ class Editor:
         self.refresh_map_dropdown()
         self.save_stats_file()
         self.draw()
+
+    def next_map_name(self, base_name):
+        if base_name not in self.maps:
+            return base_name
+
+        index = 2
+        while f"{base_name}{index}" in self.maps:
+            index += 1
+        return f"{base_name}{index}"
+
+    def copy_map_event(self, event):
+        widget = self.root.focus_get()
+        if isinstance(widget, (tk.Entry, tk.Text, ttk.Combobox)):
+            return
+        self.copy_map()
+        return "break"
+
+    def paste_map_event(self, event):
+        widget = self.root.focus_get()
+        if isinstance(widget, (tk.Entry, tk.Text, ttk.Combobox)):
+            return
+        self.paste_map()
+        return "break"
+
+    def copy_map(self):
+        if self.current_map not in self.maps:
+            return
+
+        source_name = self.current_map
+        self.map_clipboard = (source_name, copy.deepcopy(self.cur()))
+
+        try:
+            payload = json.dumps({source_name: self.serialize()[source_name]}, indent=2)
+            self.root.clipboard_clear()
+            self.root.clipboard_append(payload)
+        except tk.TclError:
+            pass
+
+        print(f"Copied map {source_name}")
+
+    def paste_map(self):
+        if self.map_clipboard is not None:
+            source_name, source_map = self.map_clipboard
+            new_name = self.next_map_name(f"{source_name}_copy")
+            self.maps[new_name] = copy.deepcopy(source_map)
+        else:
+            try:
+                clipboard_text = self.root.clipboard_get()
+                data = json.loads(clipboard_text)
+                source_name, source_data = next(iter(data.items()))
+                new_name = self.next_map_name(f"{source_name}_copy")
+                self.maps[new_name] = self.map_from_dict(source_data)
+            except (tk.TclError, json.JSONDecodeError, StopIteration, AttributeError, TypeError, ValueError) as e:
+                print("Clipboard does not contain a copied map:", e)
+                return
+
+        self.current_map = new_name
+        self.selected = None
+        self.undo[new_name].clear()
+        self.redo[new_name].clear()
+        self.refresh_map_dropdown()
+        self.save_stats_file()
+        self.draw()
+        print(f"Pasted map as {new_name}")
+
+    def map_from_dict(self, data):
+        new_map = MapData(data.get("width", 20), data.get("height", 10))
+        new_map.spawn = tuple(data.get("spawn", (0, 0)))
+
+        def to_set(v):
+            if isinstance(v, set):
+                return set(tuple(x) for x in v)
+            if isinstance(v, list):
+                return set(tuple(x) for x in v if x)
+            return set()
+
+        def to_dict(v):
+            if not v:
+                return {}
+            if isinstance(v, dict):
+                result = {}
+                for key, value in v.items():
+                    if isinstance(key, str) and "," in key:
+                        result[tuple(map(int, key.split(",")))] = value
+                    elif isinstance(key, (list, tuple)):
+                        result[tuple(key)] = value
+                return result
+            return {}
+
+        new_map.grass_tiles = to_set(data.get("grass_tiles", []))
+        new_map.water_tiles = to_set(data.get("water_tiles", []))
+        new_map.tree_tiles = to_set(data.get("trees", []))
+        new_map.cut_trees = to_set(data.get("cut_trees", []))
+        new_map.ice_tiles = to_set(data.get("ice_tiles", []))
+        new_map.hill_tiles = to_dict(data.get("hill_tiles", {}))
+        new_map.npcs = to_dict(data.get("npcs", {}))
+        new_map.items = to_dict(data.get("items", {}))
+        new_map.legendary_mons = to_dict(data.get("legendary_mons", {}))
+        new_map.block_tiles = to_dict(data.get("block_tiles", {}))
+        new_map.doors = to_dict(data.get("doors", {}))
+        new_map.doors = {key: tuple(value) for key, value in new_map.doors.items()}
+        return new_map
 
     def pos(self, e):
         return e.y // TILE_SIZE, e.x // TILE_SIZE
@@ -467,7 +599,8 @@ class Editor:
             m.npcs[(y, x)] = ("☺", ["hello", "..."])
 
         elif mode == "item":
-            m.items[(y, x)] = ("item", 1)
+            item_id = self.item_var.get().strip() if hasattr(self, "item_var") else "item"
+            m.items[(y, x)] = (item_id or "item", 1)
 
         elif mode == "legendary":
             m.legendary_mons[(y, x)] = {
@@ -628,8 +761,12 @@ class Editor:
             self.item_frame.pack(pady=5)
 
             data = m.items[(y, x)]
-            self.item_id.delete(0, tk.END)
-            self.item_id.insert(0, data[0])
+            item_id = data[0]
+            if item_id and item_id not in self.item_options:
+                self.item_options.append(item_id)
+                self.item_options.sort()
+                self.item_id["values"] = self.item_options
+            self.item_var.set(item_id)
 
             self.item_qty.delete(0, tk.END)
             self.item_qty.insert(0, str(data[1]))
@@ -714,10 +851,16 @@ class Editor:
         y, x = self.selected
 
         if (y, x) in m.items:
+            try:
+                quantity = max(1, int(self.item_qty.get()))
+            except ValueError:
+                quantity = 1
+
             m.items[(y, x)] = (
-                self.item_id.get(),
-                int(self.item_qty.get())
+                self.item_var.get().strip() or "item",
+                quantity
             )
+            self.save_stats_file()
 
         self.draw()
 

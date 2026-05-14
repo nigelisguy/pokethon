@@ -19,6 +19,9 @@ class Mon:
         mon_id=None,
         base_exp=0,
         description="No Pokédex description available.",
+        abilities=None,
+        hidden_ability=None,
+        held_items=None,
     ):
         self.id = mon_id
         self.base_exp = base_exp
@@ -33,6 +36,9 @@ class Mon:
         self.spd = spd
         self.description = description
         self.desc = description
+        self.abilities = abilities or []
+        self.hidden_ability = hidden_ability
+        self.held_items = held_items or []
 
     def call(self):
         return f"{self.name}"
@@ -123,6 +129,8 @@ POKEMON_CENTER_ROOM_ID = "map1"
 POKEMON_CENTER_PLAYER_POS = (3, 6)
 POKEMON_CENTER_NURSE_POS = (2, 6)
 SHOP_ITEMS = {}
+ITEMS = {}
+ABILITIES = {}
 TRAINER_REWARDS = {}
 MAP_ROOMS = {}
 
@@ -142,7 +150,10 @@ try:
             p.get("hp", 0), p.get("at", 0), p.get("de", 0),
             p.get("sp_at", 0), p.get("sp_de", 0), p.get("spd", 0),
             mon_id=_id, base_exp=p.get("base_exp", 0),
-            description=p.get("description", p.get("desc", "No Pokédex description available."))
+            description=p.get("description", p.get("desc", "No Pokédex description available.")),
+            abilities=p.get("abilities", []),
+            hidden_ability=p.get("hidden_ability"),
+            held_items=p.get("held_items", []),
         )
 except Exception:
     pass
@@ -233,7 +244,22 @@ try:
     with open(_DATA_DIR / "itemsdata.json", "r") as f:
         _idata = json.load(f).get("items", {})
     if isinstance(_idata, dict):
-        SHOP_ITEMS.update(_idata)
+        ITEMS.update(_idata)
+        for item_id, entry in _idata.items():
+            if isinstance(entry, dict):
+                if entry.get("shop", False):
+                    SHOP_ITEMS[item_id] = entry.get("price", 0)
+            else:
+                SHOP_ITEMS[item_id] = entry
+except Exception:
+    pass
+
+# Load ability definitions from ability.json
+try:
+    with open(_DATA_DIR / "ability.json", "r") as f:
+        _abilities = json.load(f).get("abilities", {})
+    if isinstance(_abilities, dict):
+        ABILITIES.update(_abilities)
 except Exception:
     pass
 

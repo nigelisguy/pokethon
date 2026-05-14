@@ -3,8 +3,8 @@
         "textspeed": 0.01
     },
     "player": {
-        "name": "ts",
-        "rival": "jonathan"
+        "name": "Jeff",
+        "rival": "Malfoy"
     },
     "location": {
         "room_id": "map1",
@@ -13,7 +13,7 @@
     },
     "pokedex": {
         "seen": [
-            1
+            4
         ],
         "caught": [],
         "seen_shiny": [],
@@ -22,8 +22,8 @@
     "pokemon": [
         {
             "rotation": 1,
-            "id": 1,
-            "name": "Bulbasaur",
+            "id": 4,
+            "name": "Charmander",
             "moves": [
                 340
             ],

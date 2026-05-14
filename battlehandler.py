@@ -32,7 +32,23 @@ def get_trainer_def(trainer_id):
         }
     return trainer
 
-def create_mon(mon_id, level, move_ids, hp=None, enemytype=None, shiny=False):
+def default_ability(mon_id):
+    stat_block = getattr(stats, f"mon{mon_id}")
+    abilities = getattr(stat_block, "abilities", [])
+    return abilities[0] if abilities else None
+
+def random_held_item(mon_id):
+    stat_block = getattr(stats, f"mon{mon_id}")
+    for entry in getattr(stat_block, "held_items", []):
+        if not isinstance(entry, dict):
+            continue
+        item_id = entry.get("item")
+        chance = int(entry.get("chance", 0))
+        if item_id and chance > 0 and random.randint(1, 100) <= chance:
+            return item_id
+    return None
+
+def create_mon(mon_id, level, move_ids, hp=None, enemytype=None, shiny=False, ability=None, held_item=None):
     stat_block = getattr(stats, f"mon{mon_id}")
     move_list = []
     for move_id in move_ids:
@@ -44,7 +60,13 @@ def create_mon(mon_id, level, move_ids, hp=None, enemytype=None, shiny=False):
         if move_id > 0 and hasattr(stats, f"move{move_id}"):
             move_list.append(getattr(stats, f"move{move_id}"))
 
-    mon = fightui.BattleMon(stat_block, level, move_list, hp, shiny)
+    if ability is None:
+        ability = default_ability(mon_id)
+
+    if held_item is None and enemytype in ("wild", "legendary"):
+        held_item = random_held_item(mon_id)
+
+    mon = fightui.BattleMon(stat_block, level, move_list, hp, shiny, ability, held_item)
 
     mon.mon_id = mon_id
     mon.move_ids = list(move_ids)
@@ -140,7 +162,9 @@ def to_battle_party():
             move_ids=mon.moves,
             hp=hp,
             enemytype="player",
-            shiny=getattr(mon, "shiny", False)
+            shiny=getattr(mon, "shiny", False),
+            ability=getattr(mon, "ability", None),
+            held_item=getattr(mon, "held_item", None)
         )
         battle_mon.party_index = i
         party.append(battle_mon)

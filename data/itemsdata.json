@@ -1,3 +1,141 @@
 {
-  "items": {}
+  "items": {
+    "potion": {
+      "name": "Potion",
+      "price": 300,
+      "shop": true,
+      "section": "Recover",
+      "description": "Restores 20 HP to one Pokemon during battle.",
+      "effect": "heal",
+      "amount": 20
+    },
+    "pokeball": {
+      "name": "Pokeball",
+      "price": 200,
+      "shop": true,
+      "section": "Pokeballs",
+      "description": "A ball used to catch wild Pokemon.",
+      "effect": "catch"
+    },
+    "fullheal": {
+      "name": "Full Heal",
+      "price": 600,
+      "shop": true,
+      "section": "Recover",
+      "description": "Clears all status conditions from one Pokemon.",
+      "effect": "status_heal"
+    },
+    "hm_cut": {
+      "name": "HM Cut",
+      "price": 0,
+      "shop": false,
+      "section": "Key Items",
+      "description": "Lets any Pokemon with sharp claws cut down small trees in the overworld.",
+      "effect": "field_cut"
+    },
+    "hm_swim": {
+      "name": "HM Swim",
+      "price": 0,
+      "shop": false,
+      "section": "Key Items",
+      "description": "Lets the player walk across water.",
+      "effect": "field_swim"
+    },
+    "map": {
+      "name": "Map",
+      "price": 0,
+      "shop": false,
+      "section": "Key Items",
+      "description": "A map of the region.",
+      "effect": "map"
+    },
+    "item": {
+      "name": "Item",
+      "price": 0,
+      "shop": false,
+      "section": "Other",
+      "description": "A placeholder item.",
+      "effect": "none"
+    },
+    "light_ball": {
+      "name": "Light Ball",
+      "price": 1000,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item associated with Pikachu.",
+      "effect": "held"
+    },
+    "tiny_mushroom": {
+      "name": "Tiny Mushroom",
+      "price": 250,
+      "shop": false,
+      "section": "Other",
+      "description": "A small mushroom that can be sold cheaply.",
+      "effect": "sell"
+    },
+    "big_mushroom": {
+      "name": "Big Mushroom",
+      "price": 2500,
+      "shop": false,
+      "section": "Other",
+      "description": "A large mushroom that can be sold for a good price.",
+      "effect": "sell"
+    },
+    "thick_club": {
+      "name": "Thick Club",
+      "price": 500,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item associated with Cubone and Marowak.",
+      "effect": "held"
+    },
+    "lucky_egg": {
+      "name": "Lucky Egg",
+      "price": 5000,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item said to boost gained experience.",
+      "effect": "held"
+    },
+    "stick": {
+      "name": "Stick",
+      "price": 200,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item associated with Farfetchd.",
+      "effect": "held"
+    },
+    "leftovers": {
+      "name": "Leftovers",
+      "price": 4000,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item said to restore a little HP over time.",
+      "effect": "held"
+    },
+    "miracle_seed": {
+      "name": "Miracle Seed",
+      "price": 100,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item that suits Grass-type Pokemon.",
+      "effect": "held"
+    },
+    "charcoal": {
+      "name": "Charcoal",
+      "price": 100,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item that suits Fire-type Pokemon.",
+      "effect": "held"
+    },
+    "mystic_water": {
+      "name": "Mystic Water",
+      "price": 100,
+      "shop": false,
+      "section": "Held Items",
+      "description": "A held item that suits Water-type Pokemon.",
+      "effect": "held"
+    }
+  }
 }

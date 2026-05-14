@@ -12,7 +12,12 @@
       "sp_de": 65,
       "spd": 45,
       "base_exp": 64,
-      "description": "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun's rays, the seed grows progressively larger."
+      "description": "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun's rays, the seed grows progressively larger.",
+      "abilities": [
+        "overgrow"
+      ],
+      "held_items": [],
+      "hidden_ability": "chlorophyll"
     },
     {
       "id": 2,
@@ -25,7 +30,12 @@
       "sp_at": 80,
       "sp_de": 80,
       "spd": 60,
-      "base_exp": 142
+      "base_exp": 142,
+      "abilities": [
+        "overgrow"
+      ],
+      "held_items": [],
+      "hidden_ability": "chlorophyll"
     },
     {
       "id": 3,
@@ -38,7 +48,12 @@
       "sp_at": 100,
       "sp_de": 100,
       "spd": 80,
-      "base_exp": 236
+      "base_exp": 236,
+      "abilities": [
+        "overgrow"
+      ],
+      "held_items": [],
+      "hidden_ability": "chlorophyll"
     },
     {
       "id": 4,
@@ -51,7 +66,12 @@
       "sp_at": 60,
       "sp_de": 50,
       "spd": 65,
-      "base_exp": 62
+      "base_exp": 62,
+      "abilities": [
+        "blaze"
+      ],
+      "held_items": [],
+      "hidden_ability": "solar_power"
     },
     {
       "id": 5,
@@ -64,7 +84,12 @@
       "sp_at": 80,
       "sp_de": 65,
       "spd": 80,
-      "base_exp": 142
+      "base_exp": 142,
+      "abilities": [
+        "blaze"
+      ],
+      "held_items": [],
+      "hidden_ability": "solar_power"
     },
     {
       "id": 6,
@@ -77,7 +102,12 @@
       "sp_at": 109,
       "sp_de": 85,
       "spd": 100,
-      "base_exp": 240
+      "base_exp": 240,
+      "abilities": [
+        "blaze"
+      ],
+      "held_items": [],
+      "hidden_ability": "solar_power"
     },
     {
       "id": 7,
@@ -90,7 +120,12 @@
       "sp_at": 50,
       "sp_de": 64,
       "spd": 43,
-      "base_exp": 63
+      "base_exp": 63,
+      "abilities": [
+        "torrent"
+      ],
+      "held_items": [],
+      "hidden_ability": "rain_dish"
     },
     {
       "id": 8,
@@ -103,7 +138,12 @@
       "sp_at": 65,
       "sp_de": 80,
       "spd": 58,
-      "base_exp": 142
+      "base_exp": 142,
+      "abilities": [
+        "torrent"
+      ],
+      "held_items": [],
+      "hidden_ability": "rain_dish"
     },
     {
       "id": 9,
@@ -116,7 +156,12 @@
       "sp_at": 85,
       "sp_de": 105,
       "spd": 78,
-      "base_exp": 239
+      "base_exp": 239,
+      "abilities": [
+        "torrent"
+      ],
+      "held_items": [],
+      "hidden_ability": "rain_dish"
     },
     {
       "id": 10,
@@ -129,7 +174,12 @@
       "sp_at": 20,
       "sp_de": 20,
       "spd": 45,
-      "base_exp": 39
+      "base_exp": 39,
+      "abilities": [
+        "shield_dust"
+      ],
+      "held_items": [],
+      "hidden_ability": "run_away"
     },
     {
       "id": 11,
@@ -142,7 +192,11 @@
       "sp_at": 25,
       "sp_de": 25,
       "spd": 30,
-      "base_exp": 72
+      "base_exp": 72,
+      "abilities": [
+        "shed_skin"
+      ],
+      "held_items": []
     },
     {
       "id": 12,
@@ -155,7 +209,12 @@
       "sp_at": 90,
       "sp_de": 80,
       "spd": 70,
-      "base_exp": 178
+      "base_exp": 178,
+      "abilities": [
+        "compound_eyes"
+      ],
+      "held_items": [],
+      "hidden_ability": "tinted_lens"
     },
     {
       "id": 13,
@@ -168,7 +227,12 @@
       "sp_at": 20,
       "sp_de": 20,
       "spd": 50,
-      "base_exp": 39
+      "base_exp": 39,
+      "abilities": [
+        "shield_dust"
+      ],
+      "held_items": [],
+      "hidden_ability": "run_away"
     },
     {
       "id": 14,
@@ -181,7 +245,11 @@
       "sp_at": 25,
       "sp_de": 25,
       "spd": 35,
-      "base_exp": 72
+      "base_exp": 72,
+      "abilities": [
+        "shed_skin"
+      ],
+      "held_items": []
     },
     {
       "id": 15,
@@ -194,7 +262,12 @@
       "sp_at": 45,
       "sp_de": 80,
       "spd": 75,
-      "base_exp": 178
+      "base_exp": 178,
+      "abilities": [
+        "swarm"
+      ],
+      "held_items": [],
+      "hidden_ability": "sniper"
     },
     {
       "id": 16,
@@ -207,7 +280,13 @@
       "sp_at": 35,
       "sp_de": 35,
       "spd": 56,
-      "base_exp": 50
+      "base_exp": 50,
+      "abilities": [
+        "keen_eye",
+        "tangled_feet"
+      ],
+      "hidden_ability": "big_pecks",
+      "held_items": []
     },
     {
       "id": 17,
@@ -220,7 +299,13 @@
       "sp_at": 50,
       "sp_de": 50,
       "spd": 71,
-      "base_exp": 122
+      "base_exp": 122,
+      "abilities": [
+        "keen_eye",
+        "tangled_feet"
+      ],
+      "hidden_ability": "big_pecks",
+      "held_items": []
     },
     {
       "id": 18,
@@ -233,7 +318,13 @@
       "sp_at": 70,
       "sp_de": 70,
       "spd": 101,
-      "base_exp": 216
+      "base_exp": 216,
+      "abilities": [
+        "keen_eye",
+        "tangled_feet"
+      ],
+      "hidden_ability": "big_pecks",
+      "held_items": []
     },
     {
       "id": 19,
@@ -246,7 +337,13 @@
       "sp_at": 25,
       "sp_de": 35,
       "spd": 72,
-      "base_exp": 51
+      "base_exp": 51,
+      "abilities": [
+        "run_away",
+        "guts"
+      ],
+      "hidden_ability": "hustle",
+      "held_items": []
     },
     {
       "id": 20,
@@ -259,7 +356,13 @@
       "sp_at": 50,
       "sp_de": 70,
       "spd": 97,
-      "base_exp": 145
+      "base_exp": 145,
+      "abilities": [
+        "run_away",
+        "guts"
+      ],
+      "hidden_ability": "hustle",
+      "held_items": []
     },
     {
       "id": 21,
@@ -272,7 +375,12 @@
       "sp_at": 31,
       "sp_de": 31,
       "spd": 70,
-      "base_exp": 52
+      "base_exp": 52,
+      "abilities": [
+        "keen_eye"
+      ],
+      "held_items": [],
+      "hidden_ability": "sniper"
     },
     {
       "id": 22,
@@ -285,7 +393,12 @@
       "sp_at": 61,
       "sp_de": 61,
       "spd": 100,
-      "base_exp": 155
+      "base_exp": 155,
+      "abilities": [
+        "keen_eye"
+      ],
+      "held_items": [],
+      "hidden_ability": "sniper"
     },
     {
       "id": 23,
@@ -298,7 +411,13 @@
       "sp_at": 40,
       "sp_de": 54,
       "spd": 55,
-      "base_exp": 58
+      "base_exp": 58,
+      "abilities": [
+        "intimidate",
+        "shed_skin"
+      ],
+      "hidden_ability": "unnerve",
+      "held_items": []
     },
     {
       "id": 24,
@@ -311,7 +430,13 @@
       "sp_at": 65,
       "sp_de": 79,
       "spd": 80,
-      "base_exp": 157
+      "base_exp": 157,
+      "abilities": [
+        "intimidate",
+        "shed_skin"
+      ],
+      "hidden_ability": "unnerve",
+      "held_items": []
     },
     {
       "id": 25,
@@ -324,7 +449,17 @@
       "sp_at": 50,
       "sp_de": 50,
       "spd": 90,
-      "base_exp": 112
+      "base_exp": 112,
+      "abilities": [
+        "static"
+      ],
+      "held_items": [
+        {
+          "item": "light_ball",
+          "chance": 5
+        }
+      ],
+      "hidden_ability": "lightning_rod"
     },
     {
       "id": 26,
@@ -337,7 +472,12 @@
       "sp_at": 90,
       "sp_de": 80,
       "spd": 110,
-      "base_exp": 218
+      "base_exp": 218,
+      "abilities": [
+        "static"
+      ],
+      "held_items": [],
+      "hidden_ability": "lightning_rod"
     },
     {
       "id": 27,
@@ -350,7 +490,12 @@
       "sp_at": 20,
       "sp_de": 30,
       "spd": 40,
-      "base_exp": 60
+      "base_exp": 60,
+      "abilities": [
+        "sand_veil"
+      ],
+      "held_items": [],
+      "hidden_ability": "sand_rush"
     },
     {
       "id": 28,
@@ -363,7 +508,12 @@
       "sp_at": 45,
       "sp_de": 55,
       "spd": 65,
-      "base_exp": 158
+      "base_exp": 158,
+      "abilities": [
+        "sand_veil"
+      ],
+      "held_items": [],
+      "hidden_ability": "sand_rush"
     },
     {
       "id": 29,
@@ -376,7 +526,13 @@
       "sp_at": 40,
       "sp_de": 40,
       "spd": 41,
-      "base_exp": 55
+      "base_exp": 55,
+      "abilities": [
+        "poison_point",
+        "rivalry"
+      ],
+      "hidden_ability": "hustle",
+      "held_items": []
     },
     {
       "id": 30,
@@ -389,7 +545,13 @@
       "sp_at": 55,
       "sp_de": 55,
       "spd": 56,
-      "base_exp": 128
+      "base_exp": 128,
+      "abilities": [
+        "poison_point",
+        "rivalry"
+      ],
+      "hidden_ability": "hustle",
+      "held_items": []
     },
     {
       "id": 31,
@@ -402,7 +564,13 @@
       "sp_at": 75,
       "sp_de": 85,
       "spd": 76,
-      "base_exp": 227
+      "base_exp": 227,
+      "abilities": [
+        "poison_point",
+        "rivalry"
+      ],
+      "hidden_ability": "sheer_force",
+      "held_items": []
     },
     {
       "id": 32,
@@ -415,7 +583,13 @@
       "sp_at": 40,
       "sp_de": 40,
       "spd": 50,
-      "base_exp": 55
+      "base_exp": 55,
+      "abilities": [
+        "poison_point",
+        "rivalry"
+      ],
+      "hidden_ability": "hustle",
+      "held_items": []
     },
     {
       "id": 33,
@@ -428,7 +602,13 @@
       "sp_at": 55,
       "sp_de": 55,
       "spd": 65,
-      "base_exp": 128
+      "base_exp": 128,
+      "abilities": [
+        "poison_point",
+        "rivalry"
+      ],
+      "hidden_ability": "hustle",
+      "held_items": []
     },
     {
       "id": 34,
@@ -441,7 +621,13 @@
       "sp_at": 85,
       "sp_de": 75,
       "spd": 85,
-      "base_exp": 227
+      "base_exp": 227,
+      "abilities": [
+        "poison_point",
+        "rivalry"
+      ],
+      "hidden_ability": "sheer_force",
+      "held_items": []
     },
     {
       "id": 35,
@@ -454,7 +640,13 @@
       "sp_at": 60,
       "sp_de": 65,
       "spd": 35,
-      "base_exp": 113
+      "base_exp": 113,
+      "abilities": [
+        "cute_charm",
+        "magic_guard"
+      ],
+      "hidden_ability": "friend_guard",
+      "held_items": []
     },
     {
       "id": 36,
@@ -467,7 +659,13 @@
       "sp_at": 95,
       "sp_de": 90,
       "spd": 60,
-      "base_exp": 217
+      "base_exp": 217,
+      "abilities": [
+        "cute_charm",
+        "magic_guard"
+      ],
+      "hidden_ability": "unaware",
+      "held_items": []
     },
     {
       "id": 37,
@@ -480,7 +678,12 @@
       "sp_at": 50,
       "sp_de": 65,
       "spd": 65,
-      "base_exp": 60
+      "base_exp": 60,
+      "abilities": [
+        "flash_fire"
+      ],
+      "held_items": [],
+      "hidden_ability": "drought"
     },
     {
       "id": 38,
@@ -493,7 +696,12 @@
       "sp_at": 81,
       "sp_de": 100,
       "spd": 100,
-      "base_exp": 177
+      "base_exp": 177,
+      "abilities": [
+        "flash_fire"
+      ],
+      "held_items": [],
+      "hidden_ability": "drought"
     },
     {
       "id": 39,
@@ -506,7 +714,13 @@
       "sp_at": 45,
       "sp_de": 25,
       "spd": 20,
-      "base_exp": 95
+      "base_exp": 95,
+      "abilities": [
+        "cute_charm",
+        "competitive"
+      ],
+      "hidden_ability": "friend_guard",
+      "held_items": []
     },
     {
       "id": 40,
@@ -519,7 +733,13 @@
       "sp_at": 85,
       "sp_de": 50,
       "spd": 45,
-      "base_exp": 196
+      "base_exp": 196,
+      "abilities": [
+        "cute_charm",
+        "competitive"
+      ],
+      "hidden_ability": "frisk",
+      "held_items": []
     },
     {
       "id": 41,
@@ -532,7 +752,12 @@
       "sp_at": 30,
       "sp_de": 40,
       "spd": 55,
-      "base_exp": 49
+      "base_exp": 49,
+      "abilities": [
+        "inner_focus"
+      ],
+      "held_items": [],
+      "hidden_ability": "infiltrator"
     },
     {
       "id": 42,
@@ -545,7 +770,12 @@
       "sp_at": 65,
       "sp_de": 75,
       "spd": 90,
-      "base_exp": 159
+      "base_exp": 159,
+      "abilities": [
+        "inner_focus"
+      ],
+      "held_items": [],
+      "hidden_ability": "infiltrator"
     },
     {
       "id": 43,
@@ -558,7 +788,12 @@
       "sp_at": 75,
       "sp_de": 65,
       "spd": 30,
-      "base_exp": 64
+      "base_exp": 64,
+      "abilities": [
+        "chlorophyll"
+      ],
+      "held_items": [],
+      "hidden_ability": "run_away"
     },
     {
       "id": 44,
@@ -571,7 +806,12 @@
       "sp_at": 85,
       "sp_de": 75,
       "spd": 40,
-      "base_exp": 138
+      "base_exp": 138,
+      "abilities": [
+        "chlorophyll"
+      ],
+      "held_items": [],
+      "hidden_ability": "stench"
     },
     {
       "id": 45,
@@ -584,7 +824,12 @@
       "sp_at": 110,
       "sp_de": 90,
       "spd": 50,
-      "base_exp": 221
+      "base_exp": 221,
+      "abilities": [
+        "chlorophyll"
+      ],
+      "held_items": [],
+      "hidden_ability": "effect_spore"
     },
     {
       "id": 46,
@@ -597,7 +842,22 @@
       "sp_at": 45,
       "sp_de": 55,
       "spd": 25,
-      "base_exp": 57
+      "base_exp": 57,
+      "abilities": [
+        "effect_spore",
+        "dry_skin"
+      ],
+      "hidden_ability": "damp",
+      "held_items": [
+        {
+          "item": "tiny_mushroom",
+          "chance": 50
+        },
+        {
+          "item": "big_mushroom",
+          "chance": 5
+        }
+      ]
     },
     {
       "id": 47,
@@ -610,7 +870,22 @@
       "sp_at": 60,
       "sp_de": 80,
       "spd": 30,
-      "base_exp": 142
+      "base_exp": 142,
+      "abilities": [
+        "effect_spore",
+        "dry_skin"
+      ],
+      "hidden_ability": "damp",
+      "held_items": [
+        {
+          "item": "tiny_mushroom",
+          "chance": 50
+        },
+        {
+          "item": "big_mushroom",
+          "chance": 5
+        }
+      ]
     },
     {
       "id": 48,
@@ -623,7 +898,13 @@
       "sp_at": 40,
       "sp_de": 55,
       "spd": 45,
-      "base_exp": 61
+      "base_exp": 61,
+      "abilities": [
+        "compound_eyes",
+        "tinted_lens"
+      ],
+      "hidden_ability": "run_away",
+      "held_items": []
     },
     {
       "id": 49,
@@ -636,7 +917,13 @@
       "sp_at": 90,
       "sp_de": 75,
       "spd": 90,
-      "base_exp": 158
+      "base_exp": 158,
+      "abilities": [
+        "shield_dust",
+        "tinted_lens"
+      ],
+      "hidden_ability": "wonder_skin",
+      "held_items": []
     },
     {
       "id": 50,
@@ -649,7 +936,13 @@
       "sp_at": 35,
       "sp_de": 45,
       "spd": 95,
-      "base_exp": 53
+      "base_exp": 53,
+      "abilities": [
+        "sand_veil",
+        "arena_trap"
+      ],
+      "hidden_ability": "sand_force",
+      "held_items": []
     },
     {
       "id": 51,
@@ -662,7 +955,13 @@
       "sp_at": 50,
       "sp_de": 70,
       "spd": 120,
-      "base_exp": 149
+      "base_exp": 149,
+      "abilities": [
+        "sand_veil",
+        "arena_trap"
+      ],
+      "hidden_ability": "sand_force",
+      "held_items": []
     },
     {
       "id": 52,
@@ -675,7 +974,13 @@
       "sp_at": 40,
       "sp_de": 40,
       "spd": 90,
-      "base_exp": 58
+      "base_exp": 58,
+      "abilities": [
+        "pickup",
+        "technician"
+      ],
+      "hidden_ability": "unnerve",
+      "held_items": []
     },
     {
       "id": 53,
@@ -688,7 +993,13 @@
       "sp_at": 65,
       "sp_de": 65,
       "spd": 115,
-      "base_exp": 154
+      "base_exp": 154,
+      "abilities": [
+        "limber",
+        "technician"
+      ],
+      "hidden_ability": "unnerve",
+      "held_items": []
     },
     {
       "id": 54,
@@ -701,7 +1012,13 @@
       "sp_at": 65,
       "sp_de": 50,
       "spd": 55,
-      "base_exp": 64
+      "base_exp": 64,
+      "abilities": [
+        "damp",
+        "cloud_nine"
+      ],
+      "hidden_ability": "swift_swim",
+      "held_items": []
     },
     {
       "id": 55,
@@ -714,7 +1031,13 @@
       "sp_at": 95,
       "sp_de": 80,
       "spd": 85,
-      "base_exp": 175
+      "base_exp": 175,
+      "abilities": [
+        "damp",
+        "cloud_nine"
+      ],
+      "hidden_ability": "swift_swim",
+      "held_items": []
     },
     {
       "id": 56,
@@ -727,7 +1050,13 @@
       "sp_at": 35,
       "sp_de": 45,
       "spd": 70,
-      "base_exp": 61
+      "base_exp": 61,
+      "abilities": [
+        "vital_spirit",
+        "anger_point"
+      ],
+      "hidden_ability": "defiant",
+      "held_items": []
     },
     {
       "id": 57,
@@ -740,7 +1069,13 @@
       "sp_at": 60,
       "sp_de": 70,
       "spd": 95,
-      "base_exp": 159
+      "base_exp": 159,
+      "abilities": [
+        "vital_spirit",
+        "anger_point"
+      ],
+      "hidden_ability": "defiant",
+      "held_items": []
     },
     {
       "id": 58,
@@ -753,7 +1088,13 @@
       "sp_at": 70,
       "sp_de": 50,
       "spd": 60,
-      "base_exp": 70
+      "base_exp": 70,
+      "abilities": [
+        "intimidate",
+        "flash_fire"
+      ],
+      "hidden_ability": "justified",
+      "held_items": []
     },
     {
       "id": 59,
@@ -766,7 +1107,13 @@
       "sp_at": 100,
       "sp_de": 80,
       "spd": 95,
-      "base_exp": 194
+      "base_exp": 194,
+      "abilities": [
+        "intimidate",
+        "flash_fire"
+      ],
+      "hidden_ability": "justified",
+      "held_items": []
     },
     {
       "id": 60,
@@ -779,7 +1126,13 @@
       "sp_at": 40,
       "sp_de": 40,
       "spd": 90,
-      "base_exp": 60
+      "base_exp": 60,
+      "abilities": [
+        "water_absorb",
+        "damp"
+      ],
+      "hidden_ability": "swift_swim",
+      "held_items": []
     },
     {
       "id": 61,
@@ -792,7 +1145,13 @@
       "sp_at": 50,
       "sp_de": 50,
       "spd": 90,
-      "base_exp": 135
+      "base_exp": 135,
+      "abilities": [
+        "water_absorb",
+        "damp"
+      ],
+      "hidden_ability": "swift_swim",
+      "held_items": []
     },
     {
       "id": 62,
@@ -805,7 +1164,13 @@
       "sp_at": 70,
       "sp_de": 90,
       "spd": 70,
-      "base_exp": 230
+      "base_exp": 230,
+      "abilities": [
+        "water_absorb",
+        "damp"
+      ],
+      "hidden_ability": "swift_swim",
+      "held_items": []
     },
     {
       "id": 63,
@@ -818,7 +1183,13 @@
       "sp_at": 105,
       "sp_de": 55,
       "spd": 90,
-      "base_exp": 62
+      "base_exp": 62,
+      "abilities": [
+        "synchronize",
+        "inner_focus"
+      ],
+      "hidden_ability": "magic_guard",
+      "held_items": []
     },
     {
       "id": 64,
@@ -831,7 +1202,13 @@
       "sp_at": 120,
       "sp_de": 70,
       "spd": 105,
-      "base_exp": 140
+      "base_exp": 140,
+      "abilities": [
+        "synchronize",
+        "inner_focus"
+      ],
+      "hidden_ability": "magic_guard",
+      "held_items": []
     },
     {
       "id": 65,
@@ -844,7 +1221,13 @@
       "sp_at": 135,
       "sp_de": 95,
       "spd": 120,
-      "base_exp": 225
+      "base_exp": 225,
+      "abilities": [
+        "synchronize",
+        "inner_focus"
+      ],
+      "hidden_ability": "magic_guard",
+      "held_items": []
     },
     {
       "id": 66,
@@ -857,7 +1240,13 @@
       "sp_at": 35,
       "sp_de": 35,
       "spd": 35,
-      "base_exp": 61
+      "base_exp": 61,
+      "abilities": [
+        "guts",
+        "no_guard"
+      ],
+      "hidden_ability": "steadfast",
+      "held_items": []
     },
     {
       "id": 67,
@@ -870,7 +1259,13 @@
       "sp_at": 50,
       "sp_de": 60,
       "spd": 45,
-      "base_exp": 142
+      "base_exp": 142,
+      "abilities": [
+        "guts",
+        "no_guard"
+      ],
+      "hidden_ability": "steadfast",
+      "held_items": []
     },
     {
       "id": 68,
@@ -883,7 +1278,13 @@
       "sp_at": 65,
       "sp_de": 85,
       "spd": 55,
-      "base_exp": 227
+      "base_exp": 227,
+      "abilities": [
+        "guts",
+        "no_guard"
+      ],
+      "hidden_ability": "steadfast",
+      "held_items": []
     },
     {
       "id": 69,
@@ -896,7 +1297,12 @@
       "sp_at": 70,
       "sp_de": 30,
       "spd": 40,
-      "base_exp": 60
+      "base_exp": 60,
+      "abilities": [
+        "chlorophyll"
+      ],
+      "held_items": [],
+      "hidden_ability": "gluttony"
     },
     {
       "id": 70,
@@ -909,7 +1315,12 @@
       "sp_at": 85,
       "sp_de": 45,
       "spd": 55,
-      "base_exp": 137
+      "base_exp": 137,
+      "abilities": [
+        "chlorophyll"
+      ],
+      "held_items": [],
+      "hidden_ability": "gluttony"
     },
     {
       "id": 71,
@@ -922,7 +1333,12 @@
       "sp_at": 100,
       "sp_de": 70,
       "spd": 70,
-      "base_exp": 221
+      "base_exp": 221,
+      "abilities": [
+        "chlorophyll"
+      ],
+      "held_items": [],
+      "hidden_ability": "gluttony"
     },
     {
       "id": 72,
@@ -935,7 +1351,13 @@
       "sp_at": 50,
       "sp_de": 100,
       "spd": 70,
-      "base_exp": 67
+      "base_exp": 67,
+      "abilities": [
+        "clear_body",
+        "liquid_ooze"
+      ],
+      "hidden_ability": "rain_dish",
+      "held_items": []
     },
     {
       "id": 73,
@@ -948,7 +1370,13 @@
       "sp_at": 80,
       "sp_de": 120,
       "spd": 100,
-      "base_exp": 180
+      "base_exp": 180,
+      "abilities": [
+        "clear_body",
+        "liquid_ooze"
+      ],
+      "hidden_ability": "rain_dish",
+      "held_items": []
     },
     {
       "id": 74,
@@ -961,7 +1389,13 @@
       "sp_at": 30,
       "sp_de": 30,
       "spd": 20,
-      "base_exp": 60
+      "base_exp": 60,
+      "abilities": [
+        "rock_head",
+        "sturdy"
+      ],
+      "hidden_ability": "sand_veil",
+      "held_items": []
     },
     {
       "id": 75,
@@ -974,7 +1408,13 @@
       "sp_at": 45,
       "sp_de": 45,
       "spd": 35,
-      "base_exp": 137
+      "base_exp": 137,
+      "abilities": [
+        "rock_head",
+        "sturdy"
+      ],
+      "hidden_ability": "sand_veil",
+      "held_items": []
     },
     {
       "id": 76,
@@ -987,7 +1427,13 @@
       "sp_at": 55,
       "sp_de": 65,
       "spd": 45,
-      "base_exp": 223
+      "base_exp": 223,
+      "abilities": [
+        "rock_head",
+        "sturdy"
+      ],
+      "hidden_ability": "sand_veil",
+      "held_items": []
     },
     {
       "id": 77,
@@ -1000,7 +1446,13 @@
       "sp_at": 65,
       "sp_de": 65,
       "spd": 90,
-      "base_exp": 82
+      "base_exp": 82,
+      "abilities": [
+        "run_away",
+        "flash_fire"
+      ],
+      "hidden_ability": "flame_body",
+      "held_items": []
     },
     {
       "id": 78,
@@ -1013,7 +1465,13 @@
       "sp_at": 80,
       "sp_de": 80,
       "spd": 105,
-      "base_exp": 175
+      "base_exp": 175,
+      "abilities": [
+        "run_away",
+        "flash_fire"
+      ],
+      "hidden_ability": "flame_body",
+      "held_items": []
     },
     {
       "id": 79,
@@ -1026,7 +1484,13 @@
       "sp_at": 40,
       "sp_de": 40,
       "spd": 15,
-      "base_exp": 63
+      "base_exp": 63,
+      "abilities": [
+        "oblivious",
+        "own_tempo"
+      ],
+      "hidden_ability": "regenerator",
+      "held_items": []
     },
     {
       "id": 80,
@@ -1039,7 +1503,13 @@
       "sp_at": 100,
       "sp_de": 80,
       "spd": 30,
-      "base_exp": 172
+      "base_exp": 172,
+      "abilities": [
+        "oblivious",
+        "own_tempo"
+      ],
+      "hidden_ability": "regenerator",
+      "held_items": []
     },
     {
       "id": 81,
@@ -1052,7 +1522,13 @@
       "sp_at": 95,
       "sp_de": 55,
       "spd": 45,
-      "base_exp": 65
+      "base_exp": 65,
+      "abilities": [
+        "magnet_pull",
+        "sturdy"
+      ],
+      "hidden_ability": "analytic",
+      "held_items": []
     },
     {
       "id": 82,
@@ -1065,7 +1541,13 @@
       "sp_at": 120,
       "sp_de": 70,
       "spd": 70,
-      "base_exp": 163
+      "base_exp": 163,
+      "abilities": [
+        "magnet_pull",
+        "sturdy"
+      ],
+      "hidden_ability": "analytic",
+      "held_items": []
     },
     {
       "id": 83,
@@ -1078,7 +1560,11 @@
       "sp_at": 58,
       "sp_de": 62,
       "spd": 60,
-      "base_exp": 132
+      "base_exp": 132,
+      "abilities": [
+        "run_away"
+      ],
+      "held_items": []
     },
     {
       "id": 84,
@@ -1091,7 +1577,13 @@
       "sp_at": 35,
       "sp_de": 35,
       "spd": 75,
-      "base_exp": 62
+      "base_exp": 62,
+      "abilities": [
+        "run_away",
+        "early_bird"
+      ],
+      "hidden_ability": "tangled_feet",
+      "held_items": []
     },
     {
       "id": 85,
@@ -1104,7 +1596,13 @@
       "sp_at": 60,
       "sp_de": 60,
       "spd": 110,
-      "base_exp": 165
+      "base_exp": 165,
+      "abilities": [
+        "run_away",
+        "early_bird"
+      ],
+      "hidden_ability": "tangled_feet",
+      "held_items": []
     },
     {
       "id": 86,
@@ -1117,7 +1615,13 @@
       "sp_at": 45,
       "sp_de": 70,
       "spd": 45,
-      "base_exp": 65
+      "base_exp": 65,
+      "abilities": [
+        "thick_fat",
+        "hydration"
+      ],
+      "hidden_ability": "ice_body",
+      "held_items": []
     },
     {
       "id": 87,
@@ -1130,7 +1634,13 @@
       "sp_at": 70,
       "sp_de": 95,
       "spd": 70,
-      "base_exp": 166
+      "base_exp": 166,
+      "abilities": [
+        "thick_fat",
+        "hydration"
+      ],
+      "hidden_ability": "ice_body",
+      "held_items": []
     },
     {
       "id": 88,
@@ -1143,7 +1653,13 @@
       "sp_at": 40,
       "sp_de": 50,
       "spd": 25,
-      "base_exp": 65
+      "base_exp": 65,
+      "abilities": [
+        "stench",
+        "sticky_hold"
+      ],
+      "hidden_ability": "poison_touch",
+      "held_items": []
     },
     {
       "id": 89,
@@ -1156,7 +1672,13 @@
       "sp_at": 65,
       "sp_de": 100,
       "spd": 50,
-      "base_exp": 175
+      "base_exp": 175,
+      "abilities": [
+        "stench",
+        "sticky_hold"
+      ],
+      "hidden_ability": "poison_touch",
+      "held_items": []
     },
     {
       "id": 90,
@@ -1169,7 +1691,13 @@
       "sp_at": 45,
       "sp_de": 25,
       "spd": 40,
-      "base_exp": 61
+      "base_exp": 61,
+      "abilities": [
+        "shell_armor",
+        "skill_link"
+      ],
+      "hidden_ability": "overcoat",
+      "held_items": []
     },
     {
       "id": 91,
@@ -1182,7 +1710,13 @@
       "sp_at": 85,
       "sp_de": 45,
       "spd": 70,
-      "base_exp": 184
+      "base_exp": 184,
+      "abilities": [
+        "shell_armor",
+        "skill_link"
+      ],
+      "hidden_ability": "overcoat",
+      "held_items": []
     },
     {
       "id": 92,
@@ -1195,7 +1729,11 @@
       "sp_at": 100,
       "sp_de": 35,
       "spd": 80,
-      "base_exp": 62
+      "base_exp": 62,
+      "abilities": [
+        "levitate"
+      ],
+      "held_items": []
     },
     {
       "id": 93,
@@ -1208,7 +1746,11 @@
       "sp_at": 115,
       "sp_de": 55,
       "spd": 95,
-      "base_exp": 142
+      "base_exp": 142,
+      "abilities": [
+        "levitate"
+      ],
+      "held_items": []
     },
     {
       "id": 94,
@@ -1221,7 +1763,11 @@
       "sp_at": 130,
       "sp_de": 75,
       "spd": 110,
-      "base_exp": 225
+      "base_exp": 225,
+      "abilities": [
+        "cursed_body"
+      ],
+      "held_items": []
     },
     {
       "id": 95,
@@ -1234,7 +1780,13 @@
       "sp_at": 30,
       "sp_de": 45,
       "spd": 70,
-      "base_exp": 77
+      "base_exp": 77,
+      "abilities": [
+        "rock_head",
+        "sturdy"
+      ],
+      "hidden_ability": "weak_armor",
+      "held_items": []
     },
     {
       "id": 96,
@@ -1247,7 +1799,13 @@
       "sp_at": 43,
       "sp_de": 90,
       "spd": 42,
-      "base_exp": 66
+      "base_exp": 66,
+      "abilities": [
+        "insomnia",
+        "forewarn"
+      ],
+      "hidden_ability": "inner_focus",
+      "held_items": []
     },
     {
       "id": 97,
@@ -1260,7 +1818,13 @@
       "sp_at": 73,
       "sp_de": 115,
       "spd": 67,
-      "base_exp": 169
+      "base_exp": 169,
+      "abilities": [
+        "insomnia",
+        "forewarn"
+      ],
+      "hidden_ability": "inner_focus",
+      "held_items": []
     },
     {
       "id": 98,
@@ -1273,7 +1837,13 @@
       "sp_at": 25,
       "sp_de": 25,
       "spd": 50,
-      "base_exp": 65
+      "base_exp": 65,
+      "abilities": [
+        "hyper_cutter",
+        "shell_armor"
+      ],
+      "hidden_ability": "sheer_force",
+      "held_items": []
     },
     {
       "id": 99,
@@ -1286,7 +1856,13 @@
       "sp_at": 50,
       "sp_de": 50,
       "spd": 75,
-      "base_exp": 166
+      "base_exp": 166,
+      "abilities": [
+        "hyper_cutter",
+        "shell_armor"
+      ],
+      "hidden_ability": "sheer_force",
+      "held_items": []
     },
     {
       "id": 100,
@@ -1299,7 +1875,13 @@
       "sp_at": 55,
       "sp_de": 55,
       "spd": 100,
-      "base_exp": 66
+      "base_exp": 66,
+      "abilities": [
+        "soundproof",
+        "static"
+      ],
+      "hidden_ability": "aftermath",
+      "held_items": []
     },
     {
       "id": 101,
@@ -1312,7 +1894,13 @@
       "sp_at": 80,
       "sp_de": 80,
       "spd": 150,
-      "base_exp": 172
+      "base_exp": 172,
+      "abilities": [
+        "soundproof",
+        "static"
+      ],
+      "hidden_ability": "aftermath",
+      "held_items": []
     },
     {
       "id": 102,
@@ -1325,7 +1913,12 @@
       "sp_at": 60,
       "sp_de": 45,
       "spd": 40,
-      "base_exp": 65
+      "base_exp": 65,
+      "abilities": [
+        "chlorophyll",
+        "harvest"
+      ],
+      "held_items": []
     },
     {
       "id": 103,
@@ -1338,7 +1931,12 @@
       "sp_at": 125,
       "sp_de": 75,
       "spd": 55,
-      "base_exp": 186
+      "base_exp": 186,
+      "abilities": [
+        "chlorophyll",
+        "harvest"
+      ],
+      "held_items": []
     },
     {
       "id": 104,
@@ -1351,7 +1949,18 @@
       "sp_at": 40,
       "sp_de": 50,
       "spd": 35,
-      "base_exp": 64
+      "base_exp": 64,
+      "abilities": [
+        "rock_head",
+        "lightning_rod"
+      ],
+      "hidden_ability": "battle_armor",
+      "held_items": [
+        {
+          "item": "thick_club",
+          "chance": 5
+        }
+      ]
     },
     {
       "id": 105,
@@ -1364,7 +1973,18 @@
       "sp_at": 50,
       "sp_de": 80,
       "spd": 45,
-      "base_exp": 149
+      "base_exp": 149,
+      "abilities": [
+        "rock_head",
+        "lightning_rod"
+      ],
+      "hidden_ability": "battle_armor",
+      "held_items": [
+        {
+          "item": "thick_club",
+          "chance": 5
+        }
+      ]
     },
     {
       "id": 106,
@@ -1377,7 +1997,13 @@
       "sp_at": 35,
       "sp_de": 110,
       "spd": 87,
-      "base_exp": 159
+      "base_exp": 159,
+      "abilities": [
+        "limber",
+        "reckless"
+      ],
+      "hidden_ability": "unburden",
+      "held_items": []
     },
     {
       "id": 107,
@@ -1390,7 +2016,13 @@
       "sp_at": 35,
       "sp_de": 110,
       "spd": 76,
-      "base_exp": 159
+      "base_exp": 159,
+      "abilities": [
+        "keen_eye",
+        "iron_fist"
+      ],
+      "hidden_ability": "inner_focus",
+      "held_items": []
     },
     {
       "id": 108,
@@ -1403,7 +2035,13 @@
       "sp_at": 60,
       "sp_de": 75,
       "spd": 30,
-      "base_exp": 77
+      "base_exp": 77,
+      "abilities": [
+        "own_tempo",
+        "oblivious"
+      ],
+      "hidden_ability": "cloud_nine",
+      "held_items": []
     },
     {
       "id": 109,
@@ -1416,7 +2054,11 @@
       "sp_at": 60,
       "sp_de": 45,
       "spd": 35,
-      "base_exp": 68
+      "base_exp": 68,
+      "abilities": [
+        "levitate"
+      ],
+      "held_items": []
     },
     {
       "id": 110,
@@ -1429,7 +2071,11 @@
       "sp_at": 85,
       "sp_de": 70,
       "spd": 60,
-      "base_exp": 172
+      "base_exp": 172,
+      "abilities": [
+        "levitate"
+      ],
+      "held_items": []
     },
     {
       "id": 111,
@@ -1442,7 +2088,13 @@
       "sp_at": 30,
       "sp_de": 30,
       "spd": 25,
-      "base_exp": 69
+      "base_exp": 69,
+      "abilities": [
+        "lightning_rod",
+        "rock_head"
+      ],
+      "hidden_ability": "reckless",
+      "held_items": []
     },
     {
       "id": 112,
@@ -1455,7 +2107,13 @@
       "sp_at": 45,
       "sp_de": 45,
       "spd": 40,
-      "base_exp": 170
+      "base_exp": 170,
+      "abilities": [
+        "lightning_rod",
+        "rock_head"
+      ],
+      "hidden_ability": "reckless",
+      "held_items": []
     },
     {
       "id": 113,
@@ -1468,7 +2126,18 @@
       "sp_at": 35,
       "sp_de": 105,
       "spd": 50,
-      "base_exp": 395
+      "base_exp": 395,
+      "abilities": [
+        "natural_cure",
+        "serene_grace"
+      ],
+      "hidden_ability": "healer",
+      "held_items": [
+        {
+          "item": "lucky_egg",
+          "chance": 5
+        }
+      ]
     },
     {
       "id": 114,
@@ -1481,7 +2150,13 @@
       "sp_at": 100,
       "sp_de": 40,
       "spd": 60,
-      "base_exp": 87
+      "base_exp": 87,
+      "abilities": [
+        "chlorophyll",
+        "leaf_guard"
+      ],
+      "hidden_ability": "regenerator",
+      "held_items": []
     },
     {
       "id": 115,
@@ -1494,7 +2169,13 @@
       "sp_at": 40,
       "sp_de": 80,
       "spd": 90,
-      "base_exp": 172
+      "base_exp": 172,
+      "abilities": [
+        "early_bird",
+        "scrappy"
+      ],
+      "hidden_ability": "inner_focus",
+      "held_items": []
     },
     {
       "id": 116,
@@ -1507,7 +2188,13 @@
       "sp_at": 70,
       "sp_de": 25,
       "spd": 60,
-      "base_exp": 59
+      "base_exp": 59,
+      "abilities": [
+        "swift_swim",
+        "sniper"
+      ],
+      "hidden_ability": "damp",
+      "held_items": []
     },
     {
       "id": 117,
@@ -1520,7 +2207,13 @@
       "sp_at": 95,
       "sp_de": 45,
       "spd": 85,
-      "base_exp": 154
+      "base_exp": 154,
+      "abilities": [
+        "poison_point",
+        "sniper"
+      ],
+      "hidden_ability": "damp",
+      "held_items": []
     },
     {
       "id": 118,
@@ -1533,7 +2226,13 @@
       "sp_at": 35,
       "sp_de": 50,
       "spd": 63,
-      "base_exp": 64
+      "base_exp": 64,
+      "abilities": [
+        "swift_swim",
+        "water_veil"
+      ],
+      "hidden_ability": "lightning_rod",
+      "held_items": []
     },
     {
       "id": 119,
@@ -1546,7 +2245,13 @@
       "sp_at": 65,
       "sp_de": 80,
       "spd": 68,
-      "base_exp": 158
+      "base_exp": 158,
+      "abilities": [
+        "swift_swim",
+        "water_veil"
+      ],
+      "hidden_ability": "lightning_rod",
+      "held_items": []
     },
     {
       "id": 120,
@@ -1559,7 +2264,13 @@
       "sp_at": 70,
       "sp_de": 55,
       "spd": 85,
-      "base_exp": 68
+      "base_exp": 68,
+      "abilities": [
+        "illuminate",
+        "natural_cure"
+      ],
+      "hidden_ability": "analytic",
+      "held_items": []
     },
     {
       "id": 121,
@@ -1572,7 +2283,13 @@
       "sp_at": 100,
       "sp_de": 85,
       "spd": 115,
-      "base_exp": 182
+      "base_exp": 182,
+      "abilities": [
+        "illuminate",
+        "natural_cure"
+      ],
+      "hidden_ability": "analytic",
+      "held_items": []
     },
     {
       "id": 122,
@@ -1585,7 +2302,13 @@
       "sp_at": 100,
       "sp_de": 120,
       "spd": 90,
-      "base_exp": 161
+      "base_exp": 161,
+      "abilities": [
+        "soundproof",
+        "filter"
+      ],
+      "hidden_ability": "technician",
+      "held_items": []
     },
     {
       "id": 123,
@@ -1598,7 +2321,13 @@
       "sp_at": 55,
       "sp_de": 80,
       "spd": 105,
-      "base_exp": 100
+      "base_exp": 100,
+      "abilities": [
+        "swarm",
+        "technician"
+      ],
+      "hidden_ability": "steadfast",
+      "held_items": []
     },
     {
       "id": 124,
@@ -1611,7 +2340,13 @@
       "sp_at": 115,
       "sp_de": 95,
       "spd": 95,
-      "base_exp": 159
+      "base_exp": 159,
+      "abilities": [
+        "oblivious",
+        "forewarn"
+      ],
+      "hidden_ability": "dry_skin",
+      "held_items": []
     },
     {
       "id": 125,
@@ -1624,7 +2359,12 @@
       "sp_at": 95,
       "sp_de": 85,
       "spd": 105,
-      "base_exp": 172
+      "base_exp": 172,
+      "abilities": [
+        "static"
+      ],
+      "held_items": [],
+      "hidden_ability": "vital_spirit"
     },
     {
       "id": 126,
@@ -1637,7 +2377,12 @@
       "sp_at": 100,
       "sp_de": 85,
       "spd": 93,
-      "base_exp": 173
+      "base_exp": 173,
+      "abilities": [
+        "flame_body"
+      ],
+      "held_items": [],
+      "hidden_ability": "vital_spirit"
     },
     {
       "id": 127,
@@ -1650,7 +2395,13 @@
       "sp_at": 55,
       "sp_de": 70,
       "spd": 85,
-      "base_exp": 175
+      "base_exp": 175,
+      "abilities": [
+        "hyper_cutter",
+        "mold_breaker"
+      ],
+      "hidden_ability": "moxie",
+      "held_items": []
     },
     {
       "id": 128,
@@ -1663,7 +2414,13 @@
       "sp_at": 40,
       "sp_de": 70,
       "spd": 110,
-      "base_exp": 172
+      "base_exp": 172,
+      "abilities": [
+        "intimidate",
+        "anger_point"
+      ],
+      "hidden_ability": "sheer_force",
+      "held_items": []
     },
     {
       "id": 129,
@@ -1676,7 +2433,12 @@
       "sp_at": 15,
       "sp_de": 20,
       "spd": 80,
-      "base_exp": 40
+      "base_exp": 40,
+      "abilities": [
+        "swift_swim"
+      ],
+      "held_items": [],
+      "hidden_ability": "rattled"
     },
     {
       "id": 130,
@@ -1689,7 +2451,12 @@
       "sp_at": 60,
       "sp_de": 100,
       "spd": 81,
-      "base_exp": 189
+      "base_exp": 189,
+      "abilities": [
+        "intimidate"
+      ],
+      "held_items": [],
+      "hidden_ability": "moxie"
     },
     {
       "id": 131,
@@ -1702,7 +2469,13 @@
       "sp_at": 85,
       "sp_de": 95,
       "spd": 60,
-      "base_exp": 187
+      "base_exp": 187,
+      "abilities": [
+        "water_absorb",
+        "shell_armor"
+      ],
+      "hidden_ability": "hydration",
+      "held_items": []
     },
     {
       "id": 132,
@@ -1715,7 +2488,12 @@
       "sp_at": 48,
       "sp_de": 48,
       "spd": 48,
-      "base_exp": 101
+      "base_exp": 101,
+      "abilities": [
+        "limber"
+      ],
+      "held_items": [],
+      "hidden_ability": "imposter"
     },
     {
       "id": 133,
@@ -1728,7 +2506,13 @@
       "sp_at": 45,
       "sp_de": 65,
       "spd": 55,
-      "base_exp": 65
+      "base_exp": 65,
+      "abilities": [
+        "run_away",
+        "adaptability"
+      ],
+      "hidden_ability": "anticipation",
+      "held_items": []
     },
     {
       "id": 134,
@@ -1741,7 +2525,12 @@
       "sp_at": 110,
       "sp_de": 95,
       "spd": 65,
-      "base_exp": 184
+      "base_exp": 184,
+      "abilities": [
+        "water_absorb"
+      ],
+      "held_items": [],
+      "hidden_ability": "hydration"
     },
     {
       "id": 135,
@@ -1754,7 +2543,12 @@
       "sp_at": 110,
       "sp_de": 95,
       "spd": 130,
-      "base_exp": 184
+      "base_exp": 184,
+      "abilities": [
+        "volt_absorb"
+      ],
+      "held_items": [],
+      "hidden_ability": "quick_feet"
     },
     {
       "id": 136,
@@ -1767,7 +2561,12 @@
       "sp_at": 95,
       "sp_de": 110,
       "spd": 65,
-      "base_exp": 184
+      "base_exp": 184,
+      "abilities": [
+        "flash_fire"
+      ],
+      "held_items": [],
+      "hidden_ability": "guts"
     },
     {
       "id": 137,
@@ -1780,7 +2579,13 @@
       "sp_at": 85,
       "sp_de": 75,
       "spd": 40,
-      "base_exp": 79
+      "base_exp": 79,
+      "abilities": [
+        "trace",
+        "download"
+      ],
+      "hidden_ability": "analytic",
+      "held_items": []
     },
     {
       "id": 138,
@@ -1793,7 +2598,13 @@
       "sp_at": 90,
       "sp_de": 55,
       "spd": 35,
-      "base_exp": 71
+      "base_exp": 71,
+      "abilities": [
+        "swift_swim",
+        "shell_armor"
+      ],
+      "hidden_ability": "weak_armor",
+      "held_items": []
     },
     {
       "id": 139,
@@ -1806,7 +2617,13 @@
       "sp_at": 115,
       "sp_de": 70,
       "spd": 55,
-      "base_exp": 173
+      "base_exp": 173,
+      "abilities": [
+        "swift_swim",
+        "shell_armor"
+      ],
+      "hidden_ability": "weak_armor",
+      "held_items": []
     },
     {
       "id": 140,
@@ -1819,7 +2636,13 @@
       "sp_at": 55,
       "sp_de": 45,
       "spd": 55,
-      "base_exp": 71
+      "base_exp": 71,
+      "abilities": [
+        "swift_swim",
+        "battle_armor"
+      ],
+      "hidden_ability": "weak_armor",
+      "held_items": []
     },
     {
       "id": 141,
@@ -1832,7 +2655,13 @@
       "sp_at": 65,
       "sp_de": 70,
       "spd": 80,
-      "base_exp": 173
+      "base_exp": 173,
+      "abilities": [
+        "swift_swim",
+        "battle_armor"
+      ],
+      "hidden_ability": "weak_armor",
+      "held_items": []
     },
     {
       "id": 142,
@@ -1845,7 +2674,13 @@
       "sp_at": 60,
       "sp_de": 75,
       "spd": 130,
-      "base_exp": 180
+      "base_exp": 180,
+      "abilities": [
+        "rock_head",
+        "pressure"
+      ],
+      "hidden_ability": "unnerve",
+      "held_items": []
     },
     {
       "id": 143,
@@ -1858,7 +2693,18 @@
       "sp_at": 65,
       "sp_de": 110,
       "spd": 30,
-      "base_exp": 189
+      "base_exp": 189,
+      "abilities": [
+        "immunity",
+        "thick_fat"
+      ],
+      "hidden_ability": "gluttony",
+      "held_items": [
+        {
+          "item": "leftovers",
+          "chance": 100
+        }
+      ]
     },
     {
       "id": 144,
@@ -1871,7 +2717,12 @@
       "sp_at": 95,
       "sp_de": 125,
       "spd": 85,
-      "base_exp": 261
+      "base_exp": 261,
+      "abilities": [
+        "pressure"
+      ],
+      "held_items": [],
+      "hidden_ability": "snow_cloak"
     },
     {
       "id": 145,
@@ -1884,7 +2735,12 @@
       "sp_at": 125,
       "sp_de": 90,
       "spd": 100,
-      "base_exp": 261
+      "base_exp": 261,
+      "abilities": [
+        "pressure"
+      ],
+      "held_items": [],
+      "hidden_ability": "static"
     },
     {
       "id": 146,
@@ -1897,7 +2753,12 @@
       "sp_at": 125,
       "sp_de": 85,
       "spd": 90,
-      "base_exp": 261
+      "base_exp": 261,
+      "abilities": [
+        "pressure"
+      ],
+      "held_items": [],
+      "hidden_ability": "flame_body"
     },
     {
       "id": 147,
@@ -1910,7 +2771,12 @@
       "sp_at": 50,
       "sp_de": 50,
       "spd": 50,
-      "base_exp": 60
+      "base_exp": 60,
+      "abilities": [
+        "shed_skin"
+      ],
+      "held_items": [],
+      "hidden_ability": "marvel_scale"
     },
     {
       "id": 148,
@@ -1923,7 +2789,12 @@
       "sp_at": 70,
       "sp_de": 70,
       "spd": 70,
-      "base_exp": 147
+      "base_exp": 147,
+      "abilities": [
+        "shed_skin"
+      ],
+      "held_items": [],
+      "hidden_ability": "marvel_scale"
     },
     {
       "id": 149,
@@ -1936,7 +2807,12 @@
       "sp_at": 100,
       "sp_de": 100,
       "spd": 80,
-      "base_exp": 270
+      "base_exp": 270,
+      "abilities": [
+        "inner_focus"
+      ],
+      "held_items": [],
+      "hidden_ability": "multiscale"
     },
     {
       "id": 150,
@@ -1949,7 +2825,12 @@
       "sp_at": 154,
       "sp_de": 90,
       "spd": 130,
-      "base_exp": 306
+      "base_exp": 306,
+      "abilities": [
+        "pressure"
+      ],
+      "held_items": [],
+      "hidden_ability": "unnerve"
     },
     {
       "id": 151,
@@ -1962,7 +2843,11 @@
       "sp_at": 100,
       "sp_de": 100,
       "spd": 100,
-      "base_exp": 270
+      "base_exp": 270,
+      "abilities": [
+        "synchronize"
+      ],
+      "held_items": []
     },
     {
       "id": 152,
@@ -1976,7 +2861,11 @@
       "sp_de": 0,
       "spd": 1,
       "base_exp": 270,
-      "description": "He doesn't exist. Imagine he was needed to finish the Pokédex :trollface:, also why are you even reading this?"
+      "description": "He doesn't exist. Imagine he was needed to finish the Pok\u00e9dex :trollface:, also why are you even reading this?",
+      "abilities": [
+        "run_away"
+      ],
+      "held_items": []
     }
   ]
 }

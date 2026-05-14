@@ -1,0 +1,456 @@
+{
+  "abilities": {
+    "adaptability": {
+      "name": "Adaptability",
+      "description": "No battle effect implemented yet."
+    },
+    "aftermath": {
+      "name": "Aftermath",
+      "description": "No battle effect implemented yet."
+    },
+    "analytic": {
+      "name": "Analytic",
+      "description": "No battle effect implemented yet."
+    },
+    "anger_point": {
+      "name": "Anger Point",
+      "description": "No battle effect implemented yet."
+    },
+    "anticipation": {
+      "name": "Anticipation",
+      "description": "No battle effect implemented yet."
+    },
+    "arena_trap": {
+      "name": "Arena Trap",
+      "description": "No battle effect implemented yet."
+    },
+    "battle_armor": {
+      "name": "Battle Armor",
+      "description": "No battle effect implemented yet."
+    },
+    "big_pecks": {
+      "name": "Big Pecks",
+      "description": "No battle effect implemented yet."
+    },
+    "blaze": {
+      "name": "Blaze",
+      "description": "Powers up Fire-type moves in a pinch."
+    },
+    "chlorophyll": {
+      "name": "Chlorophyll",
+      "description": "No battle effect implemented yet."
+    },
+    "clear_body": {
+      "name": "Clear Body",
+      "description": "No battle effect implemented yet."
+    },
+    "cloud_nine": {
+      "name": "Cloud Nine",
+      "description": "No battle effect implemented yet."
+    },
+    "competitive": {
+      "name": "Competitive",
+      "description": "No battle effect implemented yet."
+    },
+    "compound_eyes": {
+      "name": "Compound Eyes",
+      "description": "Raises move accuracy."
+    },
+    "cursed_body": {
+      "name": "Cursed Body",
+      "description": "No battle effect implemented yet."
+    },
+    "cute_charm": {
+      "name": "Cute Charm",
+      "description": "No battle effect implemented yet."
+    },
+    "damp": {
+      "name": "Damp",
+      "description": "No battle effect implemented yet."
+    },
+    "defiant": {
+      "name": "Defiant",
+      "description": "No battle effect implemented yet."
+    },
+    "download": {
+      "name": "Download",
+      "description": "No battle effect implemented yet."
+    },
+    "drought": {
+      "name": "Drought",
+      "description": "No battle effect implemented yet."
+    },
+    "dry_skin": {
+      "name": "Dry Skin",
+      "description": "No battle effect implemented yet."
+    },
+    "early_bird": {
+      "name": "Early Bird",
+      "description": "No battle effect implemented yet."
+    },
+    "effect_spore": {
+      "name": "Effect Spore",
+      "description": "No battle effect implemented yet."
+    },
+    "filter": {
+      "name": "Filter",
+      "description": "No battle effect implemented yet."
+    },
+    "flame_body": {
+      "name": "Flame Body",
+      "description": "No battle effect implemented yet."
+    },
+    "flash_fire": {
+      "name": "Flash Fire",
+      "description": "No battle effect implemented yet."
+    },
+    "forewarn": {
+      "name": "Forewarn",
+      "description": "No battle effect implemented yet."
+    },
+    "friend_guard": {
+      "name": "Friend Guard",
+      "description": "No battle effect implemented yet."
+    },
+    "frisk": {
+      "name": "Frisk",
+      "description": "No battle effect implemented yet."
+    },
+    "gluttony": {
+      "name": "Gluttony",
+      "description": "No battle effect implemented yet."
+    },
+    "guts": {
+      "name": "Guts",
+      "description": "Boosts Attack if statused."
+    },
+    "harvest": {
+      "name": "Harvest",
+      "description": "No battle effect implemented yet."
+    },
+    "healer": {
+      "name": "Healer",
+      "description": "No battle effect implemented yet."
+    },
+    "hustle": {
+      "name": "Hustle",
+      "description": "No battle effect implemented yet."
+    },
+    "hydration": {
+      "name": "Hydration",
+      "description": "No battle effect implemented yet."
+    },
+    "hyper_cutter": {
+      "name": "Hyper Cutter",
+      "description": "No battle effect implemented yet."
+    },
+    "ice_body": {
+      "name": "Ice Body",
+      "description": "No battle effect implemented yet."
+    },
+    "illuminate": {
+      "name": "Illuminate",
+      "description": "No battle effect implemented yet."
+    },
+    "immunity": {
+      "name": "Immunity",
+      "description": "No battle effect implemented yet."
+    },
+    "imposter": {
+      "name": "Imposter",
+      "description": "No battle effect implemented yet."
+    },
+    "infiltrator": {
+      "name": "Infiltrator",
+      "description": "No battle effect implemented yet."
+    },
+    "inner_focus": {
+      "name": "Inner Focus",
+      "description": "No battle effect implemented yet."
+    },
+    "insomnia": {
+      "name": "Insomnia",
+      "description": "No battle effect implemented yet."
+    },
+    "intimidate": {
+      "name": "Intimidate",
+      "description": "Lowers the foe Attack on entry."
+    },
+    "iron_fist": {
+      "name": "Iron Fist",
+      "description": "No battle effect implemented yet."
+    },
+    "justified": {
+      "name": "Justified",
+      "description": "No battle effect implemented yet."
+    },
+    "keen_eye": {
+      "name": "Keen Eye",
+      "description": "Prevents accuracy loss."
+    },
+    "leaf_guard": {
+      "name": "Leaf Guard",
+      "description": "No battle effect implemented yet."
+    },
+    "levitate": {
+      "name": "Levitate",
+      "description": "Grants immunity to Ground-type moves."
+    },
+    "lightning_rod": {
+      "name": "Lightning Rod",
+      "description": "No battle effect implemented yet."
+    },
+    "limber": {
+      "name": "Limber",
+      "description": "No battle effect implemented yet."
+    },
+    "liquid_ooze": {
+      "name": "Liquid Ooze",
+      "description": "No battle effect implemented yet."
+    },
+    "magic_guard": {
+      "name": "Magic Guard",
+      "description": "No battle effect implemented yet."
+    },
+    "magnet_pull": {
+      "name": "Magnet Pull",
+      "description": "No battle effect implemented yet."
+    },
+    "marvel_scale": {
+      "name": "Marvel Scale",
+      "description": "No battle effect implemented yet."
+    },
+    "mold_breaker": {
+      "name": "Mold Breaker",
+      "description": "No battle effect implemented yet."
+    },
+    "moxie": {
+      "name": "Moxie",
+      "description": "No battle effect implemented yet."
+    },
+    "multiscale": {
+      "name": "Multiscale",
+      "description": "No battle effect implemented yet."
+    },
+    "natural_cure": {
+      "name": "Natural Cure",
+      "description": "No battle effect implemented yet."
+    },
+    "no_guard": {
+      "name": "No Guard",
+      "description": "No battle effect implemented yet."
+    },
+    "oblivious": {
+      "name": "Oblivious",
+      "description": "No battle effect implemented yet."
+    },
+    "overcoat": {
+      "name": "Overcoat",
+      "description": "No battle effect implemented yet."
+    },
+    "overgrow": {
+      "name": "Overgrow",
+      "description": "Powers up Grass-type moves in a pinch."
+    },
+    "own_tempo": {
+      "name": "Own Tempo",
+      "description": "No battle effect implemented yet."
+    },
+    "pickup": {
+      "name": "Pickup",
+      "description": "No battle effect implemented yet."
+    },
+    "poison_point": {
+      "name": "Poison Point",
+      "description": "No battle effect implemented yet."
+    },
+    "poison_touch": {
+      "name": "Poison Touch",
+      "description": "No battle effect implemented yet."
+    },
+    "pressure": {
+      "name": "Pressure",
+      "description": "Makes opposing moves use extra PP."
+    },
+    "quick_feet": {
+      "name": "Quick Feet",
+      "description": "No battle effect implemented yet."
+    },
+    "rain_dish": {
+      "name": "Rain Dish",
+      "description": "No battle effect implemented yet."
+    },
+    "rattled": {
+      "name": "Rattled",
+      "description": "No battle effect implemented yet."
+    },
+    "reckless": {
+      "name": "Reckless",
+      "description": "No battle effect implemented yet."
+    },
+    "regenerator": {
+      "name": "Regenerator",
+      "description": "No battle effect implemented yet."
+    },
+    "rivalry": {
+      "name": "Rivalry",
+      "description": "No battle effect implemented yet."
+    },
+    "rock_head": {
+      "name": "Rock Head",
+      "description": "No battle effect implemented yet."
+    },
+    "run_away": {
+      "name": "Run Away",
+      "description": "Makes escaping from wild battles easier."
+    },
+    "sand_force": {
+      "name": "Sand Force",
+      "description": "No battle effect implemented yet."
+    },
+    "sand_rush": {
+      "name": "Sand Rush",
+      "description": "No battle effect implemented yet."
+    },
+    "sand_veil": {
+      "name": "Sand Veil",
+      "description": "No battle effect implemented yet."
+    },
+    "scrappy": {
+      "name": "Scrappy",
+      "description": "No battle effect implemented yet."
+    },
+    "serene_grace": {
+      "name": "Serene Grace",
+      "description": "No battle effect implemented yet."
+    },
+    "shed_skin": {
+      "name": "Shed Skin",
+      "description": "May heal its own status condition."
+    },
+    "sheer_force": {
+      "name": "Sheer Force",
+      "description": "No battle effect implemented yet."
+    },
+    "shell_armor": {
+      "name": "Shell Armor",
+      "description": "No battle effect implemented yet."
+    },
+    "shield_dust": {
+      "name": "Shield Dust",
+      "description": "Blocks added effects from damaging moves."
+    },
+    "skill_link": {
+      "name": "Skill Link",
+      "description": "No battle effect implemented yet."
+    },
+    "sniper": {
+      "name": "Sniper",
+      "description": "No battle effect implemented yet."
+    },
+    "snow_cloak": {
+      "name": "Snow Cloak",
+      "description": "No battle effect implemented yet."
+    },
+    "solar_power": {
+      "name": "Solar Power",
+      "description": "No battle effect implemented yet."
+    },
+    "soundproof": {
+      "name": "Soundproof",
+      "description": "No battle effect implemented yet."
+    },
+    "static": {
+      "name": "Static",
+      "description": "May paralyze on contact."
+    },
+    "steadfast": {
+      "name": "Steadfast",
+      "description": "No battle effect implemented yet."
+    },
+    "stench": {
+      "name": "Stench",
+      "description": "No battle effect implemented yet."
+    },
+    "sticky_hold": {
+      "name": "Sticky Hold",
+      "description": "No battle effect implemented yet."
+    },
+    "sturdy": {
+      "name": "Sturdy",
+      "description": "No battle effect implemented yet."
+    },
+    "swarm": {
+      "name": "Swarm",
+      "description": "Powers up Bug-type moves in a pinch."
+    },
+    "swift_swim": {
+      "name": "Swift Swim",
+      "description": "No battle effect implemented yet."
+    },
+    "synchronize": {
+      "name": "Synchronize",
+      "description": "Passes poison, paralysis, or burn back to the attacker."
+    },
+    "tangled_feet": {
+      "name": "Tangled Feet",
+      "description": "No battle effect implemented yet."
+    },
+    "technician": {
+      "name": "Technician",
+      "description": "No battle effect implemented yet."
+    },
+    "thick_fat": {
+      "name": "Thick Fat",
+      "description": "No battle effect implemented yet."
+    },
+    "tinted_lens": {
+      "name": "Tinted Lens",
+      "description": "No battle effect implemented yet."
+    },
+    "torrent": {
+      "name": "Torrent",
+      "description": "Powers up Water-type moves in a pinch."
+    },
+    "trace": {
+      "name": "Trace",
+      "description": "No battle effect implemented yet."
+    },
+    "unaware": {
+      "name": "Unaware",
+      "description": "No battle effect implemented yet."
+    },
+    "unburden": {
+      "name": "Unburden",
+      "description": "No battle effect implemented yet."
+    },
+    "unnerve": {
+      "name": "Unnerve",
+      "description": "No battle effect implemented yet."
+    },
+    "vital_spirit": {
+      "name": "Vital Spirit",
+      "description": "No battle effect implemented yet."
+    },
+    "volt_absorb": {
+      "name": "Volt Absorb",
+      "description": "No battle effect implemented yet."
+    },
+    "water_absorb": {
+      "name": "Water Absorb",
+      "description": "No battle effect implemented yet."
+    },
+    "water_veil": {
+      "name": "Water Veil",
+      "description": "No battle effect implemented yet."
+    },
+    "weak_armor": {
+      "name": "Weak Armor",
+      "description": "No battle effect implemented yet."
+    },
+    "wonder_skin": {
+      "name": "Wonder Skin",
+      "description": "No battle effect implemented yet."
+    }
+  }
+}

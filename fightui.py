@@ -792,10 +792,12 @@ class BattleMove:
             self.category = "status"
 
 class BattleMon:
-    def __init__(self, base, level, moves, hp=-1, shiny=False):
+    def __init__(self, base, level, moves, hp=-1, shiny=False, ability=None, held_item=None):
         self.base = base
         self.level = level
         self.shiny = shiny
+        self.ability = ability
+        self.held_item = held_item
         self.statuses = []
         self.max_hp = int(((2*base.hp*level)/100) + level + 10)
         if hp is None or hp <= -1:

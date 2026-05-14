@@ -210,8 +210,14 @@ NPC_PRESETS = {
 }
 
 
+def default_mon_ability(mon_id):
+    stat_block = getattr(stats, f"mon{mon_id}", None)
+    abilities = getattr(stat_block, "abilities", []) if stat_block is not None else []
+    return abilities[0] if abilities else None
+
+
 class MonOver:
-    def __init__(self, rotation, id, name, moves, level, exp, maxexp=-1, shiny=False):
+    def __init__(self, rotation, id, name, moves, level, exp, maxexp=-1, shiny=False, ability=None, held_item=None):
         self.ord = rotation
         self.id = id
         self.name = name
@@ -219,6 +225,8 @@ class MonOver:
         self.level = level
         self.exp = exp
         self.shiny = shiny
+        self.ability = ability if ability is not None else default_mon_ability(id)
+        self.held_item = held_item
         if maxexp == -1:
             self.maxexp = level*level*level
         else:
@@ -233,7 +241,9 @@ class MonOver:
             "level": self.level,
             "exp": self.exp,
             "maxexp": self.maxexp,
-            "shiny": self.shiny
+            "shiny": self.shiny,
+            "ability": self.ability,
+            "held_item": self.held_item
         }
 
     def menu(self, hp_value=-1, slot_number=None):
@@ -330,7 +340,9 @@ class MonOver:
             level=self.level,
             exp=self.exp,
             maxexp=self.maxexp,
-            shiny=self.shiny
+            shiny=self.shiny,
+            ability=self.ability,
+            held_item=self.held_item
         )
 
 
@@ -384,6 +396,9 @@ def add_to_party_or_pc(stdscr, mon):
     sync_party_slots()
 
 def item_label(item_name):
+    item_data = stats.ITEMS.get(item_name, {})
+    if isinstance(item_data, dict) and item_data.get("name"):
+        return item_data["name"]
     return item_name.replace("_", " ").title()
 
 ITEM_DESCRIPTIONS = {
@@ -400,11 +415,15 @@ BAG_SECTIONS = [
     ("Pokeballs", {"pokeball"}),
     ("Recover", {"potion", "fullheal"}),
     ("Key Items", {"hm_cut", "hm_swim", "map"}),
+    ("Held Items", set()),
     ("Other", set()),
 ]
 
 
 def item_description(item_name):
+    item_data = stats.ITEMS.get(item_name, {})
+    if isinstance(item_data, dict) and item_data.get("description"):
+        return item_data["description"]
     return ITEM_DESCRIPTIONS.get(item_name, "No description yet.")
 
 
@@ -418,6 +437,10 @@ def inventory_entries():
 
 
 def bag_section_for_item(item_name):
+    item_data = stats.ITEMS.get(item_name, {})
+    if isinstance(item_data, dict) and item_data.get("section"):
+        return item_data["section"]
+
     for section_name, section_items in BAG_SECTIONS:
         if section_name != "Other" and item_name in section_items:
             return section_name
@@ -911,7 +934,9 @@ def handle_wild_battle_result(stdscr, result, remove_id=None):
             moves=list(getattr(enemy, "move_ids", [])),
             level=enemy.level,
             exp=0,
-            shiny=getattr(enemy, "shiny", False)
+            shiny=getattr(enemy, "shiny", False),
+            ability=getattr(enemy, "ability", None),
+            held_item=getattr(enemy, "held_item", None)
         )
 
         add_to_party_or_pc(stdscr, new_mon)
@@ -1437,6 +1462,13 @@ def party_menu(stdscr):
 
 
 def overworld(stdscr):
+    if not save_exists():
+        import cutscene
+        if not cutscene.new_save_intro(stdscr):
+            return
+    else:
+        reset_game_state()
+
     curses.curs_set(0)
     stdscr.keypad(True)
     curses.start_color()
@@ -1865,7 +1897,9 @@ def load_pokemon(data):
             level=mon_data["level"],
             exp=mon_data["exp"],
             maxexp=mon_data["maxexp"],
-            shiny=mon_data.get("shiny", False)
+            shiny=mon_data.get("shiny", False),
+            ability=mon_data.get("ability"),
+            held_item=mon_data.get("held_item")
         )
         mons.append(mon)
 
@@ -1919,7 +1953,9 @@ def reset_game_state(data=None):
                 level=mon_data["level"],
                 exp=mon_data["exp"],
                 maxexp=mon_data["maxexp"],
-                shiny=mon_data.get("shiny", False)
+                shiny=mon_data.get("shiny", False),
+                ability=mon_data.get("ability"),
+                held_item=mon_data.get("held_item")
             )
             loaded_box.append(mon)
 
