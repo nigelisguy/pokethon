@@ -721,7 +721,7 @@ def init_overworld_colors():
     except curses.error:
         pass
 
-
+s
 def type_text(stdscr, text):
     h, w = stdscr.getmaxyx()
     stdscr.move(h - 2, 2)
@@ -1305,7 +1305,7 @@ def show_map(stdscr, current_room_id=None):
             "└─────┬┬──────┘",
             "      ││       ",
             "┌─────┴┴──────┐     ┌─────────────┐",
-            "│   ROUTE 1   │=====│CAVITAR CAVE │",
+            "│   ROUTE 1   │=====│ CAVITAR CAVE│",
             "└─────┬┬──────┘     └─────────────┘",
             "      ││       ",
             "┌─────┴┴──────┐     ┌─────────────┐",
@@ -1467,16 +1467,15 @@ def bag_menu(stdscr, current_room_id=None):
 
                 continue
 
-            # Sub-menu for held-item transfer
             if item_name in getattr(stats, "ITEMS", {}):
                 while True:
                     stdscr.clear()
                     safe_addstr(stdscr, 0, 0, "BAG ITEM ACTION")
                     safe_addstr(stdscr, 1, 0, "#" * min(w - 1, 50))
-                    safe_addstr(stdscr, 3, 0, f"Item: {item_label(item_name)} x{quantity}")
-                    safe_addstr(stdscr, 5, 0, "[Z] Give to Pokémon")
-                    safe_addstr(stdscr, 6, 0, "[X] Take from Pokémon")
-                    safe_addstr(stdscr, 7, 0, "[C] Cancel")
+                    safe_addstr(stdscr, 2, 0, f"Item: {item_label(item_name)} x{quantity}")
+                    safe_addstr(stdscr, 4, 0, "[Z] Give to Pokémon")
+                    safe_addstr(stdscr, 5, 0, "[X] Take from Pokémon")
+                    safe_addstr(stdscr, 6, 0, "[C] Cancel")
 
                     stdscr.refresh()
                     subkey = stdscr.getch()
