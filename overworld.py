@@ -721,7 +721,6 @@ def init_overworld_colors():
     except curses.error:
         pass
 
-s
 def type_text(stdscr, text):
     h, w = stdscr.getmaxyx()
     stdscr.move(h - 2, 2)

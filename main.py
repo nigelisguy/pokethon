@@ -1,18 +1,13 @@
 import os
 import sys
 
-# Add project root to path for imports
 def find_project_root(start_path=None):
-    # Get absolute path to this script
     if start_path is None:
         script_path = os.path.abspath(__file__)
     else:
         script_path = os.path.abspath(start_path)
-    
-    # Start from the script's directory
     current = os.path.dirname(script_path)
     
-    # Walk up directory tree looking for pokethon project markers
     max_depth = 10
     depth = 0
     while current != os.path.dirname(current) and depth < max_depth:
@@ -25,11 +20,9 @@ def find_project_root(start_path=None):
         current = os.path.dirname(current)
         depth += 1
     
-    # Fallback: return script directory
     return os.path.dirname(script_path)
 
 PROJECT_ROOT = find_project_root()
-# Ensure the path is added
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
@@ -61,7 +54,6 @@ try:
     curses.init_pair(13, curses.COLOR_GREEN, curses.COLOR_WHITE)
     curses.init_pair(14, curses.COLOR_YELLOW, curses.COLOR_WHITE)
     curses.init_pair(15, curses.COLOR_RED, curses.COLOR_WHITE)
-    # Extended color definitions (may not be supported everywhere)
     try:
         curses.init_color(10, 1000, 500, 0)
         curses.init_pair(16, 10, -1) # orange (filled)
@@ -916,14 +908,14 @@ def mon_menu(stdscr):
 def main(stdscr):
     height, width = stdscr.getmaxyx()
 
+    # Don’t hard-exit on non-80x24 terminals; just warn.
     if height != 24 or width != 80:
         stdscr.clear()
-        stdscr.addstr(0, 0, "For this game, it requires your terminal to be 80x24!")
-        stdscr.addstr(1, 0, f"Current Size: {height} x {width}")
-        stdscr.addstr(3, 0, "Sorry For The Inconvenience!")
+        safe_addstr(stdscr, 0, 0, "For best results, run at 80x24.", color=0)
+        safe_addstr(stdscr, 1, 0, f"Current Size: {height} x {width}", color=0)
+        safe_addstr(stdscr, 3, 0, "Continuing anyway...", color=0)
         stdscr.refresh()
-        stdscr.getch()
-        return
+        curses.napms(600)
 
     stdscr.addstr(0, 0, "Size is correct, Loading...")
     stdscr.refresh()

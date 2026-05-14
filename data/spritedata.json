@@ -185,8 +185,8 @@
         "height": 11,
         "default_color": 1,
         "front_grid": [
-          "                         ",
-          "        ######           ",
+          "         #####           ",
+          "       ########          ",
           "$ $   ###########        ",
           "$$$$  ########[]##       ",
           "$$$$  ############       ",
@@ -563,7 +563,7 @@
     "13": {
       "id": 13,
       "name": "weedle",
-      "sprite_var": "weedle",
+      "sprite_var": "kakuna",
       "sprite": {
         "width": 25,
         "height": 11,
