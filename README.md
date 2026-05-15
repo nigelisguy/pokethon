@@ -1,6 +1,6 @@
 Version 0.7.2 Development
 # PokéTerminal (Pokéthon)
-Pokémon In Your Terminal like its Nethack (or any other terminal rpg)!
+Pokémon In Your Terminal like its Nethack (or any other terminal rpg)! Fully in Python with Curses!
 
 ## Mandatory Disclaimer
 If you want to update this game at this point, please delete your old files, don't worry, there is zero resemblence of progress at least for now, since this game is heavily unfinished, and is mostly just a proof of concept than anything else. Expect heavy changes throughout updates.
