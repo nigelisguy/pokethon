@@ -1473,7 +1473,6 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
 
         elif key in key_map:
             choice = key_map[key]
-            #textbox(stdscr, f"{['bro'][choice-4]} does not work yet")
             continue
         elif key==ord("z") and menu_pos==3:
             if not can_run:
@@ -1533,6 +1532,11 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
         if turn is None:
             continue
         for user, action_type, action in turn:
+
+            # If this Pokémon already fainted earlier in the same turn,
+            # it must not act again (otherwise it can damage the replacement mon).
+            if user.hp <= 0:
+                continue
 
             target = enemy if user == player else player
 
