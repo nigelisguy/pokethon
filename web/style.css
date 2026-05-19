@@ -136,3 +136,27 @@ li {
 .copy-btn:hover {
   background: #1a1a1a;
 }
+.dev-footer {
+  margin-top: 20px;
+  padding: 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.75);
+  border-top: 4px solid #3b4cca;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.dev-links {
+  margin-top: 15px;
+}
+
+.dev-links a {
+  color: #ffde00;
+  text-decoration: none;
+  margin: 0 10px;
+  transition: 0.2s;
+}
+
+.dev-links a:hover {
+  color: white;
+}
