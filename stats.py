@@ -176,9 +176,17 @@ except Exception:
     pass
 
 # Load sprites from spritedata.json -> create globals for sprite_var names
+def _sprite_has_art(sprite):
+    for key in ("front_grid", "back_grid"):
+        for row in sprite.get(key, []):
+            if str(row).strip():
+                return True
+    return False
+
 try:
     with open(_DATA_DIR / "spritedata.json", "r") as f:
         _spr = json.load(f).get("pokemon", {})
+    _empty_sprite_vars = []
     for key, entry in _spr.items():
         sprite_var = entry.get("sprite_var") or entry.get("name")
         sprite = entry.get("sprite", {})
@@ -192,8 +200,15 @@ try:
             img = RenderImage(front_art=front_art, back_art=back_art, palettes=palettes, default_color=default_color, width=width, height=height)
             if sprite_var:
                 globals()[sprite_var] = img
+                if int(entry.get("id", key)) != 9999 and not _sprite_has_art(sprite):
+                    _empty_sprite_vars.append(sprite_var)
         except Exception:
             continue
+    error_sprite = globals().get("error")
+    if error_sprite is not None:
+        placeholder = error_sprite
+        for sprite_var in _empty_sprite_vars:
+            globals()[sprite_var] = error_sprite
 except Exception:
     pass
 

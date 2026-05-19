@@ -138,7 +138,7 @@ def title_screen(stdscr):
 
     flash_white(stdscr, 200)
     stdscr.clear()
-    safe_addstr(stdscr, 13, 30, "GAMEFREAK      983-2026", curses.color_pair(8))
+    safe_addstr(stdscr, 13, 30, "GAMEFREAK      1983-2026", curses.color_pair(8))
     safe_addstr(stdscr, 14, 30, "POKEMON        1996-2026", curses.color_pair(8))
     safe_addstr(stdscr, 15, 30, "POKETERMINAL   2026", curses.color_pair(8))
     stdscr.refresh()
