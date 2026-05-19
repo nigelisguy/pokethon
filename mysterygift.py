@@ -63,7 +63,31 @@ def gifted(stdscr):
             text += str(key)
             stdscr.addstr(str(key))
     gift_system = MysteryGiftSystem("https://pokethon-api.onrender.com/config")
-    gift = gift_system.get_gift(text)
+    gift = None
+    max_attempts = 3
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            gift = gift_system.get_gift(text)
+            break
+        except requests.exceptions.Timeout:
+            stdscr.move(2, 0)
+            stdscr.clrtoeol()
+            if attempt < max_attempts:
+                stdscr.addstr(2, 0, "Mystery Gift server timed out. Retrying...")
+                stdscr.refresh()
+            else:
+                stdscr.addstr(2, 0, "ERROR: Mystery Gift server timed out. Please try again later.")
+                stdscr.refresh()
+                stdscr.getch()
+                return
+        except requests.exceptions.RequestException:
+            stdscr.move(2, 0)
+            stdscr.clrtoeol()
+            stdscr.addstr(2, 0, "ERROR: Mystery Gift server could not be reached. Please try again later.")
+            stdscr.refresh()
+            stdscr.getch()
+            return
 
     if gift:
         mon = gift["mon"]
