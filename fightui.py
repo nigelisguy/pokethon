@@ -407,30 +407,30 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
                 move_menu = False
             continue
         
-        # Handle team selection navigation
+        
         if key == curses.KEY_LEFT and row > 0:
             row -= 1
-            move_slot = 0  # Reset move slot when changing rows
+            move_slot = 0  
         elif key == curses.KEY_RIGHT and row < 3:
             row += 1
-            move_slot = 0  # Reset move slot when changing rows
+            move_slot = 0  
         elif key == curses.KEY_UP:
-            if row == 2:  # If in moves row, navigate move slots
+            if row == 2:  
                 if move_slot > 0:
                     move_slot -= 1
             else:
-                if team_idx > 0:  # Navigate to previous pokemon slot
+                if team_idx > 0:  
                     team_idx -= 1
-                else:  # Switch to player team
+                else:  
                     col = 0
         elif key == curses.KEY_DOWN:
-            if row == 2:  # If in moves row, navigate move slots
+            if row == 2:  
                 if move_slot < 3:
                     move_slot += 1
             else:
-                if team_idx < 5:  # Navigate to next pokemon slot
+                if team_idx < 5:  
                     team_idx += 1
-                else:  # Switch to enemy team
+                else: 
                     col = 1
                     team_idx = 0
         
@@ -438,13 +438,13 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
             current_team = player_team if col == 0 else cpu_pool if col == 1 else player_team
             current_team = player_team if col == 0 else enemy_team
             
-            if row == 0:  # Select pokemon
+            if row == 0:  
                 pool = player_pool if col == 0 else cpu_pool
                 i = select_from_list_scroll(stdscr, pool, f"Select Pokemon for slot {team_idx+1}", show_type=True)
                 if i is not None:
                     chosen = pool.pop(i)
                     current_team[team_idx]['mon'] = chosen
-                    # Default ability/held item from the chosen mon's stats definition
+                    
                     abilities = getattr(chosen, "abilities", []) if hasattr(chosen, "abilities") else []
                     held_items = getattr(chosen, "held_items", []) if hasattr(chosen, "held_items") else []
                     held_item = None
@@ -455,12 +455,12 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
                     current_team[team_idx]['ability'] = abilities[0] if abilities else None
                     current_team[team_idx]['held_item'] = held_item
             
-            elif row == 1:  # Select level
+            elif row == 1:  
                 level = select_level(stdscr, current_team[team_idx]['level'])
                 if level is not None:
                     current_team[team_idx]['level'] = level
             
-            elif row == 2:  # Select moves
+            elif row == 2:  
                 if current_team[team_idx]['mon'] is None:
                     textbox(stdscr, "Please select a Pokemon first!")
                 else:
@@ -471,8 +471,7 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
             elif row == 3:  # Toggle shiny
                 current_team[team_idx]['shiny'] = not current_team[team_idx]['shiny']
         
-        elif key == ord("c"):  # Confirm and start battle
-            # Filter out empty slots
+        elif key == ord("c"):  
             valid_player = [t for t in player_team if t['mon'] is not None]
             valid_enemy = [t for t in enemy_team if t['mon'] is not None]
             
@@ -513,13 +512,11 @@ def draw_debug_team_side(stdscr, start_y, team, is_selected, team_idx, row, x_of
         y = start_y + i
         mon_data = team[i]
         
-        # Highlight current selection
         highlight = is_selected and team_idx == i
         
         if row == 0 and highlight:
             stdscr.attron(curses.color_pair(1))
-        
-        # Pokemon slot with shiny indicator
+      
         if mon_data['mon']:
             shiny_mark = "✦ " if mon_data['shiny'] else ""
             mon_name = f"{shiny_mark}{mon_data['mon'].call().capitalize()}"
@@ -531,14 +528,12 @@ def draw_debug_team_side(stdscr, start_y, team, is_selected, team_idx, row, x_of
         if row == 0 and highlight:
             stdscr.attroff(curses.color_pair(1))
         
-        # Level display
         if row == 1 and highlight:
             stdscr.attron(curses.color_pair(1))
         safe_addstr(stdscr, y, x_offset + 18, f"L{mon_data['level']:<2}", 0)
         if row == 1 and highlight:
             stdscr.attroff(curses.color_pair(1))
-        
-        # Shiny indicator
+            
         shiny_mark = "✦" if mon_data['shiny'] else " "
         if row == 3 and highlight:
             stdscr.attron(curses.color_pair(1))

@@ -1,0 +1,59 @@
+{
+    "settings": {
+        "textspeed": 0.01
+    },
+    "player": {
+        "name": "Jeff",
+        "rival": "Malfoy"
+    },
+    "location": {
+        "room_id": "map1",
+        "y": 0,
+        "x": 0
+    },
+    "pokedex": {
+        "seen": [
+            1
+        ],
+        "caught": [],
+        "seen_shiny": [],
+        "caught_shiny": []
+    },
+    "pokemon": [
+        {
+            "rotation": 1,
+            "id": 1,
+            "name": "Bulbasaur",
+            "moves": [
+                340
+            ],
+            "level": 5,
+            "exp": 0,
+            "maxexp": 125,
+            "shiny": false,
+            "ability": "overgrow",
+            "held_item": null
+        }
+    ],
+    "pcmons": [
+        []
+    ],
+    "inventory": [
+        {
+            "potion": 5
+        },
+        {
+            "pokeball": 5
+        }
+    ],
+    "money": 3000,
+    "picked_items": [],
+    "cut_trees": [],
+    "battled_trainers": [],
+    "pp": [
+        -1,
+        -1,
+        -1,
+        -1
+    ]
+}

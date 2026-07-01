@@ -105,6 +105,14 @@
       "description": "A held item associated with Farfetchd.",
       "effect": "held"
     },
+    "tera_orb": {
+      "name": "Tera Orb",
+      "price": 0,
+      "shop": false,
+      "section": "Key Items",
+      "description": "A mystical orb needed to Terastallize Pokémon. Recharges at Pokémon Centers.",
+      "effect": "tera"
+    },
     "leftovers": {
       "name": "Leftovers",
       "price": 4000,

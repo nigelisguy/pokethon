@@ -67,6 +67,8 @@ def create_mon(mon_id, level, move_ids, hp=None, enemytype=None, shiny=False, ab
         held_item = random_held_item(mon_id)
 
     mon = fightui.BattleMon(stat_block, level, move_list, hp, shiny, ability, held_item)
+    # Set tera_type from base pokemon's tera_type if set, else default to base.type
+    mon.tera_type = getattr(stat_block, "tera_type", None) or stat_block.type
 
     mon.mon_id = mon_id
     mon.move_ids = list(move_ids)
@@ -228,5 +230,6 @@ def to_battle_mon(mon):
         move_ids=mon.moves,
         hp=overworld.hpstorage[0],
         enemytype="player",
-        shiny=getattr(mon, "shiny", False)
+        shiny=getattr(mon, "shiny", False),
+        ability=overworld.default_mon_ability(mon.id) if hasattr(overworld, 'default_mon_ability') else None
     )

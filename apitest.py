@@ -1,4 +1,10 @@
-import requests
+import sys
+
+try:
+    import requests
+except ImportError:
+    print("The 'requests' package is not installed. Install it with: pip install requests (recommended).")
+    sys.exit(1)
 
 url = "https://pokethon-api.onrender.com/config"
 

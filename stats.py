@@ -189,6 +189,15 @@ try:
     _empty_sprite_vars = []
     for key, entry in _spr.items():
         sprite_var = entry.get("sprite_var") or entry.get("name")
+        sprite_aliases = {
+            alias
+            for alias in (
+                sprite_var,
+                entry.get("name"),
+                str(entry.get("name", "")).replace("-", "_"),
+            )
+            if alias
+        }
         sprite = entry.get("sprite", {})
         front_art = "\n".join(sprite.get("front_grid", []))
         back_art = "\n".join(sprite.get("back_grid", []))
@@ -198,10 +207,11 @@ try:
         height = sprite.get("height", 11)
         try:
             img = RenderImage(front_art=front_art, back_art=back_art, palettes=palettes, default_color=default_color, width=width, height=height)
-            if sprite_var:
-                globals()[sprite_var] = img
+            if sprite_aliases:
+                for alias in sprite_aliases:
+                    globals()[alias] = img
                 if int(entry.get("id", key)) != 9999 and not _sprite_has_art(sprite):
-                    _empty_sprite_vars.append(sprite_var)
+                    _empty_sprite_vars.extend(sprite_aliases)
         except Exception:
             continue
     error_sprite = globals().get("error")

@@ -1,12 +1,14 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run Program",
-      "program": "${file}",
-      "console": "integratedTerminal"
-    }
-  ]
+"version": "0.2.0",
+"configurations": [
+{
+"name": "Run main.py",
+"type": "debugpy",
+"request": "launch",
+"program": "${workspaceFolder}/main.py",
+"console": "integratedTerminal",
+"justMyCode": false
 }
+]
+}
+

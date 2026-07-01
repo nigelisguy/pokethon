@@ -42,13 +42,15 @@ DEFAULT_SAVE = {
     "pcmons": [[]],
     "inventory": [
         {"potion": 5},
-        {"pokeball": 5}
+        {"pokeball": 5},
+        {"tera_orb": 1}
     ],
     "money": 3000,
     "picked_items": [],
     "cut_trees": [],
     "battled_trainers": [],
     "pp": [-1, -1, -1, -1],
+    "tera_orb_charged": True,
     "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes]
 }
 
@@ -217,7 +219,7 @@ def default_mon_ability(mon_id):
 
 
 class MonOver:
-    def __init__(self, rotation, id, name, moves, level, exp, maxexp=-1, shiny=False, ability=None, held_item=None):
+    def __init__(self, rotation, id, name, moves, level, exp, maxexp=-1, shiny=False, ability=None, held_item=None, tera_type=None):
         self.ord = rotation
         self.id = id
         self.name = name
@@ -227,6 +229,8 @@ class MonOver:
         self.shiny = shiny
         self.ability = ability if ability is not None else default_mon_ability(id)
         self.held_item = held_item
+        # tera_type: if None, defaults to the mon's primary type when BattleMon is created
+        self.tera_type = tera_type
         if maxexp == -1:
             self.maxexp = level*level*level
         else:
@@ -243,7 +247,8 @@ class MonOver:
             "maxexp": self.maxexp,
             "shiny": self.shiny,
             "ability": self.ability,
-            "held_item": self.held_item
+            "held_item": self.held_item,
+            "tera_type": self.tera_type
         }
 
     def menu(self, hp_value=-1, slot_number=None):
@@ -342,7 +347,8 @@ class MonOver:
             maxexp=self.maxexp,
             shiny=self.shiny,
             ability=self.ability,
-            held_item=self.held_item
+            held_item=self.held_item,
+            tera_type=self.tera_type
         )
 
 
@@ -763,6 +769,7 @@ def build_save(current_room_id=None, py=None, px=None):
         "cut_trees": sorted(cut_trees),
         "battled_trainers": sorted(battled_trainers),
         "pp": fightui.pplist,
+        "tera_orb_charged": tera_orb_charged,
         "pcmons": [[mon.to_dict() for mon in box] for box in pc_boxes],
     }
 
@@ -1069,11 +1076,27 @@ def draw(stdscr, room, py, px):
     stdscr.refresh()
 
 
+def recharge_tera_orb():
+    global tera_orb_charged
+    tera_orb_charged = True
+
+def consume_tera_orb():
+    global tera_orb_charged
+    if not tera_orb_charged:
+        return False
+    tera_orb_charged = False
+    return True
+
+def is_tera_orb_charged():
+    global tera_orb_charged
+    return tera_orb_charged
+
 def heal_player():
     ensure_hpstorage_size()
     for i in range(6):
         hpstorage[i] = -1
     fightui.pplist = [-1, -1, -1, -1]
+    recharge_tera_orb()
 
 def blackout_to_pokemon_center(stdscr, rooms):
     lost = lose_blackout_money()
@@ -1299,7 +1322,7 @@ def show_map(stdscr, current_room_id=None):
         safe_addstr(stdscr, 1, 0, "=" * 40)
         map_layout = [
             "┌─────────────┐",
-            "│   Humble    │",
+            "│  Cerulean   │",
             "│    Town     │",
             "└─────┬┬──────┘",
             "      ││       ",
@@ -1315,13 +1338,11 @@ def show_map(stdscr, current_room_id=None):
         for i, line in enumerate(map_layout):
             safe_addstr(stdscr, 3 + i, 5, line)
         
-        # Mark current location
         if current_room_id == "map1":
             safe_addstr(stdscr, 6, 7, "YOU")
         elif current_room_id == "map2":
             safe_addstr(stdscr, 14, 7, "YOU")
         
-        # Legend
         safe_addstr(stdscr, 21, 2, "???????????")
         
         safe_addstr(stdscr, 23, 0, "[X] Close Map")
@@ -2139,6 +2160,9 @@ def reset_game_state(data=None):
     pokedex_caught_shiny = set(save_data.get("pokedex", {}).get("caught_shiny", []))
 
     fightui.pplist = list(save_data.get("pp", [-1, -1, -1, -1]))
+
+    global tera_orb_charged
+    tera_orb_charged = save_data.get("tera_orb_charged", True)
     ensure_hpstorage_size()
     sync_party_slots()
 

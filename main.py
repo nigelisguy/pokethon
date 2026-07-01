@@ -35,6 +35,15 @@ import mysterygift
 import cutscene
 import subprocess
 
+if not getattr(mysterygift, "REQUESTS_AVAILABLE", True):
+    print("Tip: install 'requests' to enable Mystery Gift (recommended): pip install requests or pip3 install requests")
+    time.sleep(2)
+    try:
+        cols = os.get_terminal_size().columns
+        print('\n' + ('-' * cols))
+    except OSError:
+        print('\n' + ('-' * 80))
+
 try:
     curses.initscr()
     curses.start_color()
@@ -98,11 +107,9 @@ try:
         curses.init_pair(37, 28, -1)
         curses.init_color(29, 1000, 1000, 600)
         curses.init_pair(38, 29, -1)
-    except Exception:
-        # extended colors not available; continue without them
+    except (curses.error, OSError, ValueError):
         pass
-except Exception:
-    # Terminal doesn't support colors or curses initialization; skip color setup
+except (curses.error, OSError):
     pass
 
 #variables
@@ -297,10 +304,6 @@ def prompt_int(stdscr, prompt, initial, min_value=None, max_value=None):
     return number
 
 def select_from_list(stdscr, items, title):
-    """
-    items: list of tuples (value_id, display_text)
-    Returns value_id or None if cancelled.
-    """
     cursor = 0
     view = 0
     while True:
@@ -685,6 +688,49 @@ def mainm(stdscr):
     curses.init_pair(1, curses.COLOR_BLUE, -1)
 
     menu = [
+        "",
+        "Start Game",
+        "Settings",
+    ]
+
+    y = 1
+
+    while True:
+        stdscr.clear()
+        for i in range(len(menu)):
+            text = menu[i] if i == 0 else menu[i]
+            if i == y:
+                stdscr.attron(curses.color_pair(1))
+                stdscr.addstr(i * 1, 0, f"> {text}")
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                stdscr.addstr(i * 1, 0, f"  {text}")
+
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and y > 1:
+            y -= 1
+        elif key == curses.KEY_DOWN and y < len(menu) - 1:
+            y += 1
+        elif key == ord("c"):
+            cutscene.show_readme(stdscr)
+        elif key == ord("z"):
+            if y == 2:
+                setting(stdscr)
+            elif y == 1:
+                overworld_save_menu(stdscr)
+        elif key == ord("d"):
+            debugmainm(stdscr)
+
+def debugmainm(stdscr):
+    import fightui
+    curses.curs_set(0)
+    stdscr.keypad(True)
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_BLUE, -1)
+
+    menu = [
         "-->POKETHON<--",
         "Start Game",
         "Debug Battle",
@@ -908,7 +954,6 @@ def mon_menu(stdscr):
 def main(stdscr):
     height, width = stdscr.getmaxyx()
 
-    # Don’t hard-exit on non-80x24 terminals; just warn.
     if height != 24 or width != 80:
         stdscr.clear()
         safe_addstr(stdscr, 0, 0, "For best results, run at 80x24.", color=0)
