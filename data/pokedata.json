@@ -31,6 +31,7 @@
       "sp_de": 80,
       "spd": 60,
       "base_exp": 142,
+      "description": "Its flower blooms when it is absorbing solar energy.",
       "abilities": [
         "overgrow"
       ],

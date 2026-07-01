@@ -7,6 +7,33 @@ player_result = []
 enemy_result = []
 EASY_OFFSET=15
 
+# Move type to color pair mapping
+MOVE_TYPE_COLORS = {
+    "normal": 1,      # WHITE
+    "fire": 7,        # RED
+    "water": 6,       # BLUE
+    "electric": 2,    # YELLOW
+    "grass": 4,       # GREEN
+    "ice": 3,         # CYAN
+    "fighting": 19,   # BROWN
+    "poison": 5,      # MAGENTA
+    "ground": 19,     # BROWN
+    "flying": 3,      # CYAN
+    "psychic": 5,     # MAGENTA
+    "bug": 4,         # GREEN
+    "rock": 19,       # BROWN
+    "ghost": 5,       # MAGENTA
+    "dragon": 6,      # BLUE
+    "dark": 1,        # WHITE
+    "steel": 3,       # CYAN
+    "fairy": 5,       # MAGENTA
+    "sleep": 1,       # WHITE
+}
+
+def get_move_color(move_type):
+    """Get the color pair for a move based on its type."""
+    return MOVE_TYPE_COLORS.get(move_type.lower(), 1)  # Default to WHITE
+
 STAT_DISPLAY = {
     "at": "Attack",
     "de": "Defense",
@@ -366,7 +393,13 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
             for i in range(4):
                 move_name = mon_data['moves'][i].call().capitalize() if mon_data['moves'][i] else "[Empty]"
                 prefix = "> " if move_slot == i else "  "
-                safe_addstr(stdscr, 1 + i, 50, f"{prefix}{i+1}. {move_name[:24]}", 0)
+                if mon_data['moves'][i]:
+                    move_color = get_move_color(mon_data['moves'][i].type)
+                    stdscr.attron(curses.color_pair(move_color))
+                    safe_addstr(stdscr, 1 + i, 50, f"{prefix}{i+1}. {move_name[:24]}")
+                    stdscr.attroff(curses.color_pair(move_color))
+                else:
+                    safe_addstr(stdscr, 1 + i, 50, f"{prefix}{i+1}. {move_name[:24]}", 0)
         else:
             draw_debug_team_side(stdscr, 3, player_team, col == 0, team_idx, row)
             draw_debug_team_side(stdscr, 3, enemy_team, col == 1, team_idx, row, x_offset=35)
@@ -378,7 +411,13 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
                 for i in range(4):
                     move_name = mon_data['moves'][i].call().capitalize() if mon_data['moves'][i] else "[Empty]"
                     prefix = "> " if move_slot == i else "  "
-                    safe_addstr(stdscr, 11 + i, 5, f"{prefix}{i+1}. {move_name[:20]}", 0)
+                    if mon_data['moves'][i]:
+                        move_color = get_move_color(mon_data['moves'][i].type)
+                        stdscr.attron(curses.color_pair(move_color))
+                        safe_addstr(stdscr, 11 + i, 5, f"{prefix}{i+1}. {move_name[:20]}")
+                        stdscr.attroff(curses.color_pair(move_color))
+                    else:
+                        safe_addstr(stdscr, 11 + i, 5, f"{prefix}{i+1}. {move_name[:20]}", 0)
         
         stdscr.refresh()
         key = stdscr.getch()
@@ -1019,10 +1058,17 @@ def select_teams_and_moves(stdscr, player_pool, cpu_pool, moves_list):
             for i in range(4):
                 y = 4 + i
                 mname = "#"
+                move_color = 1
                 if moves[i]:
                     mname = moves[i].call().capitalize()[:20]
+                    move_color = get_move_color(moves[i].type)
                 prefix = "> " if selected and row == i + 1 and not move_menu else "  "
-                safe_addstr(stdscr, y, x, prefix + mname,0)
+                if moves[i]:
+                    stdscr.attron(curses.color_pair(move_color))
+                    safe_addstr(stdscr, y, x, prefix + mname)
+                    stdscr.attroff(curses.color_pair(move_color))
+                else:
+                    safe_addstr(stdscr, y, x, prefix + mname,0)
 
         draw_side(5,player_mon,player_moves,col==0)
         draw_side(30,cpu_mon,cpu_moves,col==1)
@@ -1218,19 +1264,25 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
         move_row_start = row_start + 1
         for idx, move in enumerate(player.moves):
             text = f"{idx+1}. {move.name} PP{move.pp}/{move.pp_max}"
+            move_color = get_move_color(move.type)
+            stdscr.attron(curses.color_pair(move_color))
             safe_addstr(stdscr, move_row_start + idx, move_col, text)
+            stdscr.attroff(curses.color_pair(move_color))
             
 def draw_moves(stdscr, mon, highlight=-1, col=None, row_start=None):
     if col is None: col = 42
     if row_start is None: row_start = 1
     for idx, move in enumerate(mon.moves):
         text = f"[{f'{move.name} PP{move.pp}/{move.pp_max}':^20}]"
+        move_color = get_move_color(move.type)
         if idx == highlight:
             stdscr.attron(curses.color_pair(1))
             safe_addstr(stdscr, row_start + idx, col, text)
             stdscr.attroff(curses.color_pair(1))
         else:
+            stdscr.attron(curses.color_pair(move_color))
             safe_addstr(stdscr, row_start + idx, col, text)
+            stdscr.attroff(curses.color_pair(move_color))
 
 
 def show_move_info(stdscr, move, attacker, defender):

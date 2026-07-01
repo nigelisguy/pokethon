@@ -158,7 +158,6 @@ def confirm_menu(stdscr, title, detail, warning="ALL DATA WILL BE ERASED."):
             else:
                 stdscr.addstr(6 + i, 0, f"  {option}")
 
-        stdscr.addstr(10, 0, "Z = confirm   X = back")
         key = stdscr.getch()
 
         if key == curses.KEY_UP and y > 0:
@@ -227,7 +226,6 @@ def overworld_save_menu(stdscr):
             else:
                 stdscr.addstr(4 + i, 0, f"  {option}")
 
-        stdscr.addstr(10, 0, "Z = select   X = back")
         key = stdscr.getch()
 
         if key == curses.KEY_UP and y > 0:
@@ -326,7 +324,6 @@ def select_from_list(stdscr, items, title):
         if view + visible < len(items):
             safe_addstr(stdscr, 22, 0, "▼")
 
-        safe_addstr(stdscr, 23, 0, "Z = select   X = cancel")
         stdscr.refresh()
         key = stdscr.getch()
 
@@ -686,11 +683,12 @@ def mainm(stdscr):
     curses.start_color()
     curses.use_default_colors()
     curses.init_pair(1, curses.COLOR_BLUE, -1)
-
+ 
     menu = [
-        "",
-        "Start Game",
-        "Settings",
+        "MENU OPTIONS",
+        " [-Start Game (Unfinished)-]",
+        " [----------Battle---------]",
+        " [---------Settings--------]",
     ]
 
     y = 1
@@ -719,6 +717,11 @@ def mainm(stdscr):
                 setting(stdscr)
             elif y == 1:
                 overworld_save_menu(stdscr)
+            elif y == 3:
+                import fightui
+                randomizer_mode = debug_randomizer_menu(stdscr)
+                if randomizer_mode is not None:
+                    fightui.battle_setup(stdscr, randomizer_mode)
         elif key == ord("d"):
             debugmainm(stdscr)
 
@@ -799,9 +802,9 @@ def setting(stdscr):
     while True:
         stdscr.clear()
         menu = [
-            f"text speed {textspeed:.2f}",
-            "idk bro battle animations???",
-            "dkkuuygdskhjnvdguiyjdaydf",
+            f"TEXT SPEED {textspeed:.2f}sec",
+            "SET MODE (WIP)",
+            "BATTLE ANIMATIONS (WIP)",
             "back"
         ]
         for i in range(4):
