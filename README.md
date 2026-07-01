@@ -1,4 +1,4 @@
-Version 0.7.2 Development
+Version 0.7.5 Development
 # PokéTerminal (Pokéthon)
 Pokémon In Your Terminal like its Nethack (or any other terminal rpg)! Fully in Python with Curses!
 

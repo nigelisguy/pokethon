@@ -1415,8 +1415,7 @@ def bag_menu(stdscr, current_room_id=None):
             selected += 1
         elif key == ord("z") and entries:
             item_name, quantity = entries[selected]
-
-            # Use consumables (e.g. Potion) like normal "Use" items
+            
             item_data = getattr(stats, "ITEMS", {}).get(item_name)
             if isinstance(item_data, dict) and item_data.get("effect") == "heal":
                 heal_amount = int(item_data.get("amount", 0) or 0)
@@ -1438,15 +1437,12 @@ def bag_menu(stdscr, current_room_id=None):
                             text = f"{prefix} {i+1}. --- EMPTY ---"
                         else:
                             base_stats = getattr(stats, f"mon{mon.id}", None)
-                            # If we have hp storage info elsewhere, prefer it; otherwise heal is best-effort
                             max_hp = int(((2 * base_stats.hp * mon.level) / 100) + mon.level + 10) if base_stats else 0
                             text = f"{prefix} {i+1}. {mon.name}"
                             if max_hp > 0:
-                                # best-effort: stored hp is not available here; keep it simple
                                 text += f" (heal +{heal_amount})"
                         safe_addstr(stdscr, 3 + i, 0, text[:w - 1])
 
-                    safe_addstr(stdscr, 10, 0, "[UP/DOWN]  [Z] Confirm  [X] Back")
                     stdscr.refresh()
 
                     k = stdscr.getch()

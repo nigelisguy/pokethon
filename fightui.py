@@ -356,7 +356,6 @@ def select_debug_teams(stdscr, player_pool, cpu_pool, moves_list, mode):
         safe_addstr(stdscr, 0, 5, "DEBUG BATTLE SETUP", 0)
         safe_addstr(stdscr, 1, 5, "← Player Team", 0)
         safe_addstr(stdscr, 1, 35, "Enemy Team →", 0)
-        safe_addstr(stdscr, 2, 5, "[Arrow Keys] Navigate | [Z] Select | [C] Confirm | [X] Back", 0)
         
         if move_menu:
             current_team = player_team if col == 0 else enemy_team
@@ -1233,14 +1232,10 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
         col = (i % 2) * (col_spacing+8)
         text = f"[{menu[i]}]"
         color = curses.color_pair(bottom_colors[i-4])
-        if i == menu_pos:
-            stdscr.attron(curses.color_pair(8))
-            safe_addstr(stdscr, row, col+2, text)
-            stdscr.attroff(curses.color_pair(8))
-        else:
-            stdscr.attron(color)
-            safe_addstr(stdscr, row, col+2, text)
-            stdscr.attroff(color)
+        prefix = "< " if i == menu_pos else "  "
+        stdscr.attron(color)
+        safe_addstr(stdscr, row, col, prefix + text)
+        stdscr.attroff(color)
 
     draw_divider(stdscr, 4)
 
@@ -1250,14 +1245,10 @@ def draw_main_menu(stdscr, menu_pos, player=None, enemy=None,show_moves=False):
         col = (i-4)*col_spacing
         text = f" [{menu[i]}] "
         color = curses.color_pair(bottom_colors[i-4])
-        if i == menu_pos:
-            stdscr.attron(curses.color_pair(1))
-            safe_addstr(stdscr, row, col+1, text)
-            stdscr.attroff(curses.color_pair(1))
-        else:
-            stdscr.attron(color)
-            safe_addstr(stdscr, row, col+1, text)
-            stdscr.attroff(color)
+        prefix = "<" if i == menu_pos else " "
+        stdscr.attron(color)
+        safe_addstr(stdscr, row, col, prefix + text)
+        stdscr.attroff(color)
 
     if show_moves and player:
         move_col = 25  
@@ -1570,7 +1561,7 @@ def afightui(stdscr, party, enemy, mode, active_idx=0, can_run=True):
                     continue
             else:  
                 usable = [m for m in enemy.moves if m.pp > 0]
-                enemy_move = random.choice(usable) if usable else None #sinnoh ahh ai
+                enemy_move = random.choice(usable) if usable else None
             turn = sorted(
                 [(player, "move", player_move), (enemy, "move",enemy_move)],
                 key=lambda x: x[0].spd,

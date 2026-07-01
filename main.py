@@ -687,8 +687,8 @@ def mainm(stdscr):
     menu = [
         "MENU OPTIONS",
         " [-Start Game (Unfinished)-]",
-        " [----------Battle---------]",
         " [---------Settings--------]",
+        " [----------Battle---------]",
     ]
 
     y = 1
